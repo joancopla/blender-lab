@@ -108,11 +108,12 @@ const AXIS_VIEW_LABEL: Record<AxisView, string> = {
 /**
  * Initial view of the default startup file.
  * FIDELITY? Approximation of Blender's default view: turntable angles and distance
- * chosen by eye, to be adjusted against Blender.
+ * chosen by eye, to be adjusted against Blender. The azimuth differs from the
+ * camera's so the camera does not sit in front of the scene centre.
  */
 export function defaultViewState(): ViewState {
-  const tilt = fromAxisAngle(AXIS_X, 63.6 * DEG);
-  const turn = fromAxisAngle(AXIS_Z, 46.7 * DEG);
+  const tilt = fromAxisAngle(AXIS_X, 62 * DEG);
+  const turn = fromAxisAngle(AXIS_Z, 30 * DEG);
   return {
     rotation: mulQuat(turn, tilt),
     target: vec3(0, 0, 0),
