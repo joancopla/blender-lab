@@ -118,9 +118,61 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - [ ] ❓ Barra d'estat en repòs: "Select", "Rotate View", "Object Context Menu"; versió "5.2.0" a la dreta
 - [ ] ❓ Colors de la interfície aproximats al tema per defecte
 
+## Fase 2 — Escena i selecció
+
+### Selecció al viewport
+
+- [ ] Clic: selecciona l'objecte, el fa actiu i deselecciona la resta
+- [ ] Shift+clic: si no està seleccionat, l'afegeix i el fa actiu; si està seleccionat però no és l'actiu, el fa actiu; si és l'actiu, el deselecciona
+- [ ] ❓ En deseleccionar l'actiu amb Shift+clic, continua sent l'objecte actiu (la capçalera el continua mostrant)
+- [ ] ❓ Clic al buit: ho deselecciona tot i l'objecte actiu es manté
+- [ ] ❓ Shift+clic al buit: no fa res
+- [ ] ❓ Ctrl+clic: no fa res
+- [ ] ❓ Clic repetit al mateix lloc: si l'objecte actiu és sota el cursor, selecciona el següent del darrere (cicle). Amb Shift no hi ha cicle.
+- [ ] ❓ Distància de clic a les línies de la càmera: 5 px; a la llum: el cercle exterior de 9 px + 2 px
+- [ ] ❓ Llindar d'arrossegament: 3 px (Preferences > Input > Drag Threshold)
+
+### Selecció per caixa
+
+- [ ] Arrossegar amb el botó esquerre (eina Select Box), també començant sobre un objecte: sense modificador substitueix la selecció, Shift afegeix, Ctrl treu
+- [ ] ❓ Només selecciona els objectes visibles dins la caixa (no els tapats per altres)
+- [ ] ❓ La selecció per caixa no canvia l'objecte actiu
+- [ ] B: LMB arrossegant afegeix; Shift+LMB o MMB arrossegant treu; Esc o clic dret cancel·la
+- [ ] ❓ Amb B, el cursor passa a creu i es dibuixa una creu discontínua a tota la vista
+- [ ] ❓ Aspecte del rectangle (discontinu blanc i negre)
+- [ ] ❓ Barra d'estat durant B: "Select", "Deselect", "Cancel"
+- [ ] ❓ Durant un modal, les altres tecles s'ignoren
+
+### A, Alt+A, Ctrl+I
+
+- [ ] A: ho selecciona tot (si ja estava tot seleccionat, no passa res)
+- [ ] Alt+A: ho deselecciona tot
+- [ ] Ctrl+I: inverteix la selecció
+- [ ] ❓ Cap d'aquestes canvia l'objecte actiu
+
+### Undo
+
+- [ ] Cada canvi de selecció és un pas d'undo; Ctrl+Z i Ctrl+Shift+Z funcionen des de qualsevol lloc de la finestra
+- [ ] ❓ Una selecció que no canvia res no crea cap pas d'undo
+- [ ] ❓ Màxim de 32 passos (Preferences > System > Undo Steps)
+- [ ] ❓ Noms dels passos: "Select", "Box Select", "(De)select All", "Activate Item" (encara no es veuen enlloc)
+
+### Contorns i colors
+
+- [ ] ❓ Contorn de l'objecte actiu `#ffaa40`, dels seleccionats `#f15800`, d'1 px
+- [ ] ❓ El contorn no es dibuixa on l'objecte està tapat per un altre
+- [ ] ❓ Càmera i llum seleccionades: les línies canvien de color (la càmera activa, triangle inclòs)
+
+### Outliner
+
+- [ ] Scene Collection > Collection > objectes, en ordre alfabètic (Cube abans de Cube.001)
+- [ ] Clic: selecciona, fa actiu i deselecciona la resta
+- [ ] ❓ Ctrl+clic alterna: si no està seleccionat, l'afegeix i el fa actiu; si ho està, el treu
+- [ ] ❓ Clic a l'espai buit de l'Outliner: ho deselecciona tot
+- [ ] ❓ Clic a les files de col·lecció: no fa res
+- [ ] ❓ Colors de les files seleccionades i activa, icones, casella de la col·lecció i icones d'ull i càmera (decoració)
+
 ## Fases següents (anotat per no oblidar-ho)
 
-- ❓ Colors exactes del contorn de selecció (actiu i seleccionat)
-- ❓ Clic i Ctrl+clic a l'Outliner
 - ❓ Format del text de la capçalera durant G, R i S
 - ❓ Cicle de restriccions X → X local → sense restricció; clic del mig durant l'operador
