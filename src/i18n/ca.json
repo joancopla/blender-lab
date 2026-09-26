@@ -37,11 +37,11 @@
     "s3": {
       "title": "Enquadrar amb precisió",
       "instruction": "El que has fet a l'etapa anterior té una drecera. Selecciona el con (Cone) amb un clic esquerre i prem Numpad . (el punt del teclat numèric): la vista se centra en l'objecte seleccionat i s'hi apropa. Amb Home veuràs tota l'escena.",
-      "hint1": "Primer fes clic sobre el con perquè quedi seleccionat (amb un contorn taronja). Després, amb el ratolí damunt de la vista 3D, prem el punt del teclat numèric.",
+      "hint1": "Primer fes clic al con perquè quedi seleccionat (amb un contorn taronja). Després, amb el ratolí damunt de la vista 3D, prem el punt del teclat numèric.",
       "hint2": "Si no trobes el con, prem Home per veure tota l'escena. Si el teu teclat no té teclat numèric, fes servir el menú View > Frame Selected de la capçalera de la vista: a Blender és igual.",
       "selectCone": "Selecciona només el con (Cone).",
       "frameIt": "El con ja està seleccionat. Ara prem Numpad . amb el ratolí damunt de la vista.",
-      "success": "Així és com enquadraràs objectes a Blender: els selecciones i prems Numpad ."
+      "success": "A Blender enquadraràs els objectes així: els selecciones i prems Numpad ."
     },
     "s4": {
       "title": "Vistes",
@@ -65,9 +65,9 @@
     },
     "s6": {
       "title": "Moure",
-      "instruction": "Porta cada cub a la seva silueta. El Cube hi pot anar com vulguis: prem G, mou el ratolí i confirma amb clic esquerre (hi ha una tolerància de 10 cm). El Cube.001 només ha de pujar: prem G i després Z perquè només es mogui en l'eix Z. Si canvies d'opinió, clic dret cancel·la el moviment.",
+      "instruction": "Porta cada cub a la seva silueta. El Cube hi pot anar com vulguis: prem G, mou el ratolí i confirma amb un clic esquerre (hi ha una tolerància de 10 cm). El Cube.001 només ha de pujar: prem G i després Z perquè només es mogui en l'eix Z. Si canvies d'opinió, clic dret cancel·la el moviment.",
       "hint1": "Per moure un objecte, primer selecciona'l. Amb G, l'objecte segueix el ratolí en el pla de la pantalla; amb G X, G Y o G Z, només es mou en aquell eix.",
-      "hint2": "Mou el Cube primer amb G X i després amb G Y: així no canvia d'altura. Per al Cube.001, prem G Z i puja el ratolí fins que encaixi.",
+      "hint2": "Mou el Cube primer amb G X i després amb G Y: així no canvia d'altura. Per al Cube.001, prem G Z i mou el ratolí cap amunt fins que encaixi.",
       "progress": "Porta els dos cubs a les seves siluetes.",
       "aDone": "El Cube ja és al seu lloc. Ara el Cube.001, només en l'eix Z.",
       "bOffAxis": "El Cube.001 s'ha mogut en X o en Y. Desfés el moviment amb Ctrl + Z i torna-ho a provar amb G Z.",
@@ -148,7 +148,7 @@
     "prev": "Anterior",
     "next": "Següent",
     "done": "Etapa superada",
-    "doneBefore": "Ja l'havies superat",
+    "doneBefore": "Ja l'havies superada",
     "free": "Mode lliure",
     "freeText": "Tens l'escena i totes les eines, sense comprovacions. Experimenta tant com vulguis.",
     "stats": "Has trigat {time} i has fet {ops} operacions.",
@@ -198,13 +198,13 @@
   "prefs": {
     "title": "Preferències",
     "emulate3": "Emulate 3 Button Mouse",
-    "emulate3Help": "Si el teu ratolí no té botó del mig, activa-ho i fes servir Alt + clic esquerre per orbitar. A Blender és a Edit > Preferences > Input.",
+    "emulate3Help": "Si el teu ratolí no té botó del mig, activa aquesta opció i fes servir Alt + clic esquerre per orbitar. A Blender és a Edit > Preferences > Input.",
     "emulateNumpad": "Emulate Numpad",
-    "emulateNumpadHelp": "Si el teu teclat no té teclat numèric, activa-ho i fes servir la fila de números (1, 3, 7...). A Blender és a Edit > Preferences > Input.",
+    "emulateNumpadHelp": "Si el teu teclat no té teclat numèric, activa aquesta opció i fes servir la fila de números (1, 3, 7...). A Blender és a Edit > Preferences > Input.",
     "keyOverlay": "Mostra les tecles que prems",
     "keyOverlayHelp": "Mostra a baix a l'esquerra les tecles i els clics, com el complement Screencast Keys.",
     "suggestEmulate3": "Sembla que intentes orbitar sense el botó del mig del ratolí. Vols activar Emulate 3 Button Mouse? Després podràs orbitar amb Alt + clic esquerre.",
-    "suggestYes": "Activa-ho",
+    "suggestYes": "Activa-la",
     "suggestNo": "Ara no"
   }
 }
