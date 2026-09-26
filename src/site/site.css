@@ -1,18 +1,78 @@
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: #121417;
-  color: #d8dce2;
-  font-family: system-ui, sans-serif;
-}
-#site {
-  max-width: 40rem;
+/* Collection index. Shares tokens and components with lab.css. */
+.site {
+  max-width: 760px;
   margin: 0 auto;
-  padding: 3rem 1.5rem;
+  padding: 48px 24px 24px;
 }
-a {
-  color: #7fb4ff;
+.site-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(32px, 5vw, 46px);
+  letter-spacing: -0.02em;
 }
-.wip {
-  color: #8a919c;
+.site-section {
+  margin: 36px 0 12px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--lab-muted);
+}
+.site-labs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 16px;
+}
+.site-card {
+  padding: 20px;
+  border-radius: var(--lab-radius);
+  background: var(--lab-surface);
+  border: 1px solid var(--lab-border);
+}
+.site-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.site-card .lab-eyebrow {
+  margin: 0;
+}
+.site-card h2 {
+  margin: 4px 0;
+  font-size: 22px;
+}
+.site-card h2 a {
+  color: var(--lab-text);
+  text-decoration: none;
+}
+.site-card h2 a:hover,
+.site-card h2 a:focus-visible {
+  color: var(--lab-accent);
+}
+.site-status {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  background: #1f3a2f;
+  color: var(--lab-accent);
+}
+.site-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--lab-surface-2);
+  overflow: hidden;
+  margin-top: 14px;
+}
+.site-progress-fill {
+  height: 100%;
+  background: var(--lab-accent);
+}
+.site-progress-label {
+  margin: 6px 0 14px;
+  color: var(--lab-muted);
+  font-size: 13px;
+}
+.site .lab-button {
+  display: inline-block;
+  text-decoration: none;
 }
