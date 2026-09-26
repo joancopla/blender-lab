@@ -8,7 +8,25 @@ import { type Vec3, add, cross, dot, mul, sub, vec3 } from '../math/vec3';
 import { LIGHT_ICON_RADII_PX, cameraDisplay } from '../scene/object-display';
 import { type SceneState, objectRotation } from '../scene/scene';
 import type { ViewportSize } from './projection';
-import { primitiveTriangles } from './primitives';
+import { triangulateFace } from '../mesh/geometry';
+import type { MeshData } from '../mesh/mesh-data';
+import { meshOf } from '../scene/scene';
+
+const trianglesCache = new WeakMap<MeshData, Float32Array>();
+
+/** Flat triangle list (x, y, z per vertex) of a mesh, for ray tests. */
+function meshTriangles(m: MeshData): Float32Array {
+  let out = trianglesCache.get(m);
+  if (!out) {
+    const list: number[] = [];
+    m.faces.forEach((_, f) => {
+      for (const tri of triangulateFace(m, f)) for (const v of tri) list.push(m.verts[v]!.x, m.verts[v]!.y, m.verts[v]!.z);
+    });
+    out = Float32Array.from(list);
+    trianglesCache.set(m, out);
+  }
+  return out;
+}
 import { type ViewProjection, screenRay, worldToScreen } from './screen';
 
 /** Pick radius around wires, in px. FIDELITY? */
@@ -76,7 +94,7 @@ export function pickAt(
       const invScale = vec3(1 / o.scale.x, 1 / o.scale.y, 1 / o.scale.z);
       const lo = mul(rotate(inv, sub(ray.origin, o.location)), invScale);
       const ld = mul(rotate(inv, ray.direction), invScale);
-      const tris = primitiveTriangles(o.primitive);
+      const tris = meshTriangles(meshOf(o));
       let best = Infinity;
       for (let i = 0; i < tris.length; i += 9) {
         const t = rayTriangle(

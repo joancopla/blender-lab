@@ -2,7 +2,7 @@
  * Changing one transform value from the N panel (one undo step per change).
  */
 import { type Vec3, vec3 } from '../math/vec3';
-import { PRIMITIVE_LOCAL_BOUNDS, type SceneObject, type SceneState } from '../scene/scene';
+import { type SceneObject, type SceneState, meshLocalBounds, meshOf } from '../scene/scene';
 import type { OperatorCall } from '../scene/store';
 
 export type TransformField = 'location' | 'rotation' | 'scale' | 'dimensions';
@@ -16,7 +16,7 @@ const withAxis = (v: Vec3, axis: Axis, value: number): Vec3 =>
 /** Size of the object's local bounding box (before scale). Cameras and lights: 0. */
 export function localSize(o: SceneObject): Vec3 {
   if (o.type !== 'mesh') return vec3(0, 0, 0);
-  const b = PRIMITIVE_LOCAL_BOUNDS[o.primitive];
+  const b = meshLocalBounds(meshOf(o));
   return vec3(b.max.x - b.min.x, b.max.y - b.min.y, b.max.z - b.min.z);
 }
 

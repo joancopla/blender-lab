@@ -25,16 +25,5 @@ export function primitiveGeometry(kind: PrimitiveKind): THREE.BufferGeometry {
   }
 }
 
-const triangleCache = new Map<PrimitiveKind, Float32Array>();
 
 /** Flat list of triangle vertices (x, y, z per vertex, 3 vertices per triangle). */
-export function primitiveTriangles(kind: PrimitiveKind): Float32Array {
-  let tris = triangleCache.get(kind);
-  if (!tris) {
-    const g = primitiveGeometry(kind).toNonIndexed();
-    tris = Float32Array.from(g.getAttribute('position').array);
-    g.dispose();
-    triangleCache.set(kind, tris);
-  }
-  return tris;
-}
