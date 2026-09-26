@@ -294,3 +294,10 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - La segona pista apareix sola al cap de 90 s sense superar l'etapa
 - Les siluetes i els símbols no són objectes: no surten a l'Outliner i no es poden seleccionar
 - Els símbols de l'etapa 1 estan fixos a l'espai: si l'alumne mou el cub, no el segueixen
+
+## Fase 6 — Poliment
+
+- Rendiment: render sota demanda (només es dibuixa quan canvia alguna cosa) i *pixel ratio* limitat a 1,5. Passades per frame: escena, graella i, si hi ha una malla seleccionada, contorns. Cal mesurar-ho en un ordinador d'aula: jo no he pogut fer-ho, perquè la pestanya de proves quedava en segon pla.
+- Avís en pantalles tàctils o de menys de 900 px d'amplada; es pot tancar i continuar.
+- `prefers-reduced-motion`: Smooth View instantani i sense animacions a la interfície del lab.
+- Textos revisats (normativa 2017, pronoms, castellanismes). «Lab» es fa servir com a nom del producte; si prefereixes «laboratori» a tot arreu, és un canvi a `ca.json`.

@@ -46,10 +46,35 @@ Y-up primitive geometries are converted with `yUpGeometryToBlender`.
   select (visible objects inside the rectangle).
 - `ui/outliner.ts`: Outliner rows; clicks run operators.
 
-## Labs
+## Modal operators and panels
 
-A lab is a `LabDefinition` (`engine/lab.ts`) under `src/labs/<id>/`. `engine/app.ts` mounts the
-engine for a lab. HTML entry points live under `labs/<id>/index.html` at the project root.
+- `operators/transform.ts`: pure G/R/S state machine (constraints, numeric input, snapping,
+  precision). `transform-session.ts` connects it to input, the store preview and the UI.
+- `SceneStore.setPreview` shows uncommitted states (modal operators, N panel drags); confirming
+  runs one operator, cancelling logs a `cancel` entry.
+- `ui/sidebar.ts` + `ui/number-field.ts`: N panel. `ui/menu.ts`: View and Select menus.
+
+## Stages
+
+- `stages/types.ts`: a stage is data (texts as i18n keys, scene, ghosts, markers, keys) plus a
+  `check(ctx)` that reads the scene state, the view state and the operation log.
+- `stages/runner.ts`: loads stages, re-checks on every scene/view change, hints, progress.
+- `stages/ghost-match.ts`: symmetry-aware comparison with ghost silhouettes.
+- `viewport/lab-elements.ts`: ghosts and face markers (lab elements, not scene objects).
+
+## Labs and pages
+
+A lab is a `LabDefinition` (`engine/lab.ts`) under `src/labs/<id>/`: id, texts, initial scene
+and stages. Adding a lab does not require touching the engine. `engine/app.ts` mounts the Blender
+replica; `site/lab-page.ts` builds the lab page (intro, lab column, replica, "Al Blender real");
+`site/index.ts` is the collection index. HTML entry points live under `labs/<id>/index.html` at
+the project root. Lab UI (Catalan, `site/lab.css`) is styled apart from the Blender replica
+(`engine/ui/blender-ui.css`).
+
+## Preferences and progress
+
+`lab-prefs.ts` (emulations, key overlay) and `stages/progress.ts` use localStorage, always
+wrapped in try/catch; without storage everything still works for the visit.
 
 ## Deployment
 
