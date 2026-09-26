@@ -18,6 +18,9 @@ import type { FaceMarker } from '../stages/types';
 import { type OutlineState, SelectionPasses } from './selection-passes';
 import { THEME } from './theme';
 
+/** Keeps modest classroom computers at 60 fps on high-density screens. */
+const MAX_PIXEL_RATIO = 1.5;
+
 export interface FrameInfo {
   readonly view: DisplayedView;
   readonly size: ViewportSize;
@@ -61,7 +64,8 @@ export class ViewportRenderer {
     private readonly getScene: () => SceneState,
   ) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'default' });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Capped: on high-density screens every pass (scene, grid, outlines) costs 4x at 2.0.
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
     this.renderer.autoClear = false;
     this.renderer.setClearColor(THEME.viewportBackground);
     this.canvas = this.renderer.domElement;
