@@ -94,7 +94,11 @@ function suggestEmulation(): void {
   toast.hidden = false;
 }
 
-const app = mountLab(replica, lab, {
+// The replica gets its own element: .bl-app must not share an element with lab classes,
+// or the result would depend on stylesheet order (it differs between dev and build).
+const replicaHost = el('div');
+replica.prepend(replicaHost);
+const app = mountLab(replicaHost, lab, {
   inputPrefs: () => prefs,
   onNavigateWithoutMiddle: suggestEmulation,
 });

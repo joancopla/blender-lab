@@ -74,9 +74,6 @@ body {
   position: relative;
   min-width: 0;
 }
-.lab-replica > .bl-app {
-  position: absolute;
-}
 
 .lab-prefs {
   margin-top: auto;
