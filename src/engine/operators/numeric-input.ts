@@ -58,10 +58,10 @@ export class NumericInput {
     return false;
   }
 
-  /** Typed value of a component (0 when empty). */
-  value(i = 0): number {
+  /** Typed value of a component (`empty` when nothing was typed in it, e.g. 1 for scale). */
+  value(i = 0, empty = 0): number {
     const t = this.text[i] ?? '';
-    const n = t === '' || t === '.' ? 0 : Number(t);
+    const n = t === '' || t === '.' ? empty : Number(t);
     return this.negative[i] ? -n : n;
   }
 
