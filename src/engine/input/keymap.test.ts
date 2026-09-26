@@ -5,6 +5,9 @@ import {
   WheelAccumulator,
   resolveNavDrag,
   resolveNavKey,
+  resolveKey,
+  OBJECT_MODE_KEYMAP,
+  SCREEN_KEYMAP,
 } from './keymap';
 
 const key = (code: string, mods: Partial<{ ctrl: boolean; shift: boolean; alt: boolean }> = {}) => ({
@@ -95,5 +98,29 @@ describe('wheel', () => {
 
   it('ignores the wheel with modifiers', () => {
     expect(new WheelAccumulator().push(-100, 0, false)).toBe(0);
+  });
+});
+
+describe('object mode and screen keys', () => {
+  it('selection keys', () => {
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyA'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'selectAll', action: 'select' });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyA', { alt: true }), DEFAULT_INPUT_PREFS)).toEqual({
+      type: 'selectAll',
+      action: 'deselect',
+    });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyI', { ctrl: true }), DEFAULT_INPUT_PREFS)).toEqual({
+      type: 'selectAll',
+      action: 'invert',
+    });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyB'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'boxSelectModal' });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyA', { ctrl: true }), DEFAULT_INPUT_PREFS)).toBeNull();
+  });
+
+  it('undo and redo', () => {
+    expect(resolveKey(SCREEN_KEYMAP, key('KeyZ', { ctrl: true }), DEFAULT_INPUT_PREFS)).toEqual({ type: 'undo' });
+    expect(resolveKey(SCREEN_KEYMAP, key('KeyZ', { ctrl: true, shift: true }), DEFAULT_INPUT_PREFS)).toEqual({
+      type: 'redo',
+    });
+    expect(resolveKey(SCREEN_KEYMAP, key('KeyZ'), DEFAULT_INPUT_PREFS)).toBeNull();
   });
 });

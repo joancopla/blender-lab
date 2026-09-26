@@ -2,6 +2,7 @@
  * 3D Viewport navigation keymap (Blender default keymap, left click select).
  * Pure functions: DOM events are reduced to plain inputs before reaching here.
  */
+import type { SelectAllAction } from '../operators/select';
 import type { NavAction } from '../viewport/navigator';
 
 /** Preferences > Input. Both off by default, as in Blender. */
@@ -23,12 +24,12 @@ export interface KeyInput extends Modifiers {
   readonly code: string;
 }
 
-interface KeymapItem {
+interface KeymapItem<A> {
   readonly code: string;
   readonly ctrl?: boolean;
   readonly shift?: boolean;
   readonly alt?: boolean;
-  readonly action: NavAction;
+  readonly action: A;
 }
 
 /**
@@ -37,7 +38,7 @@ interface KeymapItem {
  * Not bound on purpose (FIDELITY? pending decision): Numpad 9, Ctrl+Numpad 2/4/6/8,
  * Numpad +/-, Shift+Numpad views.
  */
-export const VIEW3D_NAVIGATION_KEYMAP: readonly KeymapItem[] = [
+export const VIEW3D_NAVIGATION_KEYMAP: readonly KeymapItem<NavAction>[] = [
   { code: 'Numpad1', action: { type: 'axisView', axis: 'front' } },
   { code: 'Numpad1', ctrl: true, action: { type: 'axisView', axis: 'back' } },
   { code: 'Numpad3', action: { type: 'axisView', axis: 'right' } },
@@ -64,9 +65,29 @@ export function applyNumpadEmulation(code: string, prefs: InputPrefs): string {
   return m ? `Numpad${m[1]}` : code;
 }
 
-export function resolveNavKey(input: KeyInput, prefs: InputPrefs): NavAction | null {
+export type ObjectModeAction =
+  | { readonly type: 'selectAll'; readonly action: SelectAllAction }
+  | { readonly type: 'boxSelectModal' };
+
+/** Object Mode keymap (3D Viewport). */
+export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
+  { code: 'KeyA', action: { type: 'selectAll', action: 'select' } },
+  { code: 'KeyA', alt: true, action: { type: 'selectAll', action: 'deselect' } },
+  { code: 'KeyI', ctrl: true, action: { type: 'selectAll', action: 'invert' } },
+  { code: 'KeyB', action: { type: 'boxSelectModal' } },
+];
+
+export type ScreenAction = { readonly type: 'undo' } | { readonly type: 'redo' };
+
+/** Screen keymap: works wherever the mouse is. */
+export const SCREEN_KEYMAP: readonly KeymapItem<ScreenAction>[] = [
+  { code: 'KeyZ', ctrl: true, action: { type: 'undo' } },
+  { code: 'KeyZ', ctrl: true, shift: true, action: { type: 'redo' } },
+];
+
+export function resolveKey<A>(keymap: readonly KeymapItem<A>[], input: KeyInput, prefs: InputPrefs): A | null {
   const code = applyNumpadEmulation(input.code, prefs);
-  const item = VIEW3D_NAVIGATION_KEYMAP.find(
+  const item = keymap.find(
     (k) =>
       k.code === code &&
       !!k.ctrl === input.ctrl &&
@@ -75,6 +96,9 @@ export function resolveNavKey(input: KeyInput, prefs: InputPrefs): NavAction | n
   );
   return item ? item.action : null;
 }
+
+export const resolveNavKey = (input: KeyInput, prefs: InputPrefs): NavAction | null =>
+  resolveKey(VIEW3D_NAVIGATION_KEYMAP, input, prefs);
 
 export type DragMode = 'orbit' | 'pan' | 'zoom';
 
