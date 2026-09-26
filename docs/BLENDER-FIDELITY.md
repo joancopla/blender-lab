@@ -238,3 +238,30 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 ### Rotació interna
 
 - [ ] ❓ La rotació es guarda com a XYZ Euler en graus i es converteix de manera compatible amb el valor anterior: girar 15° vint vegades dona 300°, no −60°
+
+## Fase 4 — Panells
+
+### Panell N (Sidebar)
+
+- [ ] N mostra i amaga el panell (amb el ratolí sobre el viewport)
+- [ ] ❓ El panell se superposa a la dreta del viewport (Region Overlap) i el gizmo de navegació es desplaça a la seva esquerra
+- [ ] ❓ Pestanyes verticals Item / Tool / View; només Item funciona
+- [ ] ❓ Item > Transform: "Location:", "Rotation:", el desplegable "XYZ Euler", "Scale:" i "Dimensions:"; cada camp mostra "X/Y/Z" a l'esquerra i el valor a la dreta; cadenats a la dreta (decoració)
+- [ ] ❓ Format: `0 m`, `7.3589 m`; `63.6°`; `1.000`
+- [ ] Mostra l'objecte actiu i s'actualitza en directe durant G/R/S
+- [ ] ❓ Sense objecte actiu, el panell queda buit
+- [ ] Clic en un camp: editar amb el teclat. Enter o clic fora confirma, Esc cancel·la, Tab passa al camp següent
+- [ ] ❓ Mentre s'edita, el text és el valor complet sense unitat; s'accepten + − * / ( ), coma decimal i la unitat al final. Blender avalua Python i converteix unitats
+- [ ] ❓ Arrossegar horitzontalment canvia el valor: 0,01 m, 1° o 0,01 per píxel. Ctrl: increments de 0,1 m, 5° o 0,1. Shift: precisió. Esc o clic dret cancel·la
+- [ ] ❓ Canviar Dimensions canvia l'escala; en càmeres i llums no fa res
+- [ ] ❓ Cada canvi és un pas d'undo amb el nom de la propietat ("Location", "Rotation", "Scale", "Dimensions")
+- [ ] ❓ Només s'edita l'objecte actiu (Blender edita tots els seleccionats amb Alt)
+- [ ] ❓ No hi ha les fletxes laterals dels camps ni l'arrossegament vertical per editar X/Y/Z alhora
+
+### Preferències del lab (no són part de Blender)
+
+- [ ] Emulate 3 Button Mouse i Emulate Numpad, desactivats per defecte, amb una frase que diu on es troben a Blender
+- [ ] ❓ Blender les té a Edit > Preferences > Input; comprova-ho a la 5.2
+- [ ] Si l'alumne arrossega amb Alt + clic esquerre o amb el botó dret sense l'emulació, apareix un avís que proposa activar-la (una vegada per visita)
+- [ ] Les preferències es desen a `localStorage`
+- [ ] Overlay de tecles a baix a l'esquerra, activable: noms de tecla de Blender ("Ctrl + Numpad 1") i accions del ratolí en català
