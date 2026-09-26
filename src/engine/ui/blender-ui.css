@@ -351,3 +351,113 @@
   text-align: center;
   color: var(--bl-text);
 }
+
+/* Sidebar (N panel). FIDELITY? Colours and sizes. */
+.bl-sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--sidebar-w);
+  display: flex;
+  background: rgba(40, 40, 40, 0.92);
+  z-index: 2;
+}
+.bl-sidebar-content {
+  flex: 1;
+  overflow: auto;
+  padding: 6px;
+}
+.bl-sidebar-tabs {
+  width: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 6px;
+  background: #1d1d1d;
+}
+.bl-sidebar-tab {
+  writing-mode: vertical-rl;
+  padding: 8px 3px;
+  color: var(--bl-text-dim);
+  border-radius: 0 4px 4px 0;
+}
+.bl-sidebar-tab.is-active {
+  background: #303030;
+  color: var(--bl-text);
+}
+.bl-panel {
+  background: #303030;
+  border-radius: 4px;
+}
+.bl-panel-header {
+  padding: 5px 8px;
+  font-weight: 600;
+}
+.bl-panel-header::before {
+  content: '▾ ';
+  color: var(--bl-text-dim);
+}
+.bl-panel-body {
+  padding: 0 8px 8px;
+}
+.bl-prop-title {
+  margin: 8px 0 3px;
+  color: var(--bl-text);
+}
+.bl-prop-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 1px;
+}
+.bl-num {
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  height: 20px;
+  padding: 0 8px;
+  align-items: center;
+  border-radius: 4px;
+  background: #545454;
+  cursor: ew-resize;
+}
+.bl-num:hover {
+  background: #656565;
+}
+.bl-num.is-dragging {
+  background: #6e6e6e;
+}
+.bl-num-label {
+  color: var(--bl-text-dim);
+}
+.bl-num-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 4px;
+  padding: 0 8px;
+  background: #1d1d1d;
+  color: #fff;
+  font: inherit;
+  outline: 1px solid var(--bl-widget-active);
+}
+.bl-lock {
+  width: 16px;
+  height: 16px;
+  color: var(--bl-text-dim);
+}
+.bl-lock svg {
+  width: 16px;
+  height: 16px;
+}
+.bl-rotation-mode {
+  flex: 1;
+  margin: 3px 20px 0 0;
+}
+.bl-viewport.has-sidebar .bl-navgizmo {
+  right: calc(250px + 14px);
+}

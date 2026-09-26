@@ -12,6 +12,7 @@ import { activeCamera, cameraData, objectRotation, selectedObjects, unionBounds 
 import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
 import { Outliner } from './ui/outliner';
+import { Sidebar } from './ui/sidebar';
 import { StatusBar } from './ui/status-bar';
 import { TransformGuides } from './ui/transform-guides';
 import { TransformSession } from './transform-session';
@@ -75,8 +76,10 @@ export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
     overlay.update(info, navigator.state, store.displayState);
     gizmo.update(info.view);
   });
+  const sidebar = new Sidebar(layout.viewport, store);
   const onSceneChange = () => {
     outliner.update(store.displayState);
+    sidebar.update(store.displayState);
     view.requestRender();
   };
   store.onChange(onSceneChange);
@@ -141,6 +144,7 @@ export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
       if (a.type === 'selectAll') store.execute(SelectAllOp(a.action));
       else if (a.type === 'transform') startTransform(a.kind);
       else if (a.type === 'clear') store.execute(CLEAR_OPS[a.field]);
+      else if (a.type === 'toggleSidebar') sidebar.toggle();
     },
     onScreenAction: (a: ScreenAction) => (a.type === 'undo' ? store.undo() : store.redo()),
     onInteractionChange: refreshInteraction,

@@ -70,7 +70,8 @@ export type ObjectModeAction =
   | { readonly type: 'selectAll'; readonly action: SelectAllAction }
   | { readonly type: 'boxSelectModal' }
   | { readonly type: 'transform'; readonly kind: TransformKind }
-  | { readonly type: 'clear'; readonly field: 'location' | 'rotation' | 'scale' };
+  | { readonly type: 'clear'; readonly field: 'location' | 'rotation' | 'scale' }
+  | { readonly type: 'toggleSidebar' };
 
 /** Object Mode keymap (3D Viewport). */
 export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
@@ -84,6 +85,7 @@ export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
   { code: 'KeyG', alt: true, action: { type: 'clear', field: 'location' } },
   { code: 'KeyR', alt: true, action: { type: 'clear', field: 'rotation' } },
   { code: 'KeyS', alt: true, action: { type: 'clear', field: 'scale' } },
+  { code: 'KeyN', action: { type: 'toggleSidebar' } },
 ];
 
 export type ScreenAction = { readonly type: 'undo' } | { readonly type: 'redo' };
