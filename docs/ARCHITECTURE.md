@@ -31,20 +31,20 @@ Y-up primitive geometries are converted with `yUpGeometryToBlender`.
 
 ## Scene and operators
 
--  is the data model (single source of truth).
--  (SceneStore) holds the state and the undo history. Every change is an
-   run through , which records one undo step (only if something changed)
+- `scene/scene.ts` is the data model (single source of truth).
+- `scene/store.ts` (SceneStore) holds the state and the undo history. Every change is an
+  `OperatorCall` run through `execute`, which records one undo step (only if something changed)
   and appends to the operation log used by stage checks.
--  contains pure operator functions (: click, box, select all, Outliner).
+- `operators/` contains pure operator functions (`select.ts`: click, box, select all, Outliner).
 
 ## Selection
 
-- : pure state machine for click, drag box and the B modal.
-- : click picking in Blender space (ray vs primitive triangles; screen
+- `input/select-interaction.ts`: pure state machine for click, drag box and the B modal.
+- `viewport/picking.ts`: click picking in Blender space (ray vs primitive triangles; screen
   distance for camera and light wires), with click cycling.
-- : object-ID render pass used for mesh outlines and for box
+- `viewport/selection-passes.ts`: object-ID render pass used for mesh outlines and for box
   select (visible objects inside the rectangle).
-- : Outliner rows; clicks run operators.
+- `ui/outliner.ts`: Outliner rows; clicks run operators.
 
 ## Labs
 
