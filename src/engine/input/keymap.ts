@@ -3,6 +3,7 @@
  * Pure functions: DOM events are reduced to plain inputs before reaching here.
  */
 import type { SelectAllAction } from '../operators/select';
+import type { TransformKind } from '../operators/transform';
 import type { NavAction } from '../viewport/navigator';
 
 /** Preferences > Input. Both off by default, as in Blender. */
@@ -67,7 +68,9 @@ export function applyNumpadEmulation(code: string, prefs: InputPrefs): string {
 
 export type ObjectModeAction =
   | { readonly type: 'selectAll'; readonly action: SelectAllAction }
-  | { readonly type: 'boxSelectModal' };
+  | { readonly type: 'boxSelectModal' }
+  | { readonly type: 'transform'; readonly kind: TransformKind }
+  | { readonly type: 'clear'; readonly field: 'location' | 'rotation' | 'scale' };
 
 /** Object Mode keymap (3D Viewport). */
 export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
@@ -75,6 +78,12 @@ export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
   { code: 'KeyA', alt: true, action: { type: 'selectAll', action: 'deselect' } },
   { code: 'KeyI', ctrl: true, action: { type: 'selectAll', action: 'invert' } },
   { code: 'KeyB', action: { type: 'boxSelectModal' } },
+  { code: 'KeyG', action: { type: 'transform', kind: 'translate' } },
+  { code: 'KeyR', action: { type: 'transform', kind: 'rotate' } },
+  { code: 'KeyS', action: { type: 'transform', kind: 'resize' } },
+  { code: 'KeyG', alt: true, action: { type: 'clear', field: 'location' } },
+  { code: 'KeyR', alt: true, action: { type: 'clear', field: 'rotation' } },
+  { code: 'KeyS', alt: true, action: { type: 'clear', field: 'scale' } },
 ];
 
 export type ScreenAction = { readonly type: 'undo' } | { readonly type: 'redo' };

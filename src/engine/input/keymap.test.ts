@@ -116,6 +116,14 @@ describe('object mode and screen keys', () => {
     expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyA', { ctrl: true }), DEFAULT_INPUT_PREFS)).toBeNull();
   });
 
+  it('transform keys', () => {
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyG'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'transform', kind: 'translate' });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyR'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'transform', kind: 'rotate' });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyS'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'transform', kind: 'resize' });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyG', { alt: true }), DEFAULT_INPUT_PREFS)).toEqual({ type: 'clear', field: 'location' });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyS', { alt: true }), DEFAULT_INPUT_PREFS)).toEqual({ type: 'clear', field: 'scale' });
+  });
+
   it('undo and redo', () => {
     expect(resolveKey(SCREEN_KEYMAP, key('KeyZ', { ctrl: true }), DEFAULT_INPUT_PREFS)).toEqual({ type: 'undo' });
     expect(resolveKey(SCREEN_KEYMAP, key('KeyZ', { ctrl: true, shift: true }), DEFAULT_INPUT_PREFS)).toEqual({

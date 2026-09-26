@@ -79,3 +79,32 @@ export function worldToScreen(vp: ViewProjection, size: ViewportSize, p: Vec3): 
     depth,
   };
 }
+
+/**
+ * Projects a world segment, clipped against the near plane in perspective.
+ * Returns null if it is entirely behind the viewer.
+ */
+export function projectSegment(
+  vp: ViewProjection,
+  size: ViewportSize,
+  a: Vec3,
+  b: Vec3,
+): { a: { x: number; y: number }; b: { x: number; y: number } } | null {
+  if (!vp.orthographic) {
+    const toView = conjugate(vp.rotation);
+    const da = -rotate(toView, sub(a, vp.eye)).z;
+    const db = -rotate(toView, sub(b, vp.eye)).z;
+    const near = CLIP_START * 2;
+    if (da < near && db < near) return null;
+    const cut = (p: Vec3, q: Vec3, dp: number, dq: number) => {
+      const t = (near - dp) / (dq - dp);
+      return add(p, vec3((q.x - p.x) * t, (q.y - p.y) * t, (q.z - p.z) * t));
+    };
+    if (da < near) a = cut(a, b, da, db);
+    else if (db < near) b = cut(b, a, db, da);
+  }
+  const sa = worldToScreen(vp, size, a);
+  const sb = worldToScreen(vp, size, b);
+  if (!sa || !sb) return null;
+  return { a: { x: sa.x, y: sa.y }, b: { x: sb.x, y: sb.y } };
+}

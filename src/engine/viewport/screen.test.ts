@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { vec3, dot } from '../math/vec3';
 import type { DisplayedView } from './navigator';
-import { screenRay, viewProjection, worldToScreen } from './screen';
+import { projectSegment, screenRay, viewProjection, worldToScreen } from './screen';
 import { AXIS_VIEW_ROTATIONS, defaultViewState } from './view-state';
 
 const SIZE = { width: 800, height: 600 };
@@ -49,5 +49,21 @@ describe('screen projection', () => {
   it('points behind the eye do not project in perspective', () => {
     const vp = viewProjection(front('perspective'), SIZE, null);
     expect(worldToScreen(vp, SIZE, vec3(0, -20, 0))).toBeNull();
+  });
+});
+
+describe('projectSegment', () => {
+  it('clips a line that passes behind the viewer', () => {
+    const vp = viewProjection(front('perspective'), SIZE, null);
+    // Along Y through the target: one end far away, the other behind the eye.
+    const seg = projectSegment(vp, SIZE, vec3(0, 1000, 0), vec3(0, -1000, 0))!;
+    expect(seg).not.toBeNull();
+    expect(Number.isFinite(seg.a.x) && Number.isFinite(seg.b.x)).toBe(true);
+    expect(seg.a.x).toBeCloseTo(400, 6);
+  });
+
+  it('returns null when the whole segment is behind', () => {
+    const vp = viewProjection(front('perspective'), SIZE, null);
+    expect(projectSegment(vp, SIZE, vec3(0, -20, 0), vec3(1, -30, 0))).toBeNull();
   });
 });
