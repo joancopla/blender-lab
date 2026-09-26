@@ -33,11 +33,6 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: 
   return e;
 };
 
-const MOUSE_ICON = (button: 'left' | 'middle' | 'right') => {
-  const fill = { left: 'M2 1h3v5H2z', middle: 'M4.5 2h1v3h-1z', right: 'M5 1h3v5H5z' }[button];
-  return `<svg class="bl-mouse-icon" viewBox="0 0 10 15"><rect x="1" y="1" width="8" height="13" rx="4" fill="none" stroke="currentColor"/><path d="${fill}" fill="currentColor"/></svg>`;
-};
-
 export function buildLayout(container: HTMLElement): LayoutRefs {
   container.classList.add('bl-app');
 
@@ -76,10 +71,6 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
 
   const status = el('div', 'bl-statusbar');
   const statusLeft = el('div', 'bl-status-left');
-  statusLeft.innerHTML = `
-    <span class="bl-status-item">${MOUSE_ICON('left')}Select</span>
-    <span class="bl-status-item">${MOUSE_ICON('middle')}Rotate View</span>
-    <span class="bl-status-item">${MOUSE_ICON('right')}Object Context Menu</span>`;
   status.append(statusLeft, el('span', 'bl-spacer'), el('span', 'bl-version', '5.2.0'));
 
   container.append(topbar, main, status);

@@ -231,3 +231,92 @@
 .bl-version {
   color: var(--bl-text-dim);
 }
+
+/* Box select and B crosshair. FIDELITY? Dash pattern and colours. */
+.bl-select-box {
+  position: absolute;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 1px dashed #fff;
+  outline: 1px dashed #000;
+  outline-offset: -2px;
+}
+.bl-crosshair {
+  position: absolute;
+  pointer-events: none;
+  border: 0 dashed rgba(255, 255, 255, 0.8);
+}
+.bl-crosshair-h {
+  left: 0;
+  right: 0;
+  border-top-width: 1px;
+}
+.bl-crosshair-v {
+  top: 0;
+  bottom: 0;
+  border-left-width: 1px;
+}
+.bl-viewport.is-box-modal {
+  cursor: crosshair;
+}
+
+/* Outliner */
+.bl-outliner {
+  flex: 1;
+  overflow: auto;
+  padding: 2px 0;
+  background: #282828;
+}
+.bl-ol-row {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding-left: calc(4px + var(--depth) * 18px);
+  padding-right: 6px;
+  color: var(--bl-text);
+  cursor: default;
+}
+.bl-ol-row:nth-child(even) {
+  background: #2b2b2b;
+}
+.bl-ol-row:hover {
+  background: #333333;
+}
+.bl-ol-row.is-selected {
+  background: #334d80;
+}
+.bl-ol-row.is-selected.is-active {
+  background: #3d5a94;
+}
+.bl-ol-row.is-active .bl-ol-name {
+  color: #fff;
+}
+.bl-ol-expand {
+  width: 14px;
+  color: var(--bl-text-dim);
+  font-size: 10px;
+}
+.bl-ol-icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+}
+.bl-ol-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.bl-ol-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bl-ol-right {
+  display: inline-flex;
+  gap: 2px;
+}
+.bl-ol-restrict {
+  color: #cfcfcf;
+  margin-right: 0;
+}

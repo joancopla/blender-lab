@@ -1,26 +1,26 @@
 /**
- * Mounts the Blender replica for a lab: layout, viewport, navigation and input.
+ * Mounts the Blender replica for a lab: layout, viewport, navigation, selection
+ * and input. The SceneStore is the single source of truth.
  */
-import { type InputPrefs, DEFAULT_INPUT_PREFS } from './input/keymap';
+import { type InputPrefs, DEFAULT_INPUT_PREFS, type ObjectModeAction, type ScreenAction } from './input/keymap';
+import { type SelectCommand, SelectInteraction } from './input/select-interaction';
 import { ViewportInput } from './input/viewport-input';
 import type { LabDefinition } from './lab';
-import {
-  type SceneState,
-  activeCamera,
-  cameraData,
-  selectedObjects,
-  objectRotation,
-  unionBounds,
-} from './scene/scene';
+import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operators/select';
+import { activeCamera, cameraData, objectRotation, selectedObjects, unionBounds } from './scene/scene';
+import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
+import { Outliner } from './ui/outliner';
+import { StatusBar } from './ui/status-bar';
 import { ViewportOverlay } from './ui/viewport-overlay';
 import { NavGizmo } from './viewport/nav-gizmo';
 import { Navigator } from './viewport/navigator';
+import { chooseClickTarget, pickAt } from './viewport/picking';
 import { ViewportRenderer } from './viewport/renderer';
 
 export interface LabApp {
   readonly navigator: Navigator;
-  getScene(): SceneState;
+  readonly store: SceneStore;
 }
 
 /**
@@ -36,8 +36,7 @@ function inputPrefsFromUrl(): InputPrefs {
 }
 
 export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
-  const scene: SceneState = lab.initialScene();
-  const getScene = () => scene;
+  const store = new SceneStore(lab.initialScene());
   const layout = buildLayout(container);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -45,31 +44,82 @@ export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
   const navigator = new Navigator({
     size: () => renderer?.viewportSize ?? { width: 1, height: 1 },
     cameraPose: () => {
-      const cam = activeCamera(scene);
+      const cam = activeCamera(store.state);
       return cam ? { location: cam.location, rotation: objectRotation(cam) } : null;
     },
     cameraData: () => {
-      const cam = activeCamera(scene);
-      return cam ? cameraData(scene, cam) : null;
+      const cam = activeCamera(store.state);
+      return cam ? cameraData(store.state, cam) : null;
     },
-    selectedBounds: () => unionBounds(selectedObjects(scene)),
-    allBounds: () => unionBounds(scene.objects),
+    selectedBounds: () => unionBounds(selectedObjects(store.state)),
+    allBounds: () => unionBounds(store.state.objects),
     reducedMotion: () => reducedMotion.matches,
     now: () => performance.now(),
   });
 
-  renderer = new ViewportRenderer(layout.viewport, navigator, getScene);
+  const view = new ViewportRenderer(layout.viewport, navigator, () => store.state);
+  renderer = view;
   const overlay = new ViewportOverlay(layout.viewport);
   const gizmo = new NavGizmo(navigator);
   layout.viewport.append(gizmo.element);
-  renderer.onDraw((info) => {
-    overlay.update(info, navigator.state, scene);
-    gizmo.update(info.view);
+  const status = new StatusBar(layout.statusLeft);
+  const outliner = new Outliner({
+    container: layout.outlinerBody,
+    onSelect: (id, extend) => store.execute(OutlinerSelectOp(id, extend)),
   });
 
-  const prefs = inputPrefsFromUrl();
-  new ViewportInput({ element: layout.viewport, navigator, prefs: () => prefs });
+  view.onDraw((info) => {
+    overlay.update(info, navigator.state, store.state);
+    gizmo.update(info.view);
+  });
+  const onSceneChange = () => {
+    outliner.update(store.state);
+    view.requestRender();
+  };
+  store.onChange(onSceneChange);
+  onSceneChange();
 
-  renderer.requestRender();
-  return { navigator, getScene };
+  const select = new SelectInteraction();
+  let cursor: { x: number; y: number } | null = null;
+  const refreshInteraction = () => {
+    overlay.setBox(select.box);
+    overlay.setCrosshair(select.modalWaiting ? cursor : null);
+    status.set(select.isModal ? 'boxModal' : 'idle');
+  };
+  layout.viewport.addEventListener('pointermove', (e) => {
+    const r = layout.viewport.getBoundingClientRect();
+    cursor = { x: e.clientX - r.left, y: e.clientY - r.top };
+    if (select.modalWaiting) refreshInteraction();
+  });
+
+  const runSelect = (cmd: SelectCommand) => {
+    const frame = view.frame;
+    if (!frame) return;
+    if (cmd.type === 'click') {
+      const cam = activeCamera(store.state);
+      const hidden = new Set<string>(frame.view.camera && cam ? [cam.id] : []);
+      const hits = pickAt(store.state, frame.projection, frame.size, cmd.x, cmd.y, { hiddenIds: hidden });
+      const id = cmd.extend ? (hits[0]?.id ?? null) : chooseClickTarget(hits, store.state);
+      store.execute(SelectOp(id, cmd.extend));
+    } else {
+      store.execute(BoxSelectOp(view.objectsInRect(cmd.rect), cmd.mode));
+    }
+  };
+
+  const prefs = inputPrefsFromUrl();
+  new ViewportInput({
+    element: layout.viewport,
+    navigator,
+    prefs: () => prefs,
+    select,
+    onSelect: runSelect,
+    onObjectModeAction: (a: ObjectModeAction) => {
+      if (a.type === 'selectAll') store.execute(SelectAllOp(a.action));
+    },
+    onScreenAction: (a: ScreenAction) => (a.type === 'undo' ? store.undo() : store.redo()),
+    onInteractionChange: refreshInteraction,
+  });
+
+  view.requestRender();
+  return { navigator, store };
 }

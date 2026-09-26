@@ -12,6 +12,9 @@ export class ViewportOverlay {
   private readonly nameLine: HTMLDivElement;
   private readonly contextLine: HTMLDivElement;
   private readonly cameraFrame: HTMLDivElement;
+  private readonly box: HTMLDivElement;
+  private readonly crossH: HTMLDivElement;
+  private readonly crossV: HTMLDivElement;
 
   constructor(viewport: HTMLElement) {
     this.text = document.createElement('div');
@@ -24,7 +27,38 @@ export class ViewportOverlay {
     this.cameraFrame.className = 'bl-camera-frame';
     this.cameraFrame.hidden = true;
 
-    viewport.append(this.cameraFrame, this.text);
+    this.box = document.createElement('div');
+    this.box.className = 'bl-select-box';
+    this.box.hidden = true;
+    this.crossH = document.createElement('div');
+    this.crossH.className = 'bl-crosshair bl-crosshair-h';
+    this.crossV = document.createElement('div');
+    this.crossV.className = 'bl-crosshair bl-crosshair-v';
+    this.crossH.hidden = this.crossV.hidden = true;
+
+    viewport.append(this.cameraFrame, this.text, this.box, this.crossH, this.crossV);
+  }
+
+  /** Box select rectangle (dashed), or null to hide it. */
+  setBox(rect: { x: number; y: number; width: number; height: number } | null): void {
+    this.box.hidden = rect === null;
+    if (rect) {
+      Object.assign(this.box.style, {
+        left: `${rect.x}px`,
+        top: `${rect.y}px`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
+      });
+    }
+  }
+
+  /** Crosshair shown while B waits for the drag. FIDELITY? */
+  setCrosshair(p: { x: number; y: number } | null): void {
+    this.crossH.hidden = this.crossV.hidden = p === null;
+    if (p) {
+      this.crossH.style.top = `${p.y}px`;
+      this.crossV.style.left = `${p.x}px`;
+    }
   }
 
   update(info: FrameInfo, state: ViewState, scene: SceneState): void {
