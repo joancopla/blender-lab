@@ -1,0 +1,8 @@
+{
+  "site": {
+    "title": "Blender Lab",
+    "tagline": "Laboratoris interactius per aprendre Blender des de zero.",
+    "labLink": "Lab 01 · Viewport i transformacions",
+    "wip": "En construcció: de moment només hi ha la navegació del viewport."
+  }
+}

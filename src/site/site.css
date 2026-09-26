@@ -1,0 +1,18 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #121417;
+  color: #d8dce2;
+  font-family: system-ui, sans-serif;
+}
+#site {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+a {
+  color: #7fb4ff;
+}
+.wip {
+  color: #8a919c;
+}
