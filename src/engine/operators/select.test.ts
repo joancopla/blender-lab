@@ -133,9 +133,9 @@ describe('store preview', () => {
     store.setPreview(moved);
     expect(store.displayState).toBe(moved);
     expect(store.state.selectedIds).toEqual(['cube']);
-    store.logCancel('Move');
+    store.logCancel('Move', 'rightClick');
     expect(store.displayState).toBe(store.state);
     expect(store.canUndo).toBe(false);
-    expect(store.log).toEqual([{ kind: 'cancel', name: 'Move' }]);
+    expect(store.log).toEqual([{ kind: 'cancel', name: 'Move', via: 'rightClick' }]);
   });
 });

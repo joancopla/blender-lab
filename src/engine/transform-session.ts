@@ -54,13 +54,13 @@ export class TransformSession implements ModalHandler {
   }
 
   pointerDown(button: number): void {
-    this.finish(this.modal.button(button));
+    this.finish(this.modal.button(button), 'rightClick');
     if (button === 1) this.refresh();
   }
 
   keyDown(code: string, mods: Modifiers): void {
     this.modal.setModifiers(mods.ctrl, mods.shift);
-    this.finish(this.modal.key(code, mods.shift));
+    this.finish(this.modal.key(code, mods.shift), 'escape');
     this.refresh();
   }
 
@@ -80,7 +80,7 @@ export class TransformSession implements ModalHandler {
     guides.update(this.modal.guides, frame.projection, view.viewportSize);
   }
 
-  private finish(result: ModalResult): void {
+  private finish(result: ModalResult, cancelVia: 'rightClick' | 'escape'): void {
     if (!result || this.ended) return;
     this.ended = true;
     const { store, header, headerText, status, guides, view } = this.deps;
@@ -89,7 +89,7 @@ export class TransformSession implements ModalHandler {
       store.execute({ name: this.modal.operatorName, apply: () => final });
     } else {
       // The original state was never replaced: dropping the preview restores it exactly.
-      store.logCancel(this.modal.operatorName);
+      store.logCancel(this.modal.operatorName, cancelVia);
     }
     header.classList.remove('is-modal');
     headerText.hidden = true;

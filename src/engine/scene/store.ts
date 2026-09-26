@@ -17,7 +17,7 @@ export type LogEntry =
   | { readonly kind: 'execute'; readonly name: string }
   | { readonly kind: 'undo'; readonly name: string }
   | { readonly kind: 'redo'; readonly name: string }
-  | { readonly kind: 'cancel'; readonly name: string };
+  | { readonly kind: 'cancel'; readonly name: string; readonly via: 'rightClick' | 'escape' };
 
 interface Step {
   readonly name: string;
@@ -55,9 +55,9 @@ export class SceneStore {
   }
 
   /** Records a cancelled modal operator in the log (no undo step). */
-  logCancel(name: string): void {
+  logCancel(name: string, via: 'rightClick' | 'escape'): void {
     this.previewState = null;
-    this.log.push({ kind: 'cancel', name });
+    this.log.push({ kind: 'cancel', name, via });
     this.emit();
   }
 
