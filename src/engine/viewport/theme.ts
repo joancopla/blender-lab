@@ -14,6 +14,9 @@ export const THEME = {
   /** Solid shading object colour (0.8 linear grey). */
   solidObjectLinear: 0.8,
   viewportText: '#ffffff',
+  /** Theme > 3D Viewport > Active Object / Object Selected. */
+  activeObject: '#ffaa40',
+  objectSelected: '#f15800',
 } as const;
 
 /** Overlays > Guides defaults: X and Y axis lines visible, Z hidden. FIDELITY? */

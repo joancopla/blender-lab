@@ -3,32 +3,12 @@
  * (they live under the Blender-space root, see coords.ts).
  */
 import * as THREE from 'three';
-import { yUpGeometryToBlender } from '../coords';
-import type { CameraObject, LightObject, PrimitiveKind, SceneObject } from '../scene/scene';
+import { type CameraObject, type LightObject, type SceneObject } from '../scene/scene';
+import { LIGHT_ICON_RADII_PX, cameraDisplay } from '../scene/object-display';
+import { primitiveGeometry } from './primitives';
 import { THEME } from './theme';
 
-/**
- * Geometry of Blender's primitives with default Add settings.
- * Blender primitives are flat shaded until "Shade Smooth". FIDELITY?
- */
-export function primitiveGeometry(kind: PrimitiveKind): THREE.BufferGeometry {
-  switch (kind) {
-    case 'cube':
-      return new THREE.BoxGeometry(2, 2, 2);
-    case 'uvSphere':
-      // 32 segments, 16 rings, radius 1. three.js spheres are Y-up.
-      return yUpGeometryToBlender(new THREE.SphereGeometry(1, 32, 16));
-    case 'cylinder':
-      return yUpGeometryToBlender(new THREE.CylinderGeometry(1, 1, 2, 32));
-    case 'cone':
-      return yUpGeometryToBlender(new THREE.CylinderGeometry(0, 1, 2, 32));
-    case 'torus':
-      // Major radius 1, minor 0.25, 48 x 12 segments. three.js tori lie in the XY plane already.
-      return new THREE.TorusGeometry(1, 0.25, 12, 48);
-    case 'plane':
-      return new THREE.PlaneGeometry(2, 2);
-  }
-}
+export type SelectionDisplay = 'none' | 'selected' | 'active';
 
 let solidMaterial: THREE.Material | null = null;
 
@@ -47,64 +27,38 @@ function getSolidMaterial(): THREE.Material {
   return solidMaterial;
 }
 
-const wireMaterial = new THREE.LineBasicMaterial({ color: THEME.wire });
+const toThree = (v: { x: number; y: number; z: number }) => new THREE.Vector3(v.x, v.y, v.z);
 
-/** Camera display: pyramid, frame and the "up" triangle (filled for the scene camera). */
 function buildCamera(cam: CameraObject, isSceneCamera: boolean, aspect: number): THREE.Object3D {
   const group = new THREE.Group();
-  // Blender: drawsize = 0.5 * Display Size (1 m). Sensor fit Auto on the render size.
-  const s = 0.5;
-  const halfW = aspect >= 1 ? s : s * aspect;
-  const halfH = aspect >= 1 ? s / aspect : s;
-  const depth = (s * cam.lens) / (cam.sensorWidth / 2);
-  const c = [
-    new THREE.Vector3(-halfW, -halfH, -depth),
-    new THREE.Vector3(halfW, -halfH, -depth),
-    new THREE.Vector3(halfW, halfH, -depth),
-    new THREE.Vector3(-halfW, halfH, -depth),
-  ] as const;
-  const o = new THREE.Vector3(0, 0, 0);
-  const pts: THREE.Vector3[] = [];
-  for (let i = 0; i < 4; i++) {
-    pts.push(o, c[i]!, c[i]!, c[(i + 1) % 4]!);
-  }
-  // Triangle above the frame (BKE camera drawing proportions). FIDELITY?
-  const ty = s * (halfH / s + 0.1);
-  const tTop = 1.1 * s * (halfH / s + 0.7);
-  const t0 = new THREE.Vector3(-0.7 * s, ty, -depth);
-  const t1 = new THREE.Vector3(0.7 * s, ty, -depth);
-  const t2 = new THREE.Vector3(0, tTop, -depth);
-  pts.push(t0, t1, t1, t2, t2, t0);
-  group.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), wireMaterial));
+  const d = cameraDisplay(cam, aspect);
+  const wire = new THREE.LineBasicMaterial({ color: THEME.wire });
+  const pts = d.segments.flatMap(([a, b]) => [toThree(a), toThree(b)]);
+  group.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), wire));
   if (isSceneCamera) {
-    const tri = new THREE.Mesh(
-      new THREE.BufferGeometry().setFromPoints([t0, t1, t2]),
-      new THREE.MeshBasicMaterial({ color: THEME.wire, side: THREE.DoubleSide }),
-    );
-    group.add(tri);
+    const fill = new THREE.MeshBasicMaterial({ color: THEME.wire, side: THREE.DoubleSide });
+    group.add(new THREE.Mesh(new THREE.BufferGeometry().setFromPoints(d.triangle.map(toThree)), fill));
   }
   return group;
 }
 
 /**
  * Point light display. Its circles keep a constant size on screen, so the renderer
- * calls `updateLightBillboard` every frame. FIDELITY? Exact look of the light icon.
+ * calls `updateLightDisplay` every frame. FIDELITY? Exact look of the light icon.
  */
-function buildLight(light: LightObject): THREE.Object3D {
+function buildLight(_light: LightObject): THREE.Object3D {
   const group = new THREE.Group();
   const billboard = new THREE.Group();
   billboard.name = 'billboard';
-  const circle = (r: number) => {
+  const wire = new THREE.LineBasicMaterial({ color: THEME.wire });
+  for (const r of LIGHT_ICON_RADII_PX) {
     const pts: THREE.Vector3[] = [];
     for (let i = 0; i <= 32; i++) {
       const a = (i / 32) * Math.PI * 2;
       pts.push(new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r, 0));
     }
-    return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), wireMaterial);
-  };
-  // Radii in pixels (scaled by the billboard).
-  billboard.add(circle(9));
-  billboard.add(circle(3));
+    billboard.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), wire));
+  }
   group.add(billboard);
 
   // Dashed line down to the ground (Z = 0), in world space.
@@ -114,7 +68,6 @@ function buildLight(light: LightObject): THREE.Object3D {
   );
   ground.name = 'groundLine';
   group.add(ground);
-  group.userData.lightId = light.id;
   return group;
 }
 
@@ -132,9 +85,29 @@ export function buildObject(o: SceneObject, isSceneCamera: boolean, renderAspect
   return obj;
 }
 
+const WIRE_COLORS: Record<SelectionDisplay, string> = {
+  none: THEME.wire,
+  selected: THEME.objectSelected,
+  active: THEME.activeObject,
+};
+
+/**
+ * Cameras and lights show selection by changing their wire colour. Meshes use
+ * the outline pass instead (see selection-passes.ts).
+ */
+export function setWireSelection(obj: THREE.Object3D, state: SelectionDisplay): void {
+  const color = WIRE_COLORS[state];
+  obj.traverse((child) => {
+    const m = (child as THREE.Mesh | THREE.Line).material as THREE.Material | undefined;
+    if (m && !(child instanceof THREE.Mesh && child.material === solidMaterial) && 'color' in m) {
+      (m as THREE.LineBasicMaterial).color.set(color);
+    }
+  });
+}
+
 /**
  * Keeps the light circles facing the view at a constant pixel size, and the
- * ground line reaching Z = 0. `pixelSize(worldPos)` returns metres per pixel there.
+ * ground line reaching Z = 0.
  */
 export function updateLightDisplay(
   obj: THREE.Object3D,
@@ -144,13 +117,13 @@ export function updateLightDisplay(
 ): void {
   const billboard = obj.getObjectByName('billboard');
   if (billboard) {
-    // The light object has no parent rotation relevant to the icon: cancel it.
+    // Cancel the light's own rotation so the icon faces the view.
     billboard.quaternion.copy(obj.quaternion).invert().multiply(viewRotation);
     billboard.scale.setScalar(metresPerPixel / Math.max(1e-9, obj.scale.x));
   }
   const ground = obj.getObjectByName('groundLine') as THREE.Line | undefined;
   if (ground) {
-    // Ground line in world Z, independent of the light's rotation and scale.
+    // Ground line in world Z, independent of the light's rotation.
     ground.quaternion.copy(obj.quaternion).invert();
     const pos = ground.geometry.getAttribute('position') as THREE.BufferAttribute;
     pos.setXYZ(1, 0, 0, -Math.max(0, worldLocationZ) / Math.max(1e-9, obj.scale.z));
