@@ -22,16 +22,6 @@ export interface ViewportSize {
   readonly height: number;
 }
 
-/** Frustum bounds at unit distance (perspective) or in metres (orthographic). */
-export interface Frustum {
-  readonly left: number;
-  readonly right: number;
-  readonly top: number;
-  readonly bottom: number;
-  readonly near: number;
-  readonly far: number;
-}
-
 /**
  * Half-extent of the view plane per unit of distance, for each viewport axis.
  * Sensor fit AUTO: the sensor covers the larger dimension of the viewport.
@@ -52,36 +42,6 @@ export function halfTangents(
 export function minHalfTangent(size: ViewportSize): number {
   const t = halfTangents(size);
   return Math.min(t.x, t.y);
-}
-
-/**
- * Perspective frustum at the near plane. Orthographic views show the same area at
- * the view target as a perspective view would, which is why switching with
- * Numpad 5 keeps the object at a similar size.
- */
-export function perspectiveFrustum(size: ViewportSize): Frustum {
-  const t = halfTangents(size);
-  return {
-    left: -t.x * CLIP_START,
-    right: t.x * CLIP_START,
-    top: t.y * CLIP_START,
-    bottom: -t.y * CLIP_START,
-    near: CLIP_START,
-    far: CLIP_END,
-  };
-}
-
-export function orthographicFrustum(size: ViewportSize, distance: number): Frustum {
-  const t = halfTangents(size);
-  return {
-    left: -t.x * distance,
-    right: t.x * distance,
-    top: t.y * distance,
-    bottom: -t.y * distance,
-    // Orthographic views clip symmetrically around the view point.
-    near: -CLIP_END / 2,
-    far: CLIP_END / 2,
-  };
 }
 
 /** Distance range Blender allows for the view (ED_view3d_dist_range_get). */
