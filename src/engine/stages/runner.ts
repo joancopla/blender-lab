@@ -78,6 +78,8 @@ export class StageRunner {
     this.initialScene = scene;
     this.deps.store.reset(scene);
     this.deps.resetView(stage?.view?.() ?? defaultViewState());
+    // Loading itself is not student activity.
+    this.interacted = false;
     this.deps.progress.setCurrent(this.index);
     this.evaluate();
   }

@@ -12,6 +12,7 @@ import { activeCamera, cameraData, objectRotation, selectedObjects, unionBounds 
 import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
 import { KeyOverlay } from './ui/key-overlay';
+import { attachMenu } from './ui/menu';
 import { Outliner } from './ui/outliner';
 import { Sidebar } from './ui/sidebar';
 import { StatusBar } from './ui/status-bar';
@@ -22,11 +23,16 @@ import { NavGizmo } from './viewport/nav-gizmo';
 import { Navigator } from './viewport/navigator';
 import { chooseClickTarget, pickAt } from './viewport/picking';
 import { ViewportRenderer } from './viewport/renderer';
+import type { ViewportSize } from './viewport/projection';
+import { type ViewProjection, viewProjection } from './viewport/screen';
 
 export interface LabApp {
   readonly navigator: Navigator;
   readonly store: SceneStore;
   readonly keyOverlay: KeyOverlay;
+  readonly renderer: ViewportRenderer;
+  /** Projection of the settled view (no Smooth View in between), for stage checks. */
+  settledProjection(): { projection: ViewProjection; size: ViewportSize };
 }
 
 export interface MountOptions {
@@ -147,6 +153,51 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
   });
   const keyOverlay = new KeyOverlay(layout.viewport, container);
 
+  const nav = (action: Parameters<Navigator['apply']>[0]) => () => navigator.apply(action);
+  attachMenu(layout.viewMenu, () => [
+    { label: 'Sidebar', shortcut: 'N', checked: () => sidebar.visible, action: () => sidebar.toggle() },
+    'separator',
+    { label: 'Perspective/Orthographic', shortcut: 'Numpad 5', action: nav({ type: 'toggleProjection' }) },
+    'separator',
+    { label: 'Frame Selected', shortcut: 'Numpad .', action: nav({ type: 'frameSelected' }) },
+    { label: 'Frame All', shortcut: 'Home', action: nav({ type: 'frameAll' }) },
+    'separator',
+    {
+      label: 'Viewpoint',
+      submenu: [
+        { label: 'Camera', shortcut: 'Numpad 0', action: nav({ type: 'toggleCamera' }) },
+        'separator',
+        { label: 'Top', shortcut: 'Numpad 7', action: nav({ type: 'axisView', axis: 'top' }) },
+        { label: 'Bottom', shortcut: 'Ctrl Numpad 7', action: nav({ type: 'axisView', axis: 'bottom' }) },
+        'separator',
+        { label: 'Front', shortcut: 'Numpad 1', action: nav({ type: 'axisView', axis: 'front' }) },
+        { label: 'Back', shortcut: 'Ctrl Numpad 1', action: nav({ type: 'axisView', axis: 'back' }) },
+        'separator',
+        { label: 'Right', shortcut: 'Numpad 3', action: nav({ type: 'axisView', axis: 'right' }) },
+        { label: 'Left', shortcut: 'Ctrl Numpad 3', action: nav({ type: 'axisView', axis: 'left' }) },
+      ],
+    },
+  ]);
+  attachMenu(layout.selectMenu, () => [
+    { label: 'All', shortcut: 'A', action: () => store.execute(SelectAllOp('select')) },
+    { label: 'None', shortcut: 'Alt A', action: () => store.execute(SelectAllOp('deselect')) },
+    { label: 'Invert', shortcut: 'Ctrl I', action: () => store.execute(SelectAllOp('invert')) },
+    'separator',
+    {
+      label: 'Box Select',
+      shortcut: 'B',
+      action: () => {
+        select.startModal();
+        refreshInteraction();
+      },
+    },
+  ]);
+
   view.requestRender();
-  return { navigator, store, keyOverlay };
+  const settledProjection = () => {
+    const size = view.viewportSize;
+    const cam = activeCamera(store.state);
+    return { projection: viewProjection(navigator.settled(), size, cam ? cameraData(store.state, cam) : null), size };
+  };
+  return { navigator, store, keyOverlay, renderer: view, settledProjection };
 }

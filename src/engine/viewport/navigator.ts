@@ -171,6 +171,11 @@ export class Navigator {
     return true;
   }
 
+  /** The view once any transition has ended (what stage checks look at). */
+  settled(): DisplayedView {
+    return this.poseOf(this.current);
+  }
+
   /** View to draw now, including an in-progress Smooth View transition. */
   displayed(): DisplayedView {
     const tr = this.transition;

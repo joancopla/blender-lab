@@ -12,6 +12,9 @@ import { type SelectionDisplay, buildObject, setWireSelection, updateLightDispla
 import { type ViewportSize, CLIP_END, CLIP_START } from './projection';
 import { type ViewProjection, viewProjection } from './screen';
 import { Grid } from './grid';
+import { LabElements } from './lab-elements';
+import type { Ghost } from '../stages/ghost-match';
+import type { FaceMarker } from '../stages/types';
 import { type OutlineState, SelectionPasses } from './selection-passes';
 import { THEME } from './theme';
 
@@ -42,6 +45,7 @@ export class ViewportRenderer {
   private readonly perspCamera = new THREE.PerspectiveCamera();
   private readonly orthoCamera = new THREE.OrthographicCamera();
   private readonly lightRig = new THREE.Group();
+  private readonly labElements = new LabElements();
   private readonly passes: SelectionPasses;
   private readonly objects = new Map<string, ObjectEntry>();
   private objectsKey = '';
@@ -68,7 +72,7 @@ export class ViewportRenderer {
     this.scene.add(this.root);
     this.gridScene.add(this.gridRoot);
     this.gridRoot.add(this.grid.mesh);
-    this.root.add(this.perspCamera, this.orthoCamera, this.lightRig);
+    this.root.add(this.perspCamera, this.orthoCamera, this.lightRig, this.labElements.group);
     this.buildLightRig();
 
     navigator.onChange(() => this.requestRender());
@@ -97,6 +101,17 @@ export class ViewportRenderer {
     const metresPerPixelAt = (p: Vec3) =>
       vp.orthographic ? perPixel : perPixel * Math.max(CLIP_START, dot(sub(p, vp.eye), forward));
     return { view, size, projection: vp, metresPerPixelAt };
+  }
+
+  /** Ghost silhouettes and face markers of the current stage. */
+  setLabElements(ghosts: readonly Ghost[], markers: readonly FaceMarker[]): void {
+    this.labElements.set(ghosts, markers);
+    this.requestRender();
+  }
+
+  setSeenMarkers(ids: readonly string[]): void {
+    this.labElements.setSeen(ids);
+    this.requestRender();
   }
 
   onDraw(fn: (info: FrameInfo) => void): () => void {

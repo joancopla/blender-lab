@@ -28,13 +28,21 @@ body {
   background: var(--lab-bg);
 }
 
-.lab-shell {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  grid-template-columns: 330px 1fr;
-  font: 14px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+.lab-page {
+  font: 15px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--lab-text);
+}
+
+.lab-shell {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  font-size: 14px;
+  line-height: 1.5;
+  border-top: 1px solid var(--lab-border);
+  border-bottom: 1px solid var(--lab-border);
 }
 
 .lab-panel {
@@ -227,4 +235,202 @@ body {
   .lab-switch input::after {
     transition: none;
   }
+}
+
+/* Page sections around the lab. */
+.lab-intro,
+.lab-real,
+.lab-footer {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+.lab-intro h1 {
+  margin: 0 0 12px;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.lab-intro h2,
+.lab-real h2 {
+  margin: 28px 0 10px;
+  font-size: 20px;
+}
+.lab-eyebrow {
+  margin: 24px 0 4px;
+  color: var(--lab-accent);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+.lab-lead {
+  color: var(--lab-muted);
+  font-size: 17px;
+}
+.lab-back {
+  color: var(--lab-muted);
+  text-decoration: none;
+}
+.lab-back:hover,
+.lab-back:focus-visible {
+  color: var(--lab-accent);
+}
+.lab-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 6px 20px;
+  padding-left: 18px;
+  margin: 0 0 24px;
+}
+.lab-intro .lab-button {
+  display: inline-block;
+  text-decoration: none;
+}
+.lab-real ul {
+  padding-left: 18px;
+}
+.lab-real li {
+  margin-bottom: 8px;
+}
+.lab-footer {
+  color: var(--lab-muted);
+  font-size: 13px;
+  padding-top: 0;
+}
+
+/* Stage column. */
+.lab-stage h1 {
+  font-size: 20px;
+}
+.lab-stage-count {
+  margin: 0 0 2px;
+  color: var(--lab-accent);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.lab-instruction {
+  margin: 0 0 12px;
+}
+.lab-stage-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.lab-dot {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid var(--lab-border);
+  background: var(--lab-surface);
+  color: var(--lab-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.lab-dot:hover,
+.lab-dot:focus-visible {
+  border-color: var(--lab-accent);
+  outline: none;
+}
+.lab-dot.is-done {
+  background: #1f3a2f;
+  color: var(--lab-accent);
+  border-color: #2f5a48;
+}
+.lab-dot.is-current {
+  border-color: var(--lab-accent);
+  color: var(--lab-text);
+  box-shadow: 0 0 0 1px var(--lab-accent);
+}
+.lab-keychips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.lab-kbd {
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--lab-border);
+  border-bottom-width: 2px;
+  background: var(--lab-surface-2);
+  font: 600 12.5px/1.6 system-ui, sans-serif;
+}
+.lab-result {
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: var(--lab-surface);
+  border-left: 3px solid var(--lab-muted);
+}
+.lab-result p {
+  margin: 4px 0 0;
+}
+.lab-result.is-progress {
+  border-left-color: var(--lab-accent);
+}
+.lab-result.is-fix {
+  border-left-color: var(--lab-warn);
+}
+.lab-result.is-done {
+  border-left-color: var(--lab-ok);
+  background: #16271f;
+}
+.lab-stats {
+  font-weight: 600;
+}
+.lab-muted {
+  color: var(--lab-muted);
+  font-size: 13px;
+}
+.lab-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+.lab-hint {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--lab-surface);
+  border: 1px dashed var(--lab-border);
+}
+.lab-hint p {
+  margin: 4px 0 0;
+}
+.lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Touch / small screen notice. */
+.lab-device-warning {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(8, 9, 10, 0.88);
+}
+.lab-device-box {
+  max-width: 420px;
+  padding: 24px;
+  border-radius: var(--lab-radius);
+  background: var(--lab-surface);
+  border: 1px solid var(--lab-warn);
+  color: var(--lab-text);
+  font: 15px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.lab-device-box h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
 }

@@ -10,6 +10,8 @@ export interface LayoutRefs {
   readonly viewport: HTMLElement;
   /** Viewport header: menus normally, the operator text during a modal transform. */
   readonly viewportHeaderText: HTMLElement;
+  readonly viewMenu: HTMLElement;
+  readonly selectMenu: HTMLElement;
   readonly outlinerBody: HTMLElement;
   readonly statusLeft: HTMLElement;
 }
@@ -52,11 +54,13 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
 
   const viewArea = el('section', 'bl-area bl-area-view3d');
   const header = el('div', 'bl-header');
+  const viewMenu = el('span', 'bl-menu', 'View');
+  const selectMenu = el('span', 'bl-menu', 'Select');
   header.append(
     el('span', 'bl-editor-type', '▣'),
     el('span', 'bl-dropdown', 'Object Mode'),
-    el('span', 'bl-menu', 'View'),
-    el('span', 'bl-menu', 'Select'),
+    viewMenu,
+    selectMenu,
     el('span', 'bl-menu', 'Add'),
     el('span', 'bl-menu', 'Object'),
   );
@@ -79,5 +83,5 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
   status.append(statusLeft, el('span', 'bl-spacer'), el('span', 'bl-version', '5.2.0'));
 
   container.append(topbar, main, status);
-  return { root: container, viewport, viewportHeaderText, outlinerBody, statusLeft };
+  return { root: container, viewport, viewportHeaderText, viewMenu, selectMenu, outlinerBody, statusLeft };
 }

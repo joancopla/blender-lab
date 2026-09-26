@@ -1,7 +1,10 @@
 import type { LabDefinition } from '../../engine/lab';
-import { blenderDefaultScene } from '../../engine/scene/default-scene';
+import { LAB01_STAGES } from './stages';
 
 export const lab01: LabDefinition = {
   id: '01-viewport',
-  initialScene: blenderDefaultScene,
+  nameKey: 'lab01.name',
+  descKey: 'lab01.desc',
+  initialScene: () => LAB01_STAGES.stages[0]!.scene(),
+  stages: LAB01_STAGES,
 };
