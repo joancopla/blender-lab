@@ -7,6 +7,8 @@ const base = process.env.BASE_PATH ?? '/';
 export default defineConfig({
   base,
   build: {
+    // three.js alone is ~550 kB minified; one chunk per page is fine for this app.
+    chunkSizeWarningLimit: 800,
     rollupOptions: {
       input: {
         index: 'index.html',
