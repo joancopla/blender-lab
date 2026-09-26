@@ -1,0 +1,230 @@
+/*
+ * Lab UI: deliberately different from Blender's look (serif-free, warmer,
+ * rounded, sage accent), so students never confuse it with the program.
+ */
+/* Elements hidden with the hidden attribute stay hidden whatever their display. */
+[hidden] {
+  display: none !important;
+}
+
+:root {
+  --lab-bg: #0f1113;
+  --lab-surface: #181b1f;
+  --lab-surface-2: #22262b;
+  --lab-border: #2c3136;
+  --lab-text: #ece9e2;
+  --lab-muted: #a1a7ad;
+  --lab-accent: #8fcfb4;
+  --lab-accent-ink: #0f2a20;
+  --lab-warn: #e8b86a;
+  --lab-ok: #8fcfb4;
+  --lab-radius: 12px;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--lab-bg);
+}
+
+.lab-shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  font: 14px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--lab-text);
+}
+
+.lab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 16px;
+  overflow-y: auto;
+  background: var(--lab-bg);
+  border-right: 1px solid var(--lab-border);
+}
+
+.lab-panel h1,
+.lab-panel h2 {
+  margin: 0 0 8px;
+  line-height: 1.25;
+}
+.lab-panel h1 {
+  font-size: 18px;
+}
+.lab-panel h2 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--lab-muted);
+}
+
+.lab-replica {
+  position: relative;
+  min-width: 0;
+}
+.lab-replica > .bl-app {
+  position: absolute;
+}
+
+.lab-prefs {
+  margin-top: auto;
+  padding: 14px;
+  border-radius: var(--lab-radius);
+  background: var(--lab-surface);
+}
+
+.lab-switch {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  cursor: pointer;
+}
+.lab-switch input {
+  appearance: none;
+  flex: none;
+  width: 34px;
+  height: 20px;
+  margin: 2px 0 0;
+  border-radius: 10px;
+  background: var(--lab-surface-2);
+  border: 1px solid var(--lab-border);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lab-switch input::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--lab-muted);
+  transition: transform 0.15s;
+}
+.lab-switch input:checked {
+  background: var(--lab-accent);
+}
+.lab-switch input:checked::after {
+  transform: translateX(14px);
+  background: var(--lab-accent-ink);
+}
+.lab-switch input:focus-visible {
+  outline: 2px solid var(--lab-accent);
+  outline-offset: 2px;
+}
+.lab-switch-text {
+  display: flex;
+  flex-direction: column;
+}
+.lab-switch-text small {
+  color: var(--lab-muted);
+  font-size: 12.5px;
+}
+
+.lab-button {
+  font: inherit;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--lab-border);
+  background: var(--lab-surface-2);
+  color: var(--lab-text);
+  cursor: pointer;
+}
+.lab-button:hover {
+  border-color: var(--lab-accent);
+}
+.lab-button:focus-visible {
+  outline: 2px solid var(--lab-accent);
+  outline-offset: 2px;
+}
+.lab-button-primary {
+  background: var(--lab-accent);
+  color: var(--lab-accent-ink);
+  border-color: var(--lab-accent);
+  font-weight: 600;
+}
+.lab-button[disabled] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Suggestion toast over the replica. */
+.lab-toast {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: min(440px, calc(100% - 40px));
+  padding: 14px 16px;
+  border-radius: var(--lab-radius);
+  background: var(--lab-surface);
+  border: 1px solid var(--lab-accent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  font: 14px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--lab-text);
+  animation: lab-rise 0.2s ease-out;
+}
+.lab-toast p {
+  margin: 0 0 10px;
+}
+.lab-toast-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Key overlay (Screencast Keys style), bottom left of the viewport. */
+.lab-keys {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  pointer-events: none;
+  z-index: 3;
+  font: 600 15px/1.2 system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.lab-keys-item {
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(15, 17, 19, 0.82);
+  border: 1px solid var(--lab-accent);
+  color: var(--lab-text);
+  animation: lab-fade 2.5s forwards;
+}
+
+@keyframes lab-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+@keyframes lab-fade {
+  0%,
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-toast,
+  .lab-keys-item {
+    animation: none;
+  }
+  .lab-switch input,
+  .lab-switch input::after {
+    transition: none;
+  }
+}

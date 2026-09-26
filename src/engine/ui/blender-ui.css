@@ -2,6 +2,11 @@
  * Replica of Blender's default dark theme (simplified).
  * FIDELITY? UI colours approximated from the default theme.
  */
+/* Elements hidden with the hidden attribute stay hidden whatever their display. */
+[hidden] {
+  display: none !important;
+}
+
 :root {
   --bl-window: #1d1d1d;
   --bl-border: #161616;
@@ -16,7 +21,8 @@
 }
 
 .bl-app {
-  position: fixed;
+  /* Fills its container; the page decides where the replica goes. */
+  position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;

@@ -4,5 +4,26 @@
     "tagline": "Laboratoris interactius per aprendre Blender des de zero.",
     "labLink": "Lab 01 · Viewport i transformacions",
     "wip": "En construcció: de moment només hi ha la navegació del viewport."
+  },
+  "keyOverlay": {
+    "mouse": {
+      "left": "Clic esquerre",
+      "middle": "Botó del mig",
+      "right": "Clic dret",
+      "wheelUp": "Roda amunt",
+      "wheelDown": "Roda avall"
+    }
+  },
+  "prefs": {
+    "title": "Preferències",
+    "emulate3": "Emulate 3 Button Mouse",
+    "emulate3Help": "Si el teu ratolí no té botó del mig, activa-ho i fes servir Alt + clic esquerre per orbitar. A Blender és a Edit > Preferences > Input.",
+    "emulateNumpad": "Emulate Numpad",
+    "emulateNumpadHelp": "Si el teu teclat no té teclat numèric, activa-ho i fes servir la fila de números (1, 3, 7...). A Blender és a Edit > Preferences > Input.",
+    "keyOverlay": "Mostra les tecles que prems",
+    "keyOverlayHelp": "Ensenya a baix a l'esquerra les tecles i els clics, com el complement Screencast Keys.",
+    "suggestEmulate3": "Sembla que intentes orbitar sense el botó del mig del ratolí. Vols activar Emulate 3 Button Mouse? Després podràs orbitar amb Alt + clic esquerre.",
+    "suggestYes": "Activa-ho",
+    "suggestNo": "Ara no"
   }
 }

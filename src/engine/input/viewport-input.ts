@@ -38,6 +38,11 @@ export interface ViewportInputOptions {
   onScreenAction(action: ScreenAction): void;
   /** The selection interaction changed (box, modal state): redraw overlays. */
   onInteractionChange(): void;
+  /**
+   * The student drags with Alt+LMB or RMB while Emulate 3 Button Mouse is off:
+   * probably trying to orbit without a middle button.
+   */
+  onNavigateWithoutMiddle?(): void;
 }
 
 const modsOf = (e: MouseEvent | KeyboardEvent) => ({ ctrl: e.ctrlKey, shift: e.shiftKey, alt: e.altKey });
@@ -50,6 +55,7 @@ export class ViewportInput {
   private hovered = false;
   private navDrag: { mode: DragMode; pointerId: number; x: number; y: number } | null = null;
   private readonly wheel = new WheelAccumulator();
+  private suspect: { x: number; y: number } | null = null;
 
   constructor(private readonly opts: ViewportInputOptions) {
     const el = opts.element;
@@ -107,6 +113,10 @@ export class ViewportInput {
     const { select } = this.opts;
     const p = this.local(e);
     const mods = modsOf(e);
+    this.suspect =
+      !this.opts.prefs().emulate3ButtonMouse && ((e.button === 0 && e.altKey) || e.button === 2)
+        ? { x: e.clientX, y: e.clientY }
+        : null;
 
     // A running selection interaction (e.g. B) owns every button.
     if (!select.busy) {
@@ -126,6 +136,10 @@ export class ViewportInput {
   };
 
   private onPointerMove = (e: PointerEvent): void => {
+    if (this.suspect && Math.hypot(e.clientX - this.suspect.x, e.clientY - this.suspect.y) > 12) {
+      this.suspect = null;
+      this.opts.onNavigateWithoutMiddle?.();
+    }
     const d = this.navDrag;
     if (d) {
       if (e.pointerId !== d.pointerId) return;
@@ -148,6 +162,7 @@ export class ViewportInput {
   };
 
   private onPointerUp = (e: PointerEvent): void => {
+    this.suspect = null;
     if (this.navDrag) {
       if (e.pointerId !== this.navDrag.pointerId) return;
       this.navDrag = null;

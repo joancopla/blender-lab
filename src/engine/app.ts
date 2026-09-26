@@ -2,7 +2,7 @@
  * Mounts the Blender replica for a lab: layout, viewport, navigation, selection
  * and input. The SceneStore is the single source of truth.
  */
-import { type InputPrefs, DEFAULT_INPUT_PREFS, type ObjectModeAction, type ScreenAction } from './input/keymap';
+import type { InputPrefs, ObjectModeAction, ScreenAction } from './input/keymap';
 import { type SelectCommand, SelectInteraction } from './input/select-interaction';
 import { ViewportInput } from './input/viewport-input';
 import type { LabDefinition } from './lab';
@@ -11,6 +11,7 @@ import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operator
 import { activeCamera, cameraData, objectRotation, selectedObjects, unionBounds } from './scene/scene';
 import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
+import { KeyOverlay } from './ui/key-overlay';
 import { Outliner } from './ui/outliner';
 import { Sidebar } from './ui/sidebar';
 import { StatusBar } from './ui/status-bar';
@@ -25,21 +26,16 @@ import { ViewportRenderer } from './viewport/renderer';
 export interface LabApp {
   readonly navigator: Navigator;
   readonly store: SceneStore;
+  readonly keyOverlay: KeyOverlay;
 }
 
-/**
- * Temporary way to test the input emulations until the lab preferences UI
- * (phase 4): ?emulate3=1 and/or ?emulateNumpad=1 in the URL.
- */
-function inputPrefsFromUrl(): InputPrefs {
-  const q = new URLSearchParams(location.search);
-  return {
-    emulate3ButtonMouse: q.get('emulate3') === '1' || DEFAULT_INPUT_PREFS.emulate3ButtonMouse,
-    emulateNumpad: q.get('emulateNumpad') === '1' || DEFAULT_INPUT_PREFS.emulateNumpad,
-  };
+export interface MountOptions {
+  /** Current input preferences (Emulate 3 Button Mouse, Emulate Numpad). */
+  inputPrefs(): InputPrefs;
+  onNavigateWithoutMiddle?(): void;
 }
 
-export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
+export function mountLab(container: HTMLElement, lab: LabDefinition, options: MountOptions): LabApp {
   const store = new SceneStore(lab.initialScene());
   const layout = buildLayout(container);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -132,11 +128,10 @@ export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
   };
   const CLEAR_OPS = { location: ClearLocationOp, rotation: ClearRotationOp, scale: ClearScaleOp };
 
-  const prefs = inputPrefsFromUrl();
   new ViewportInput({
     element: layout.viewport,
     navigator,
-    prefs: () => prefs,
+    prefs: options.inputPrefs,
     select,
     modal: () => transform,
     onSelect: runSelect,
@@ -148,8 +143,10 @@ export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
     },
     onScreenAction: (a: ScreenAction) => (a.type === 'undo' ? store.undo() : store.redo()),
     onInteractionChange: refreshInteraction,
+    onNavigateWithoutMiddle: options.onNavigateWithoutMiddle,
   });
+  const keyOverlay = new KeyOverlay(layout.viewport, container);
 
   view.requestRender();
-  return { navigator, store };
+  return { navigator, store, keyOverlay };
 }
