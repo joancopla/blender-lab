@@ -265,3 +265,32 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - [ ] Si l'alumne arrossega amb Alt + clic esquerre o amb el botó dret sense l'emulació, apareix un avís que proposa activar-la (una vegada per visita)
 - [ ] Les preferències es desen a `localStorage`
 - [ ] Overlay de tecles a baix a l'esquerra, activable: noms de tecla de Blender ("Ctrl + Numpad 1") i accions del ratolí en català
+
+## Fase 5 — Etapes i web
+
+### Menús de la capçalera (afegits perquè sense teclat numèric es pugui fer Frame Selected, com a Blender)
+
+- [ ] ❓ View: Sidebar (N), Perspective/Orthographic (Numpad 5), Frame Selected (Numpad .), Frame All (Home), Viewpoint ▸ Camera / Top / Bottom / Front / Back / Right / Left. Blender en té molts més; comprova l'ordre i el text de les dreceres ("Ctrl Numpad 1")
+- [ ] ❓ Select: All (A), None (Alt A), Invert (Ctrl I), Box Select (B)
+- [ ] ❓ Add i Object continuen sent decoració
+- [ ] ❓ Passar el ratolí per un altre menú de la capçalera amb un menú obert canvia de menú
+
+### Continguts que depenen de Blender (textos del lab)
+
+- [ ] ❓ Rutes de menú citades al bloc "Al Blender real" i a les pistes: Edit > Preferences > Navigation / Input, View > Viewpoint, View > Frame Selected / Frame All, Select > All / None / Invert / Box Select, Object > Transform, Object > Clear > Location / Rotation / Scale, Edit > Undo History
+- [ ] ❓ Pista de l'etapa 1: "per veure la cara de sota, arrossega cap amunt", que depèn del sentit de l'òrbita
+- [ ] ❓ A l'etapa 4, Auto Perspective explicat com a opció de Blender (Preferences > Navigation)
+
+### Decisions de disseny de les etapes (no són de Blender, però revisa-les)
+
+- Etapa 1: una cara compta com a vista si la direcció de la vista és a menys de 35° de la normal de la cara
+- Etapa 2: l'esfera ha d'estar a menys d'un 12 % del costat curt de la vista respecte del centre i ocupar almenys un 25 %
+- Etapa 3: només el Cone seleccionat i el centre de la vista sobre el Cone (s'hi pot arribar amb Numpad . o amb View > Frame Selected)
+- Etapa 5: els missatges diuen quins objectes sobren, quins falten i quin és l'actiu
+- Etapa 6: Cube amb tolerància de 10 cm; Cube.001 amb X i Y sense canvis (1e-4) i Z a menys de 10 cm
+- Etapa 7: tolerància 1e-4; si falta poc (10 cm, 3° o 0,1), el missatge suggereix desfer i escriure el número
+- Etapa 8: cal cancel·lar amb clic dret (amb Esc surt un avís), fer un canvi, desfer-lo, i acabar amb totes les transformacions iguals que al principi
+- Etapa 9: la comparació amb la silueta té en compte la simetria (un cub girat 90° encaixa, un con capgirat no); tolerància de 10 cm en els punts característics
+- La segona pista apareix sola al cap de 90 s sense superar l'etapa
+- Les siluetes i els símbols no són objectes: no surten a l'Outliner i no es poden seleccionar
+- Els símbols de l'etapa 1 estan fixos a l'espai: si l'alumne mou el cub, no el segueixen
