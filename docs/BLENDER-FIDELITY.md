@@ -301,3 +301,21 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - Avís en pantalles tàctils o de menys de 900 px d'amplada; es pot tancar i continuar.
 - `prefers-reduced-motion`: Smooth View instantani i sense animacions a la interfície del lab.
 - Textos revisats (normativa 2017, pronoms, castellanismes). «Lab» es fa servir com a nom del producte; si prefereixes «laboratori» a tot arreu, és un canvi a `ca.json`.
+
+---
+
+# Lab 02 — Mode Edició
+
+## Fase 1 — Estructura de malla (sense interfície)
+
+- [ ] ❓ Recomptes de les primitives amb els paràmetres per defecte de l'Add (comprova'ls amb l'overlay Statistics):
+  - Cube: 8 vèrtexs, 12 arestes, 6 cares, 12 triangles
+  - UV Sphere (32 × 16): 482 / 992 / 512 / 960
+  - Cylinder (32, tapes n-gon): 64 / 96 / 34 / 124
+  - Cone (32, base n-gon): 33 / 64 / 33 / 62
+  - Torus (48 × 12): 576 / 1152 / 576 / 1152
+  - Plane: 4 / 4 / 1 / 2
+- [ ] ❓ Els cercles (Cylinder, Cone, UV Sphere) comencen amb el primer vèrtex a +Y i giren en sentit antihorari vist des de dalt. Afecta la posició exacta dels vèrtexs, no els recomptes
+- [ ] ❓ Edge loop (Alt+clic): continua pels vèrtexs de 4 arestes per l'aresta que no comparteix cap cara amb l'actual; en una vora, segueix la vora mentre cada vèrtex en tingui dues. El caminador de Blender té més casos especials
+- [ ] ❓ Edge ring (Ctrl+Alt+clic): travessa quads cap a l'aresta oposada i s'atura a les cares que no són quads
+- [ ] ❓ "Non-manifold" com Select > Select All by Trait > Non Manifold: arestes amb 0, 1 o 3+ cares, i vèrtexs on les cares no formen un sol ventall
