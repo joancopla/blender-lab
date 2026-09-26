@@ -8,6 +8,8 @@ import './blender-ui.css';
 export interface LayoutRefs {
   readonly root: HTMLElement;
   readonly viewport: HTMLElement;
+  /** Viewport header: menus normally, the operator text during a modal transform. */
+  readonly viewportHeaderText: HTMLElement;
   readonly outlinerBody: HTMLElement;
   readonly statusLeft: HTMLElement;
 }
@@ -58,6 +60,9 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
     el('span', 'bl-menu', 'Add'),
     el('span', 'bl-menu', 'Object'),
   );
+  const viewportHeaderText = el('span', 'bl-header-text');
+  viewportHeaderText.hidden = true;
+  header.append(viewportHeaderText);
   const viewport = el('div', 'bl-viewport');
   viewArea.append(header, viewport);
 
@@ -74,5 +79,5 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
   status.append(statusLeft, el('span', 'bl-spacer'), el('span', 'bl-version', '5.2.0'));
 
   container.append(topbar, main, status);
-  return { root: container, viewport, outlinerBody, statusLeft };
+  return { root: container, viewport, viewportHeaderText, outlinerBody, statusLeft };
 }

@@ -7,6 +7,7 @@ import type { Navigator } from '../viewport/navigator';
 import {
   type DragMode,
   type InputPrefs,
+  type Modifiers,
   type ObjectModeAction,
   type ScreenAction,
   OBJECT_MODE_KEYMAP,
@@ -18,11 +19,20 @@ import {
 } from './keymap';
 import { type SelectCommand, SelectInteraction } from './select-interaction';
 
+/** A running modal operator (G/R/S) receives all input while it lasts. */
+export interface ModalHandler {
+  pointerMove(x: number, y: number, mods: Modifiers): void;
+  pointerDown(button: number, mods: Modifiers): void;
+  keyDown(code: string, mods: Modifiers): void;
+  keyUp(mods: Modifiers): void;
+}
+
 export interface ViewportInputOptions {
   readonly element: HTMLElement;
   readonly navigator: Navigator;
   readonly prefs: () => InputPrefs;
   readonly select: SelectInteraction;
+  readonly modal: () => ModalHandler | null;
   onSelect(cmd: SelectCommand): void;
   onObjectModeAction(action: ObjectModeAction): void;
   onScreenAction(action: ScreenAction): void;
@@ -56,6 +66,11 @@ export class ViewportInput {
     // Not passive: Ctrl+wheel would zoom the whole page.
     el.addEventListener('wheel', this.onWheel, { passive: false });
     window.addEventListener('keydown', this.onKeyDown);
+    // Modal operators get the mouse anywhere in the window, before the viewport does.
+    window.addEventListener('pointermove', this.onModalPointerMove);
+    window.addEventListener('pointerdown', this.onModalPointerDown, { capture: true });
+    window.addEventListener('contextmenu', (e) => this.opts.modal() && e.preventDefault());
+    window.addEventListener('keyup', (e) => this.opts.modal()?.keyUp(modsOf(e)));
     // Firefox focuses its menu bar on a lone Alt release.
     window.addEventListener('keyup', (e) => this.hovered && e.key === 'Alt' && e.preventDefault());
   }
@@ -69,6 +84,21 @@ export class ViewportInput {
     this.opts.element.classList.toggle('is-box-modal', this.opts.select.modalWaiting);
     this.opts.onInteractionChange();
   }
+
+  private onModalPointerMove = (e: PointerEvent): void => {
+    const modal = this.opts.modal();
+    if (!modal) return;
+    const p = this.local(e);
+    modal.pointerMove(p.x, p.y, modsOf(e));
+  };
+
+  private onModalPointerDown = (e: PointerEvent): void => {
+    const modal = this.opts.modal();
+    if (!modal) return;
+    e.preventDefault();
+    e.stopPropagation();
+    modal.pointerDown(e.button, modsOf(e));
+  };
 
   private onPointerDown = (e: PointerEvent): void => {
     this.hovered = true;
@@ -137,7 +167,7 @@ export class ViewportInput {
 
   private onWheel = (e: WheelEvent): void => {
     e.preventDefault();
-    if (this.opts.select.busy) return;
+    if (this.opts.select.busy || this.opts.modal()) return;
     const noMods = !e.ctrlKey && !e.shiftKey && !e.altKey;
     const steps = this.wheel.push(e.deltaY, e.deltaMode, noMods);
     if (steps !== 0) this.opts.navigator.apply({ type: 'zoomSteps', steps });
@@ -149,6 +179,12 @@ export class ViewportInput {
     const prefs = this.opts.prefs();
     const { select } = this.opts;
 
+    const modal = this.opts.modal();
+    if (modal) {
+      e.preventDefault();
+      modal.keyDown(e.code, input);
+      return;
+    }
     if (select.busy) {
       // Modal interactions only listen to Esc (FIDELITY? other keys are ignored).
       if (e.code === 'Escape' && select.cancel()) this.changed();

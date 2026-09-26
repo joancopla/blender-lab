@@ -6,12 +6,15 @@ import { type InputPrefs, DEFAULT_INPUT_PREFS, type ObjectModeAction, type Scree
 import { type SelectCommand, SelectInteraction } from './input/select-interaction';
 import { ViewportInput } from './input/viewport-input';
 import type { LabDefinition } from './lab';
+import { ClearLocationOp, ClearRotationOp, ClearScaleOp } from './operators/clear';
 import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operators/select';
 import { activeCamera, cameraData, objectRotation, selectedObjects, unionBounds } from './scene/scene';
 import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
 import { Outliner } from './ui/outliner';
 import { StatusBar } from './ui/status-bar';
+import { TransformGuides } from './ui/transform-guides';
+import { TransformSession } from './transform-session';
 import { ViewportOverlay } from './ui/viewport-overlay';
 import { NavGizmo } from './viewport/nav-gizmo';
 import { Navigator } from './viewport/navigator';
@@ -57,7 +60,7 @@ export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
     now: () => performance.now(),
   });
 
-  const view = new ViewportRenderer(layout.viewport, navigator, () => store.state);
+  const view = new ViewportRenderer(layout.viewport, navigator, () => store.displayState);
   renderer = view;
   const overlay = new ViewportOverlay(layout.viewport);
   const gizmo = new NavGizmo(navigator);
@@ -69,11 +72,11 @@ export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
   });
 
   view.onDraw((info) => {
-    overlay.update(info, navigator.state, store.state);
+    overlay.update(info, navigator.state, store.displayState);
     gizmo.update(info.view);
   });
   const onSceneChange = () => {
-    outliner.update(store.state);
+    outliner.update(store.displayState);
     view.requestRender();
   };
   store.onChange(onSceneChange);
@@ -94,7 +97,6 @@ export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
 
   const runSelect = (cmd: SelectCommand) => {
     const frame = view.frame;
-    if (!frame) return;
     if (cmd.type === 'click') {
       const cam = activeCamera(store.state);
       const hidden = new Set<string>(frame.view.camera && cam ? [cam.id] : []);
@@ -106,15 +108,39 @@ export function mountLab(container: HTMLElement, lab: LabDefinition): LabApp {
     }
   };
 
+  const guides = new TransformGuides(layout.viewport);
+  let transform: TransformSession | null = null;
+  const startTransform = (kind: 'translate' | 'rotate' | 'resize') => {
+    if (transform || !cursor) return;
+    transform = TransformSession.start(
+      {
+        store,
+        view,
+        status,
+        guides,
+        header: layout.viewportHeaderText.parentElement!,
+        headerText: layout.viewportHeaderText,
+        onEnd: () => (transform = null),
+      },
+      kind,
+      cursor,
+      { ctrl: false, shift: false, alt: false },
+    );
+  };
+  const CLEAR_OPS = { location: ClearLocationOp, rotation: ClearRotationOp, scale: ClearScaleOp };
+
   const prefs = inputPrefsFromUrl();
   new ViewportInput({
     element: layout.viewport,
     navigator,
     prefs: () => prefs,
     select,
+    modal: () => transform,
     onSelect: runSelect,
     onObjectModeAction: (a: ObjectModeAction) => {
       if (a.type === 'selectAll') store.execute(SelectAllOp(a.action));
+      else if (a.type === 'transform') startTransform(a.kind);
+      else if (a.type === 'clear') store.execute(CLEAR_OPS[a.field]);
     },
     onScreenAction: (a: ScreenAction) => (a.type === 'undo' ? store.undo() : store.redo()),
     onInteractionChange: refreshInteraction,

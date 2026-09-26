@@ -172,7 +172,69 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - [ ] ❓ Clic a les files de col·lecció: no fa res
 - [ ] ❓ Colors de les files seleccionades i activa, icones, casella de la col·lecció i icones d'ull i càmera (decoració)
 
-## Fases següents (anotat per no oblidar-ho)
+## Fase 3 — Operadors modals (G, R, S)
 
-- ❓ Format del text de la capçalera durant G, R i S
-- ❓ Cicle de restriccions X → X local → sense restricció; clic del mig durant l'operador
+### General
+
+- [ ] G, R i S s'apliquen a tots els objectes seleccionats; el pivot és el Median Point (mitjana dels orígens)
+- [ ] Sense selecció, G/R/S no fan res
+- [ ] Confirmar: Enter, Enter del teclat numèric o clic esquerre (en prémer, no en deixar anar)
+- [ ] Cancel·lar: Esc o clic dret; l'escena torna exactament a l'estat inicial
+- [ ] ❓ Una operació confirmada és un pas d'undo encara que no s'hagi mogut res
+- [ ] ❓ Noms dels passos d'undo: "Move", "Rotate", "Resize"
+- [ ] ❓ Durant l'operador, el ratolí funciona a tota la finestra i no es pot navegar (ni amb la roda ni amb el botó del mig)
+- [ ] ❓ Prémer G, R o S durant un altre operador no fa res. Blender canvia d'operador; R R (trackball) queda fora d'abast
+- [ ] ❓ El cursor no fa la volta per les vores (Blender sí)
+
+### Restriccions
+
+- [ ] X/Y/Z: el primer cop és l'eix global, el segon el local, el tercer sense restricció. Canviar d'eix torna a global
+- [ ] Shift+X/Y/Z: restricció a pla (exclou l'eix)
+- [ ] ❓ Amb diversos objectes i eix local, cada objecte fa servir el seu eix local
+- [ ] ❓ Clic del mig: restringeix a l'eix global més alineat amb el moviment del ratolí des de l'inici (Blender el va triant mentre es manté premut)
+- [ ] ❓ A R, Shift+X es comporta com X: gira al voltant de la normal del pla
+- [ ] ❓ Guies: línia de l'eix amb el seu color (dues línies per a un pla); amb eix local, una línia per objecte
+- [ ] ❓ Línia discontínua blanca i negra del pivot al cursor a R i S
+
+### Moviment del ratolí
+
+- [ ] G: l'objecte segueix el ratolí en el pla de la vista; amb eix, només el component al llarg de l'eix a la pantalla
+- [ ] ❓ G amb pla: el moviment de la vista es projecta sobre el pla en la direcció de visió
+- [ ] ❓ G amb un eix que apunta cap a l'observador: es mou amb el moviment vertical del ratolí
+- [ ] R: angle al voltant del pivot a la pantalla; sense restricció, gira al voltant de l'eix de visió
+- [ ] ❓ R amb eix: el sentit s'inverteix si l'eix s'allunya de l'observador, perquè l'objecte segueixi el ratolí
+- [ ] S: proporció entre la distància del pivot al cursor ara i al principi
+- [ ] ❓ S: si el cursor passa a l'altra banda del pivot, l'escala es torna negativa
+- [ ] ❓ S amb eix global en un objecte girat: escala l'eix local corresponent (sense cisallament)
+
+### Modificadors
+
+- [ ] ❓ Ctrl: increments d'1 m (G), 5° (R) i 0,1 (S). Ctrl+Shift: 0,1 m, 1° i 0,01. A Blender, l'increment de G depèn de l'escala de la graella
+- [ ] ❓ Shift: mode precisió, el ratolí es mou a una desena part de la velocitat
+
+### Entrada numèrica
+
+- [ ] Dígits, punt decimal, signe menys (commuta el signe) i Backspace
+- [ ] Amb eix, el valor s'aplica a aquell eix. G sense restricció: el valor va a X, i Tab passa a Y i Z
+- [ ] ❓ G amb pla: el primer valor va al primer eix lliure i Tab passa al segon
+- [ ] ❓ R sense restricció: el valor gira al voltant de l'eix de visió
+- [ ] ❓ Amb un valor escrit, l'angle de R és positiu segons la regla de la mà dreta respecte de l'eix (R Z 45 → Rotation Z = 45°)
+- [ ] ❓ Esborrar-ho tot amb Backspace torna el control al ratolí
+- [ ] ❓ La coma també fa de separador decimal. Blender accepta expressions i unitats ("2cm"); aquí no
+
+### Text de la capçalera i barra d'estat
+
+- [ ] ❓ G: `Dx: 0.0000 m  Dy: 0.0000 m  Dz: 0.0000 m (0.0000 m)`; amb eix `D: 2.0000 m (2.0000 m) along global X`; amb pla `... locking global Z`
+- [ ] ❓ R: `Rot: 45.00° along global Z`
+- [ ] ❓ S: `Scale X: 1.0000  Y: 1.0000  Z: 1.0000`; amb eix `Scale: 2.0000 along global Z`
+- [ ] ❓ Amb entrada numèrica, el valor es mostra com `[2|]`
+- [ ] ❓ Barra d'estat: Confirm, Cancel, X/Y/Z Axis, X/Y/Z Plane, Automatic Constraint, Snap Invert, Precision Mode
+
+### Esborrar transformacions
+
+- [ ] Alt+G: Location a 0; Alt+R: Rotation a 0; Alt+S: Scale a 1 (només els objectes seleccionats)
+- [ ] ❓ Noms dels passos d'undo: "Clear Location", "Clear Rotation", "Clear Scale"
+
+### Rotació interna
+
+- [ ] ❓ La rotació es guarda com a XYZ Euler en graus i es converteix de manera compatible amb el valor anterior: girar 15° vint vegades dona 300°, no −60°

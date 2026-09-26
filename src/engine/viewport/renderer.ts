@@ -80,9 +80,23 @@ export class ViewportRenderer {
     return this.size;
   }
 
-  /** Projection of the last drawn frame (what the user sees). */
-  get frame(): FrameInfo | null {
-    return this.lastFrame;
+  /**
+   * Projection of what the user sees: the last drawn frame, or the current view
+   * if nothing has been drawn yet (e.g. the tab is in the background).
+   */
+  get frame(): FrameInfo {
+    return this.lastFrame ?? this.frameInfo(this.getScene(), this.navigator.displayed());
+  }
+
+  private frameInfo(scene: SceneState, view: DisplayedView): FrameInfo {
+    const size = this.size;
+    const sceneCam = activeCamera(scene);
+    const vp = viewProjection(view, size, sceneCam ? cameraData(scene, sceneCam) : null);
+    const forward = rotate(vp.rotation, vec3(0, 0, -1));
+    const perPixel = (vp.right - vp.left) / size.width;
+    const metresPerPixelAt = (p: Vec3) =>
+      vp.orthographic ? perPixel : perPixel * Math.max(CLIP_START, dot(sub(p, vp.eye), forward));
+    return { view, size, projection: vp, metresPerPixelAt };
   }
 
   onDraw(fn: (info: FrameInfo) => void): () => void {
@@ -177,11 +191,10 @@ export class ViewportRenderer {
   private draw(): void {
     const scene = this.getScene();
     const view = this.navigator.displayed();
-    const size = this.size;
     this.syncObjects(scene, view);
 
-    const sceneCam = activeCamera(scene);
-    const vp = viewProjection(view, size, sceneCam ? cameraData(scene, sceneCam) : null);
+    const info = this.frameInfo(scene, view);
+    const { projection: vp, metresPerPixelAt } = info;
     const camera = vp.orthographic ? this.orthoCamera : this.perspCamera;
     this.lastCamera = camera;
     for (const obj of [camera, this.lightRig]) {
@@ -204,11 +217,6 @@ export class ViewportRenderer {
       this.perspCamera.projectionMatrix.makePerspective(vp.left * n, vp.right * n, vp.top * n, vp.bottom * n, n, CLIP_END);
       this.perspCamera.projectionMatrixInverse.copy(this.perspCamera.projectionMatrix).invert();
     }
-
-    const forward = rotate(vp.rotation, vec3(0, 0, -1));
-    const perPixel = (vp.right - vp.left) / size.width;
-    const metresPerPixelAt = (p: Vec3) =>
-      vp.orthographic ? perPixel : perPixel * Math.max(CLIP_START, dot(sub(p, vp.eye), forward));
 
     // Lights keep a constant on-screen size.
     const viewQuat = new THREE.Quaternion(vp.rotation.x, vp.rotation.y, vp.rotation.z, vp.rotation.w);
@@ -239,7 +247,6 @@ export class ViewportRenderer {
     }
     this.drawOutlines(camera);
 
-    const info: FrameInfo = { view, size, projection: vp, metresPerPixelAt };
     this.lastFrame = info;
     for (const fn of this.drawListeners) fn(info);
   }
