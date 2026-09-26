@@ -16,7 +16,8 @@ export interface OperatorCall {
 export type LogEntry =
   | { readonly kind: 'execute'; readonly name: string }
   | { readonly kind: 'undo'; readonly name: string }
-  | { readonly kind: 'redo'; readonly name: string };
+  | { readonly kind: 'redo'; readonly name: string }
+  | { readonly kind: 'cancel'; readonly name: string };
 
 interface Step {
   readonly name: string;
@@ -27,6 +28,7 @@ export class SceneStore {
   private steps: Step[];
   private index = 0;
   private listeners = new Set<() => void>();
+  private previewState: SceneState | null = null;
   /** Everything the student did, in order (used by stage checks). */
   readonly log: LogEntry[] = [];
 
@@ -36,6 +38,27 @@ export class SceneStore {
 
   get state(): SceneState {
     return this.steps[this.index]!.state;
+  }
+
+  /**
+   * What the viewport and panels show: the preview of a running modal operator,
+   * or the committed state.
+   */
+  get displayState(): SceneState {
+    return this.previewState ?? this.state;
+  }
+
+  /** Shows an uncommitted state while a modal operator runs (null to clear it). */
+  setPreview(state: SceneState | null): void {
+    this.previewState = state;
+    this.emit();
+  }
+
+  /** Records a cancelled modal operator in the log (no undo step). */
+  logCancel(name: string): void {
+    this.previewState = null;
+    this.log.push({ kind: 'cancel', name });
+    this.emit();
   }
 
   get canUndo(): boolean {
@@ -56,8 +79,12 @@ export class SceneStore {
    * Returns true if the scene changed.
    */
   execute(op: OperatorCall): boolean {
+    this.previewState = null;
     const next = op.apply(this.state);
-    if (next === this.state) return false;
+    if (next === this.state) {
+      this.emit();
+      return false;
+    }
     this.steps = this.steps.slice(0, this.index + 1);
     this.steps.push({ name: op.name, state: next });
     // Keep the original plus UNDO_STEPS steps.
@@ -87,6 +114,7 @@ export class SceneStore {
 
   /** Starts over from a new scene (stage load / reset). Clears history and log. */
   reset(initial: SceneState): void {
+    this.previewState = null;
     this.steps = [{ name: 'Original', state: initial }];
     this.index = 0;
     this.log.length = 0;

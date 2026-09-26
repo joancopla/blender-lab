@@ -125,3 +125,17 @@ describe('undo history', () => {
     expect(undos).toBe(32);
   });
 });
+
+describe('store preview', () => {
+  it('shows the preview without recording it; cancel logs and restores', () => {
+    const store = new SceneStore(scene());
+    const moved = { ...store.state, selectedIds: [] };
+    store.setPreview(moved);
+    expect(store.displayState).toBe(moved);
+    expect(store.state.selectedIds).toEqual(['cube']);
+    store.logCancel('Move');
+    expect(store.displayState).toBe(store.state);
+    expect(store.canUndo).toBe(false);
+    expect(store.log).toEqual([{ kind: 'cancel', name: 'Move' }]);
+  });
+});
