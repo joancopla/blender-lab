@@ -202,12 +202,13 @@ describe('camera view', () => {
     expect(r.x + r.width / 2).toBeCloseTo(SIZE.width / 2, 6);
   });
 
-  it('Home fits the camera frame with a 2 px margin', () => {
+  it('Home fits the camera frame like view_center_camera', () => {
     const s = fitCameraFrame(toggleCameraView(base(), true), CAM_DATA, SIZE);
     const r = cameraFrameRect(s.camera!, CAM_DATA, SIZE);
-    // The tighter side (here the height) ends 2 px from each edge; the other fits inside.
-    expect(r.height).toBeCloseTo(SIZE.height - 4, 3);
-    expect(r.width).toBeLessThanOrEqual(SIZE.width - 4);
+    // view_center_camera: scale = window / (frame + 4) on the tighter side (here the height).
+    const r0 = cameraFrameRect({ zoom: 0, offsetX: 0, offsetY: 0 }, CAM_DATA, SIZE);
+    expect(r.height).toBeCloseTo((SIZE.height * r0.height) / (r0.height + 4), 3);
+    expect(r.width).toBeLessThan(SIZE.width);
   });
 
   it('wheel zoom scales the camera frame instead of moving the view', () => {

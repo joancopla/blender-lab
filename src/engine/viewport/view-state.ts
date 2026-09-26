@@ -419,7 +419,7 @@ export function cameraFrameRect(
 
 /**
  * Home in the camera view: fit the camera frame to the viewport (view_center_camera,
- * which leaves a 2 px margin on each side).
+ * scale = window / (frame + 4 px) on the tighter side).
  */
 export function fitCameraFrame(s: ViewState, data: SceneCameraData, size: ViewportSize): ViewState {
   if (!s.camera) return s;
