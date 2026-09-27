@@ -84,5 +84,15 @@
   "app": {
     "name": "Blender",
     "version": "Blender 5.2 LTS"
+  },
+  "shortcuts": {
+    "grab": "Moure",
+    "rotate": "Girar",
+    "scale": "Escalar",
+    "axis": "Limitar a l'eix X",
+    "editMode": "Entrar i sortir del Mode Edició",
+    "extrude": "Extrudir",
+    "undo": "Desfer",
+    "views": "Vistes frontal, lateral i superior"
   }
 }

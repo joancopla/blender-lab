@@ -22,7 +22,9 @@
     "resetProgress": "Reinicia el progrés",
     "resetProgressConfirm": "Fes clic de nou per esborrar-lo",
     "progressReset": "Progrés reiniciat",
-    "footer": "Projecte educatiu independent, fet per a l'aula. No està vinculat a cap fabricant de programari."
+    "footer": "Projecte educatiu independent, fet per a l'aula. No està vinculat a cap fabricant de programari.",
+    "shortcutsTitle": "Control ràpid des del teclat",
+    "shortcutsLead": "Als labs aprens les dreceres reals de Blender. Aquestes són les que faràs servir més."
   },
   "ui": {
     "backToIndex": "← Tots els labs",
@@ -77,9 +79,8 @@
   },
   "theme": {
     "label": "Mode: {mode}",
-    "system": "sistema",
     "light": "clar",
     "dark": "fosc",
-    "help": "Canvia entre el mode clar, el fosc i el del sistema"
+    "help": "Canvia entre el mode fosc i el clar"
   }
 }

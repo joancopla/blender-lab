@@ -1,16 +1,15 @@
 /**
- * Light "paper" or dark "blueprint" look for the shell (DESIGN.md). Follows the
- * system unless the student picks one; the choice is applied as
- * <html data-theme="light|dark">. Each HTML page applies the saved choice in an
- * inline script before the first paint, with the same storage key.
+ * Dark (default) or light look for the shell (DESIGN.md). The student can switch
+ * at any time; the choice is applied as <html data-theme="dark|light">. Each
+ * HTML page applies the saved choice in an inline script before the first paint,
+ * with the same storage key.
  */
 import { t } from '../i18n';
 import type { StorageLike } from './prefs';
 
-export type ThemeChoice = 'system' | 'light' | 'dark';
+export type ThemeChoice = 'dark' | 'light';
 
 export const THEME_KEY = 'blender-lab:theme';
-const ORDER: readonly ThemeChoice[] = ['system', 'light', 'dark'];
 
 function defaultStorage(): StorageLike | null {
   try {
@@ -23,9 +22,9 @@ function defaultStorage(): StorageLike | null {
 export function loadTheme(storage: StorageLike | null = defaultStorage()): ThemeChoice {
   try {
     const v = storage?.getItem(THEME_KEY);
-    return v === 'light' || v === 'dark' ? v : 'system';
+    return v === 'light' ? 'light' : 'dark';
   } catch {
-    return 'system';
+    return 'dark';
   }
 }
 
@@ -38,15 +37,14 @@ export function saveTheme(choice: ThemeChoice, storage: StorageLike | null = def
 }
 
 export function nextTheme(choice: ThemeChoice): ThemeChoice {
-  return ORDER[(ORDER.indexOf(choice) + 1) % ORDER.length]!;
+  return choice === 'dark' ? 'light' : 'dark';
 }
 
 export function applyTheme(choice: ThemeChoice): void {
-  if (choice === 'system') delete document.documentElement.dataset.theme;
-  else document.documentElement.dataset.theme = choice;
+  document.documentElement.dataset.theme = choice;
 }
 
-/** A button that cycles system → light → dark and says which one is on. */
+/** A button that switches between dark and light and says which one is on. */
 export function themeButton(cls: string): HTMLButtonElement {
   const b = document.createElement('button');
   b.type = 'button';

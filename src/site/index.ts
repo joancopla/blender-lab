@@ -10,6 +10,7 @@ import { KEY_OVERLAY_PREF, type PrefValues, loadPrefs, savePrefs } from '../core
 import { renderPrefSwitches } from '../core/shell/prefs-panel';
 import { themeButton } from '../core/shell/theme';
 import { BLENDER_PREFERENCES } from '../apps/blender/blender-app';
+import { axisText } from '../core/shell/axis-text';
 import { lab01 } from '../labs/blender/01-viewport';
 import { lab02 } from '../labs/blender/02-edit-mode';
 import '../core/shell/shell.css';
@@ -20,10 +21,19 @@ interface LabEntry {
   readonly href: string;
 }
 
+interface Shortcut {
+  /** i18n key of what it does. */
+  readonly labelKey: string;
+  /** Key ids (keys.<id>). */
+  readonly keys: readonly string[];
+}
+
 interface ProgramGroup {
   /** i18n key of the program name. */
   readonly nameKey: string;
   readonly labs: readonly LabEntry[];
+  /** Real shortcuts taught in the labs, for the index strip. */
+  readonly shortcuts: readonly Shortcut[];
 }
 
 const PROGRAMS: readonly ProgramGroup[] = [
@@ -32,6 +42,16 @@ const PROGRAMS: readonly ProgramGroup[] = [
     labs: [
       { lab: lab01, href: 'labs/01-viewport/' },
       { lab: lab02, href: 'labs/02-edit-mode/' },
+    ],
+    shortcuts: [
+      { labelKey: 'shortcuts.grab', keys: ['g'] },
+      { labelKey: 'shortcuts.rotate', keys: ['r'] },
+      { labelKey: 'shortcuts.scale', keys: ['s'] },
+      { labelKey: 'shortcuts.axis', keys: ['g', 'x'] },
+      { labelKey: 'shortcuts.views', keys: ['numpad1', 'numpad3', 'numpad7'] },
+      { labelKey: 'shortcuts.editMode', keys: ['tab'] },
+      { labelKey: 'shortcuts.extrude', keys: ['e'] },
+      { labelKey: 'shortcuts.undo', keys: ['ctrlZ'] },
     ],
   },
 ];
@@ -91,7 +111,7 @@ function topBar(): HTMLElement {
 
 function views(): HTMLElement {
   // The drawing itself (lines per stage) comes with the blueprint phase.
-  const figure = el('figure', 'site-blueprint');
+  const figure = el('figure', 'site-blueprint grid-paper');
   figure.setAttribute('aria-label', t('site.blueprintTitle'));
   for (const v of ['front', 'side', 'top'] as const) {
     const view = el('div', `site-view site-view-${v}`);
@@ -123,6 +143,7 @@ function labRow(entry: LabEntry, blueprint: HTMLElement): HTMLLIElement {
   const p = progressOf(lab);
   const row = el('li', 'site-row');
   row.dataset.lab = lab.id;
+  if (p.started && p.done < p.total) row.classList.add('is-current');
 
   const title = el('div', 'site-row-title');
   const link = el('a', undefined, t(lab.nameKey));
@@ -134,7 +155,7 @@ function labRow(entry: LabEntry, blueprint: HTMLElement): HTMLLIElement {
   const state = el('div', 'site-row-state');
   state.append(
     el('span', 'site-row-count', t('site.stages', { n: p.done, total: p.total })),
-    el('span', p.done === p.total ? 'site-row-status is-done' : 'site-row-status', status),
+    el('span', p.done === p.total ? 'site-row-status is-done' : p.started ? 'site-row-status is-current' : 'site-row-status', status),
   );
   if (justReset === lab.id) state.append(el('span', 'site-row-note', t('site.progressReset')));
   else if (p.started) {
@@ -155,7 +176,12 @@ function labRow(entry: LabEntry, blueprint: HTMLElement): HTMLLIElement {
     state.append(reset);
   }
 
-  row.append(el('span', 'site-row-n', lab.number), title, state);
+  const bar = el('div', 'site-row-progress');
+  bar.setAttribute('aria-hidden', 'true');
+  const fill = el('div');
+  fill.style.width = `${(p.done / p.total) * 100}%`;
+  bar.append(fill);
+  row.append(el('span', 'site-row-n', lab.number), title, state, bar);
   // Highlights this lab's lines in the blueprint.
   const highlight = (on: boolean) => {
     if (on) blueprint.dataset.lab = lab.id;
@@ -166,6 +192,28 @@ function labRow(entry: LabEntry, blueprint: HTMLElement): HTMLLIElement {
   row.addEventListener('focusin', () => highlight(true));
   row.addEventListener('focusout', () => highlight(false));
   return row;
+}
+
+function shortcuts(group: ProgramGroup): HTMLElement {
+  const section = el('section', 'site-shortcuts');
+  const head = el('div', 'site-shortcuts-head');
+  head.append(el('h2', undefined, t('site.shortcutsTitle')), el('p', 'lab-muted', t('site.shortcutsLead')));
+  const list = el('ul', 'site-shortcuts-list');
+  for (const sc of group.shortcuts) {
+    const li = el('li', sc.keys.length > 2 ? 'is-wide' : undefined);
+    const keys = el('span', 'site-shortcut-keys');
+    for (const k of sc.keys) {
+      const kbd = el('kbd', 'lab-kbd');
+      kbd.append(axisText(t(`keys.${k}`)));
+      keys.append(kbd);
+    }
+    const label = el('span', 'site-shortcut-label');
+    label.append(axisText(t(sc.labelKey)));
+    li.append(label, keys);
+    list.append(li);
+  }
+  section.append(head, list);
+  return section;
 }
 
 function render(): void {
@@ -188,7 +236,7 @@ function render(): void {
   }
 
   const main = el('main', 'site');
-  main.append(hero, labs);
+  main.append(hero, labs, ...PROGRAMS.map(shortcuts));
   root.replaceChildren(topBar(), main, el('footer', 'lab-footer site-footer', t('site.footer')));
 }
 

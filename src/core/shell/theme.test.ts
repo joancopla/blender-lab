@@ -7,25 +7,24 @@ const memory = () => {
 };
 
 describe('theme choice', () => {
-  it('defaults to the system and round-trips', () => {
+  it('defaults to dark and round-trips', () => {
     const s = memory();
-    expect(loadTheme(s)).toBe('system');
-    saveTheme('dark', s);
     expect(loadTheme(s)).toBe('dark');
+    saveTheme('light', s);
+    expect(loadTheme(s)).toBe('light');
   });
 
   it('ignores invalid values and broken storage', () => {
     const s = memory();
     s.setItem(THEME_KEY, 'purple');
-    expect(loadTheme(s)).toBe('system');
+    expect(loadTheme(s)).toBe('dark');
     const broken = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } };
-    expect(loadTheme(broken)).toBe('system');
+    expect(loadTheme(broken)).toBe('dark');
     expect(() => saveTheme('light', broken)).not.toThrow();
   });
 
-  it('cycles system, light, dark', () => {
-    expect(nextTheme('system')).toBe('light');
+  it('switches between dark and light', () => {
+    expect(nextTheme('dark')).toBe('light');
     expect(nextTheme('light')).toBe('dark');
-    expect(nextTheme('dark')).toBe('system');
   });
 });
