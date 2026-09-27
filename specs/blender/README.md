@@ -49,7 +49,7 @@ ampliació, s'amplia sense trencar els labs anteriors (cal passar-ne els tests).
 |---|---|---|---|
 | Viewport, selecció, operadors G/R/S | `viewport/`, `operators/` | Tots | 01 |
 | Malles editables | `mesh/` | 01 (primitives), 02, 03, 10 | 01 (dades), 02 (edició) |
-| Properties Editor (pestanyes) | `ui/properties/` | 03, 04, 05, 06, 07 | 05 |
+| Properties Editor (pestanyes) | `ui/properties/` | 03, 04, 05, 06, 07 | 03 (Joan va avançar el Lab 03 al 05) |
 | Mòdul de render (Material Preview, Rendered, gestió del color) | `render/` | 04, 05, 06, 07, 10 | 05 |
 | Dades d'animació (F-curves, avaluació) | `anim/` | 08, 09, 10 | 08 |
 | Timeline i Dope Sheet | `ui/timeline/` | 08, 09, 10 | 08 |

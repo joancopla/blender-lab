@@ -78,6 +78,15 @@ Blender stage lists into core ones. `ghost-match.ts` and `silhouette.ts` are che
 - `operators/`: pure operator functions run through the store. `transform-session.ts` and
   `edit/` connect modal operators to input, preview and UI.
 
+### Modifiers
+
+- `modifiers/types.ts`: modifier data stored on `MeshObject.modifiers` (immutable, Blender defaults).
+- `modifiers/stack.ts`: `evaluatedMesh(object, scene)` runs the base mesh through the enabled
+  modifiers in order, with a per-object, per-modifier cache (reference equality on the input mesh
+  and the modifier). Object Mode draws, picks and counts the evaluated mesh; Edit Mode edits the base.
+- `modifiers/mirror.ts`, `array.ts`, `bisect.ts`: the algorithms. `operators/modifiers.ts`: add,
+  remove, move and edit through the history.
+
 ### Replica UI
 
 `ui/`: header, Outliner, N panel, status bar, menus, adjust panel, statistics, analyser panel
