@@ -44,7 +44,9 @@ import { Outliner } from './ui/outliner';
 import { Sidebar } from './ui/sidebar';
 import { StatusBar } from './ui/status-bar';
 import { TransformGuides } from './ui/transform-guides';
-import { TransformSession } from './transform-session';
+import { type ModalOperator, TransformSession } from './transform-session';
+import { TransformModal } from './operators/transform';
+import { ComponentTransform } from './edit/component-transform';
 import { ViewportOverlay } from './ui/viewport-overlay';
 import { NavGizmo } from './viewport/nav-gizmo';
 import { Navigator } from './viewport/navigator';
@@ -216,23 +218,31 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
 
   const guides = new TransformGuides(layout.viewport);
   let transform: TransformSession | null = null;
+  const sessionDeps = {
+    store,
+    view,
+    status,
+    guides,
+    header: layout.viewportHeaderText.parentElement!,
+    headerText: layout.viewportHeaderText,
+    onEnd: () => (transform = null),
+  };
+  const NO_MODS = { ctrl: false, shift: false, alt: false };
+  /** Starts any modal operator at the mouse position. */
+  const startModal = (modal: ModalOperator) => {
+    if (transform) return;
+    transform = TransformSession.start(sessionDeps, modal, NO_MODS);
+  };
   const startTransform = (kind: 'translate' | 'rotate' | 'resize') => {
-    // Transforming components arrives in phase 3.
-    if (transform || !cursor || isEditMode(store.state)) return;
-    transform = TransformSession.start(
-      {
-        store,
-        view,
-        status,
-        guides,
-        header: layout.viewportHeaderText.parentElement!,
-        headerText: layout.viewportHeaderText,
-        onEnd: () => (transform = null),
-      },
-      kind,
-      cursor,
-      { ctrl: false, shift: false, alt: false },
-    );
+    if (transform || !cursor) return;
+    const frame = view.frame;
+    if (isEditMode(store.state)) {
+      if (!ComponentTransform.canStart(store.state)) return;
+      startModal(new ComponentTransform(kind, store.state, frame.projection, frame.size, cursor));
+      return;
+    }
+    if (!TransformModal.canStart(store.state)) return;
+    startModal(new TransformModal(kind, store.state, frame.projection, frame.size, cursor));
   };
   const CLEAR_OPS = { location: ClearLocationOp, rotation: ClearRotationOp, scale: ClearScaleOp };
 
@@ -268,6 +278,8 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
           return void store.execute(SelectLinkedOp);
         case 'selectMoreLess':
           return void store.execute(SelectMoreLessOp(a.more));
+        case 'transform':
+          return startTransform(a.kind);
         case 'selectLinkedPick': {
           if (!cursor) return;
           const hit = pickComponent(pickContext(), selectModeOf(store.state), cursor.x, cursor.y);

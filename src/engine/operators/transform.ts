@@ -39,6 +39,15 @@ export interface Guides {
 
 export type ModalResult = 'confirm' | 'cancel' | null;
 
+export interface TransformOptions {
+  /** Operator name for the undo history (default: Move / Rotate / Resize). */
+  readonly name?: string;
+  /** Constraint active from the start (Extrude moves along the normal). */
+  readonly constraint?: Constraint;
+  /** Header name of the local space. */
+  readonly localLabel?: string;
+}
+
 /**
  * Increments with Ctrl (and finer ones with Ctrl+Shift).
  * FIDELITY? Blender's translation increment depends on the grid scale of the view.
@@ -81,6 +90,8 @@ function withRotation(o: SceneObject, delta: Quat): Vec3 {
 
 export class TransformModal {
   readonly operatorName: string;
+  /** How the header calls the local space ('local', or 'normal' for Extrude). */
+  private readonly localLabel: string;
   private readonly objects: readonly SceneObject[];
   private readonly pivot: Vec3;
   private readonly pivotScreen: { x: number; y: number };
@@ -100,8 +111,11 @@ export class TransformModal {
     private readonly vp: ViewProjection,
     private readonly size: ViewportSize,
     mouse: { x: number; y: number },
+    options: TransformOptions = {},
   ) {
-    this.operatorName = OPERATOR_NAMES[kind];
+    this.operatorName = options.name ?? OPERATOR_NAMES[kind];
+    this.localLabel = options.localLabel ?? 'local';
+    this.constraintState = options.constraint ?? null;
     this.objects = selectedObjects(scene);
     this.pivot = medianPoint(this.objects);
     const ps = worldToScreen(vp, size, this.pivot);
@@ -389,8 +403,8 @@ export class TransformModal {
     const c = this.constraintState;
     const where = c
       ? c.kind === 'axis'
-        ? ` along ${c.space} ${AXIS_LETTER[c.axis]}`
-        : ` locking ${c.space} ${AXIS_LETTER[c.axis]}`
+        ? ` along ${c.space === 'local' ? this.localLabel : c.space} ${AXIS_LETTER[c.axis]}`
+        : ` locking ${c.space === 'local' ? this.localLabel : c.space} ${AXIS_LETTER[c.axis]}`
       : '';
     const n = this.num;
     const first = this.objects[0];

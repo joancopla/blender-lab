@@ -163,7 +163,6 @@ describe('edit mode keys', () => {
       type: 'selectMoreLess',
       more: true,
     });
-    // G does nothing in Edit Mode yet.
-    expect(resolveKey(EDIT_MODE_KEYMAP, key('KeyG'), DEFAULT_INPUT_PREFS)).toBeNull();
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('KeyG'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'transform', kind: 'translate' });
   });
 });

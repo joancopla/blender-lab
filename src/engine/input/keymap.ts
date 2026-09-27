@@ -99,6 +99,7 @@ export type EditModeAction =
   | { readonly type: 'selectLinkedPick' }
   | { readonly type: 'selectLinked' }
   | { readonly type: 'selectMoreLess'; readonly more: boolean }
+  | { readonly type: 'transform'; readonly kind: TransformKind }
   | { readonly type: 'toggleSidebar' }
   | { readonly type: 'toggleEditMode' }
   | { readonly type: 'toggleXray' };
@@ -106,7 +107,6 @@ export type EditModeAction =
 /**
  * Edit Mode (Mesh) keymap. With Emulate Numpad on, the number row is taken by
  * the views first, so 1 / 2 / 3 do not change the select mode (as in Blender).
- * FIDELITY? G / R / S on components arrive in phase 3.
  */
 export const EDIT_MODE_KEYMAP: readonly KeymapItem<EditModeAction>[] = [
   { code: 'Digit1', action: { type: 'selectMode', kind: 'vert', extend: false } },
@@ -123,6 +123,9 @@ export const EDIT_MODE_KEYMAP: readonly KeymapItem<EditModeAction>[] = [
   { code: 'KeyL', ctrl: true, action: { type: 'selectLinked' } },
   { code: 'NumpadAdd', ctrl: true, action: { type: 'selectMoreLess', more: true } },
   { code: 'NumpadSubtract', ctrl: true, action: { type: 'selectMoreLess', more: false } },
+  { code: 'KeyG', action: { type: 'transform', kind: 'translate' } },
+  { code: 'KeyR', action: { type: 'transform', kind: 'rotate' } },
+  { code: 'KeyS', action: { type: 'transform', kind: 'resize' } },
   { code: 'KeyN', action: { type: 'toggleSidebar' } },
   { code: 'Tab', action: { type: 'toggleEditMode' } },
   { code: 'KeyZ', alt: true, action: { type: 'toggleXray' } },

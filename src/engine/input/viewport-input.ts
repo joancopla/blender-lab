@@ -27,6 +27,8 @@ export interface ModalHandler {
   pointerDown(button: number, mods: Modifiers): void;
   keyDown(code: string, mods: Modifiers): void;
   keyUp(mods: Modifiers): void;
+  /** Mouse wheel steps (up = +1). */
+  wheel?(steps: number): void;
 }
 
 export interface ViewportInputOptions {
@@ -215,7 +217,13 @@ export class ViewportInput {
 
   private onWheel = (e: WheelEvent): void => {
     e.preventDefault();
-    if (this.opts.select.busy || this.opts.modal()) return;
+    if (this.opts.select.busy) return;
+    const modal = this.opts.modal();
+    if (modal) {
+      const steps = this.wheel.push(e.deltaY, e.deltaMode, true);
+      if (steps !== 0) modal.wheel?.(steps);
+      return;
+    }
     const noMods = !e.ctrlKey && !e.shiftKey && !e.altKey;
     const steps = this.wheel.push(e.deltaY, e.deltaMode, noMods);
     if (steps !== 0) this.opts.navigator.apply({ type: 'zoomSteps', steps });
