@@ -3,9 +3,8 @@
  * (they live under the Blender-space root, see coords.ts).
  */
 import * as THREE from 'three';
-import { type CameraObject, type LightObject, type SceneObject, meshOf } from '../scene/scene';
+import type { CameraObject, LightObject, SceneObject } from '../scene/scene';
 import { LIGHT_ICON_RADII_PX, cameraDisplay } from '../scene/object-display';
-import { meshToGeometry } from './mesh-geometry';
 import { THEME } from './theme';
 
 export type SelectionDisplay = 'none' | 'selected' | 'active';
@@ -85,10 +84,11 @@ export function setSolidXray(on: boolean): void {
   m.needsUpdate = true;
 }
 
+/** Meshes start with an empty geometry: the renderer fills it with the mesh to draw. */
 export function buildObject(o: SceneObject, isSceneCamera: boolean, renderAspect: number): THREE.Object3D {
   let obj: THREE.Object3D;
   if (o.type === 'mesh') {
-    obj = new THREE.Mesh(meshToGeometry(meshOf(o)).geometry, getSolidMaterial());
+    obj = new THREE.Mesh(new THREE.BufferGeometry(), getSolidMaterial());
   } else if (o.type === 'camera') {
     obj = buildCamera(o, isSceneCamera, renderAspect);
   } else {

@@ -10,7 +10,7 @@ import { type SceneState, objectRotation } from '../scene/scene';
 import type { ViewportSize } from './projection';
 import { triangulateFace } from '../mesh/geometry';
 import type { MeshData } from '../mesh/mesh-data';
-import { meshOf } from '../scene/scene';
+import { evaluatedMesh } from '../modifiers/stack';
 
 const trianglesCache = new WeakMap<MeshData, Float32Array>();
 
@@ -94,7 +94,7 @@ export function pickAt(
       const invScale = vec3(1 / o.scale.x, 1 / o.scale.y, 1 / o.scale.z);
       const lo = mul(rotate(inv, sub(ray.origin, o.location)), invScale);
       const ld = mul(rotate(inv, ray.direction), invScale);
-      const tris = meshTriangles(meshOf(o));
+      const tris = meshTriangles(evaluatedMesh(o, scene));
       let best = Infinity;
       for (let i = 0; i < tris.length; i += 9) {
         const t = rayTriangle(

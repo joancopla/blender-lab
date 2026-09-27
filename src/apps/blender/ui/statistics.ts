@@ -1,10 +1,11 @@
 /**
  * Overlays > Statistics text (off by default in Blender; a lab can turn it on).
- * Object Mode: selected / total objects and scene totals.
+ * Object Mode: selected / total objects and scene totals (after modifiers).
  * Edit Mode: selected / total components of the meshes being edited.
  * FIDELITY? Exact labels, alignment and which totals Blender 5.2 shows.
  */
 import { meshCounts } from '../mesh/mesh-data';
+import { evaluatedMesh } from '../modifiers/stack';
 import { selectionOf } from '../operators/edit-mode';
 import { type MeshObject, type SceneState, isEditMode, meshOf } from '../scene/scene';
 
@@ -41,7 +42,7 @@ export function statistics(s: SceneState): StatisticsLine[] {
       ['Triangles', `${tris}`],
     ];
   }
-  const totals = meshes.map((o) => meshCounts(meshOf(o))).reduce(
+  const totals = meshes.map((o) => meshCounts(evaluatedMesh(o, s))).reduce(
     (a, c) => ({ verts: a.verts + c.verts, edges: a.edges + c.edges, faces: a.faces + c.faces, tris: a.tris + c.tris }),
     { verts: 0, edges: 0, faces: 0, tris: 0 },
   );

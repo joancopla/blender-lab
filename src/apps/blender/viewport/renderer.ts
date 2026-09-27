@@ -17,6 +17,7 @@ import {
   selectModeOf,
 } from '../scene/scene';
 import type { MeshData } from '../mesh/mesh-data';
+import { evaluatedMesh } from '../modifiers/stack';
 import { meshToGeometry } from './mesh-geometry';
 import { buildEditOverlay, disposeGroup } from './edit-overlay';
 import { buildAnalyzerOverlay } from './analyzer-overlay';
@@ -258,11 +259,14 @@ export class ViewportRenderer {
   /** Rebuilds the geometry when the mesh changes, and the Edit Mode overlay when needed. */
   private syncMesh(e: ObjectEntry, o: Extract<SceneState['objects'][number], { type: 'mesh' }>, scene: SceneState): void {
     const m = meshOf(o);
+    const editing = scene.editObjectIds?.includes(o.id) ?? false;
+    // Object Mode draws the modifiers' result. FIDELITY? Edit Mode with modifiers (cage) is Phase 4 of Lab 03.
+    const drawn = editing ? m : evaluatedMesh(o, scene);
     const mesh = e.root as THREE.Mesh;
-    if (e.meshData !== m) {
-      if (e.meshData) mesh.geometry.dispose();
-      if (e.meshData) mesh.geometry = meshToGeometry(m).geometry;
-      e.meshData = m;
+    if (e.meshData !== drawn) {
+      mesh.geometry.dispose();
+      mesh.geometry = meshToGeometry(drawn).geometry;
+      e.meshData = drawn;
     }
     const analyse = o.id === this.analyzerObjectId;
     if (e.analyzer && (!analyse || e.analyzerFor !== m)) {
@@ -276,7 +280,6 @@ export class ViewportRenderer {
       e.analyzerFor = m;
       mesh.add(e.analyzer);
     }
-    const editing = scene.editObjectIds?.includes(o.id) ?? false;
     if (!editing) {
       if (e.overlay) {
         mesh.remove(e.overlay);
