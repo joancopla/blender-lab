@@ -12,11 +12,16 @@ import { type Mat4, fromTRS, invert, multiply } from '../math/mat4';
 import type { MeshData } from '../mesh/mesh-data';
 import { type MeshObject, type SceneObject, type SceneState, findObject, meshOf, objectRotation } from '../scene/scene';
 import { applyArray } from './array';
+import { applyBevel } from './bevel';
 import { applyMirror } from './mirror';
-import type { Modifier } from './types';
+import { applySubsurf } from './subsurf';
+import { MAX_VIEWPORT_LEVELS, type Modifier } from './types';
 
 /** Where the result is for: the viewport (Realtime toggle) or a render. */
 export type EvalPurpose = 'viewport' | 'render';
+
+/** Why a modifier could not do its work (shown by the UI as a lab warning). */
+export type ModifierWarning = 'bevelUnsupported';
 
 interface Stage {
   readonly input: MeshData;
@@ -24,6 +29,7 @@ interface Stage {
   /** Everything else the result depends on, as a string. */
   readonly context: string;
   readonly output: MeshData;
+  readonly warning: ModifierWarning | null;
 }
 
 const cache = new Map<string, Stage[]>();
@@ -47,10 +53,27 @@ function mirrorSpace(o: MeshObject, mod: Modifier, scene: SceneState): Mat4 | nu
   return target ? multiply(invert(objectMatrix(o)), objectMatrix(target)) : null;
 }
 
-function runModifier(input: MeshData, mod: Modifier, space: Mat4 | null): MeshData {
+interface StageResult {
+  readonly output: MeshData;
+  readonly warning: ModifierWarning | null;
+}
+
+function runModifier(input: MeshData, mod: Modifier, space: Mat4 | null, purpose: EvalPurpose): StageResult {
   evaluations++;
-  if (mod.type === 'MIRROR') return applyMirror(input, mod, space);
-  return applyArray(input, mod);
+  switch (mod.type) {
+    case 'MIRROR':
+      return { output: applyMirror(input, mod, space), warning: null };
+    case 'ARRAY':
+      return { output: applyArray(input, mod), warning: null };
+    case 'SUBSURF': {
+      const levels = purpose === 'render' ? mod.renderLevels : Math.min(mod.levels, MAX_VIEWPORT_LEVELS);
+      return { output: applySubsurf(input, mod, levels), warning: null };
+    }
+    case 'BEVEL': {
+      const r = applyBevel(input, mod);
+      return { output: r.mesh, warning: r.unsupported ? 'bevelUnsupported' : null };
+    }
+  }
 }
 
 /**
@@ -58,9 +81,24 @@ function runModifier(input: MeshData, mod: Modifier, space: Mat4 | null): MeshDa
  * In Edit Mode only modifiers with "Edit Mode" on take part (FIDELITY? cage display is Phase 4).
  */
 export function evaluatedMesh(o: MeshObject, scene: SceneState, purpose: EvalPurpose = 'viewport'): MeshData {
+  return evaluate(o, scene, purpose).mesh;
+}
+
+/** Warnings of the last evaluation, by modifier name. */
+export function modifierWarnings(
+  o: MeshObject,
+  scene: SceneState,
+  purpose: EvalPurpose = 'viewport',
+): ReadonlyMap<string, ModifierWarning> {
+  const out = new Map<string, ModifierWarning>();
+  for (const st of evaluate(o, scene, purpose).stages) if (st.warning) out.set(st.modifier.name, st.warning);
+  return out;
+}
+
+function evaluate(o: MeshObject, scene: SceneState, purpose: EvalPurpose): { mesh: MeshData; stages: Stage[] } {
   const base = meshOf(o);
   const mods = o.modifiers ?? [];
-  if (mods.length === 0) return base;
+  if (mods.length === 0) return { mesh: base, stages: [] };
   const editMode = scene.editObjectIds?.includes(o.id) ?? false;
   const key = `${o.id}|${purpose}`;
   const previous = cache.get(key) ?? [];
@@ -74,12 +112,12 @@ export function evaluatedMesh(o: MeshObject, scene: SceneState, purpose: EvalPur
     const stage: Stage =
       old && old.input === mesh && old.modifier === mod && old.context === context
         ? old
-        : { input: mesh, modifier: mod, context, output: runModifier(mesh, mod, space) };
+        : { input: mesh, modifier: mod, context, ...runModifier(mesh, mod, space, purpose) };
     stages.push(stage);
     mesh = stage.output;
   }
   cache.set(key, stages);
-  return mesh;
+  return { mesh, stages };
 }
 
 /** Whether the object has any modifier (the evaluated mesh may differ from the base mesh). */
