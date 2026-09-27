@@ -2,13 +2,40 @@
  * Mounts the Blender replica for a lab: layout, viewport, navigation, selection
  * and input. The SceneStore is the single source of truth.
  */
-import type { InputPrefs, ObjectModeAction, ScreenAction } from './input/keymap';
+import type { EditModeAction, InputPrefs, ObjectModeAction, ScreenAction } from './input/keymap';
+import { baseKind } from './edit/selection';
+import { add, max, min, mul, vec3 } from './math/vec3';
+import { rotate } from './math/quat';
+import {
+  EditBoxSelectOp,
+  EditSelectAllOp,
+  EditSelectOp,
+  LoopSelectOp,
+  SelectLinkedOp,
+  SelectLinkedPickOp,
+  SelectModeOp,
+  SelectMoreLessOp,
+  ToggleEditModeOp,
+  selectionOf,
+} from './operators/edit-mode';
+import { componentsInRect, pickComponent, pickEdge } from './viewport/component-picking';
+import type { Bounds } from './viewport/view-state';
 import { type SelectCommand, SelectInteraction } from './input/select-interaction';
 import { ViewportInput } from './input/viewport-input';
 import type { LabDefinition } from './lab';
 import { ClearLocationOp, ClearRotationOp, ClearScaleOp } from './operators/clear';
 import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operators/select';
-import { activeCamera, cameraData, objectRotation, selectedObjects, unionBounds } from './scene/scene';
+import {
+  type SceneState,
+  activeCamera,
+  cameraData,
+  isEditMode,
+  meshOf,
+  objectRotation,
+  selectModeOf,
+  selectedObjects,
+  unionBounds,
+} from './scene/scene';
 import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
 import { KeyOverlay } from './ui/key-overlay';
@@ -39,6 +66,28 @@ export interface MountOptions {
   /** Current input preferences (Emulate 3 Button Mouse, Emulate Numpad). */
   inputPrefs(): InputPrefs;
   onNavigateWithoutMiddle?(): void;
+  /** Overlays > Statistics (off by default, as in Blender). */
+  readonly statistics?: boolean;
+}
+
+/** World-space bounds of the selected vertices of the objects in Edit Mode. */
+function selectedComponentBounds(s: SceneState): Bounds | null {
+  const ids = new Set(s.editObjectIds ?? []);
+  let lo = vec3(Infinity, Infinity, Infinity);
+  let hi = vec3(-Infinity, -Infinity, -Infinity);
+  let any = false;
+  for (const o of s.objects) {
+    if (o.type !== 'mesh' || !ids.has(o.id)) continue;
+    const m = meshOf(o);
+    const q = objectRotation(o);
+    for (const v of selectionOf(o).verts) {
+      const p = add(o.location, rotate(q, mul(m.verts[v]!, o.scale)));
+      lo = min(lo, p);
+      hi = max(hi, p);
+      any = true;
+    }
+  }
+  return any ? { min: lo, max: hi } : null;
 }
 
 export function mountLab(container: HTMLElement, lab: LabDefinition, options: MountOptions): LabApp {
@@ -57,7 +106,9 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
       const cam = activeCamera(store.state);
       return cam ? cameraData(store.state, cam) : null;
     },
-    selectedBounds: () => unionBounds(selectedObjects(store.state)),
+    // Numpad . frames the selected components in Edit Mode, the selected objects otherwise.
+    selectedBounds: () =>
+      isEditMode(store.state) ? selectedComponentBounds(store.state) : unionBounds(selectedObjects(store.state)),
     allBounds: () => unionBounds(store.state.objects),
     reducedMotion: () => reducedMotion.matches,
     now: () => performance.now(),
@@ -65,14 +116,33 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
 
   const view = new ViewportRenderer(layout.viewport, navigator, () => store.displayState);
   renderer = view;
-  const overlay = new ViewportOverlay(layout.viewport);
+  const overlay = new ViewportOverlay(layout.viewport, options.statistics ?? false);
   const gizmo = new NavGizmo(navigator);
   layout.viewport.append(gizmo.element);
   const status = new StatusBar(layout.statusLeft);
   const outliner = new Outliner({
     container: layout.outlinerBody,
-    onSelect: (id, extend) => store.execute(OutlinerSelectOp(id, extend)),
+    // FIDELITY? Clicking objects in the Outliner while in Edit Mode is ignored here.
+    onSelect: (id, extend) => !isEditMode(store.state) && store.execute(OutlinerSelectOp(id, extend)),
   });
+
+  // Header: mode selector, select mode buttons and mode-specific menus.
+  const updateHeader = () => {
+    const s = store.displayState;
+    const edit = isEditMode(s);
+    layout.modeMenu.textContent = edit ? 'Edit Mode' : 'Object Mode';
+    for (const e of layout.objectModeOnly) e.hidden = edit;
+    for (const e of layout.editModeOnly) e.hidden = !edit;
+    const mode = selectModeOf(s);
+    for (const k of ['vert', 'edge', 'face'] as const) layout.selectModeButtons[k].classList.toggle('is-active', mode[k]);
+  };
+  for (const k of ['vert', 'edge', 'face'] as const) {
+    layout.selectModeButtons[k].addEventListener('click', (e) => store.execute(SelectModeOp(k, e.shiftKey)));
+  }
+  attachMenu(layout.modeMenu, () => [
+    { label: 'Object Mode', action: () => isEditMode(store.state) && store.execute(ToggleEditModeOp) },
+    { label: 'Edit Mode', action: () => !isEditMode(store.state) && store.execute(ToggleEditModeOp) },
+  ]);
 
   view.onDraw((info) => {
     overlay.update(info, navigator.state, store.displayState);
@@ -82,6 +152,7 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
   const onSceneChange = () => {
     outliner.update(store.displayState);
     sidebar.update(store.displayState);
+    updateHeader();
     view.requestRender();
   };
   store.onChange(onSceneChange);
@@ -100,9 +171,39 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
     if (select.modalWaiting) refreshInteraction();
   });
 
+  let xray = false;
+  const pickContext = () => {
+    const frame = view.frame;
+    return { scene: store.state, projection: frame.projection, size: frame.size, xray };
+  };
+
+  const runEditSelect = (cmd: SelectCommand) => {
+    const ctx = pickContext();
+    if (cmd.type === 'box') {
+      const inside = componentsInRect(ctx, baseKind(selectModeOf(store.state)), cmd.rect);
+      store.execute(EditBoxSelectOp(inside, cmd.mode));
+      return;
+    }
+    if (cmd.alt) {
+      // Alt+click: edge loop; Ctrl+Alt+click: edge ring. Shift adds.
+      const hit = pickEdge(ctx, cmd.x, cmd.y, 20);
+      if (hit) store.execute(LoopSelectOp(hit.objectId, hit.ref.index, cmd.ctrl ? 'ring' : 'loop', cmd.extend));
+      return;
+    }
+    // FIDELITY? Ctrl+click (Pick Shortest Path in Blender) is out of scope.
+    if (cmd.ctrl) return;
+    store.execute(EditSelectOp(pickComponent(ctx, selectModeOf(store.state), cmd.x, cmd.y), cmd.extend));
+  };
+
   const runSelect = (cmd: SelectCommand) => {
+    if (isEditMode(store.state)) {
+      runEditSelect(cmd);
+      return;
+    }
     const frame = view.frame;
     if (cmd.type === 'click') {
+      // Ctrl+click and Alt+click do nothing in Object Mode here.
+      if (cmd.ctrl || cmd.alt) return;
       const cam = activeCamera(store.state);
       const hidden = new Set<string>(frame.view.camera && cam ? [cam.id] : []);
       const hits = pickAt(store.state, frame.projection, frame.size, cmd.x, cmd.y, { hiddenIds: hidden });
@@ -116,7 +217,8 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
   const guides = new TransformGuides(layout.viewport);
   let transform: TransformSession | null = null;
   const startTransform = (kind: 'translate' | 'rotate' | 'resize') => {
-    if (transform || !cursor) return;
+    // Transforming components arrives in phase 3.
+    if (transform || !cursor || isEditMode(store.state)) return;
     transform = TransformSession.start(
       {
         store,
@@ -134,6 +236,12 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
   };
   const CLEAR_OPS = { location: ClearLocationOp, rotation: ClearRotationOp, scale: ClearScaleOp };
 
+  /** Alt+Z: a viewport shading setting, not an undo step. */
+  function toggleXray(): void {
+    xray = !xray;
+    view.setXray(xray);
+  }
+
   new ViewportInput({
     element: layout.viewport,
     navigator,
@@ -146,6 +254,39 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
       else if (a.type === 'transform') startTransform(a.kind);
       else if (a.type === 'clear') store.execute(CLEAR_OPS[a.field]);
       else if (a.type === 'toggleSidebar') sidebar.toggle();
+      else if (a.type === 'toggleEditMode') store.execute(ToggleEditModeOp);
+      else if (a.type === 'toggleXray') toggleXray();
+    },
+    editMode: () => isEditMode(store.state),
+    onEditModeAction: (a: EditModeAction) => {
+      switch (a.type) {
+        case 'selectMode':
+          return void store.execute(SelectModeOp(a.kind, a.extend));
+        case 'selectAll':
+          return void store.execute(EditSelectAllOp(a.action));
+        case 'selectLinked':
+          return void store.execute(SelectLinkedOp);
+        case 'selectMoreLess':
+          return void store.execute(SelectMoreLessOp(a.more));
+        case 'selectLinkedPick': {
+          if (!cursor) return;
+          const hit = pickComponent(pickContext(), selectModeOf(store.state), cursor.x, cursor.y);
+          if (!hit) return;
+          const o = store.state.objects.find((x) => x.id === hit.objectId);
+          if (o?.type !== 'mesh') return;
+          const m = meshOf(o);
+          const verts = hit.ref.kind === 'vert' ? [hit.ref.index] : hit.ref.kind === 'edge' ? [...m.edges[hit.ref.index]!] : [...m.faces[hit.ref.index]!];
+          return void store.execute(SelectLinkedPickOp(hit.objectId, verts));
+        }
+        case 'toggleSidebar':
+          return sidebar.toggle();
+        case 'toggleEditMode':
+          return void store.execute(ToggleEditModeOp);
+        case 'toggleXray':
+          return toggleXray();
+        case 'boxSelectModal':
+          return; // handled by the input layer
+      }
     },
     onScreenAction: (a: ScreenAction) => (a.type === 'undo' ? store.undo() : store.redo()),
     onInteractionChange: refreshInteraction,
@@ -178,20 +319,38 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
       ],
     },
   ]);
-  attachMenu(layout.selectMenu, () => [
-    { label: 'All', shortcut: 'A', action: () => store.execute(SelectAllOp('select')) },
-    { label: 'None', shortcut: 'Alt A', action: () => store.execute(SelectAllOp('deselect')) },
-    { label: 'Invert', shortcut: 'Ctrl I', action: () => store.execute(SelectAllOp('invert')) },
-    'separator',
-    {
-      label: 'Box Select',
-      shortcut: 'B',
-      action: () => {
-        select.startModal();
-        refreshInteraction();
+  attachMenu(layout.selectMenu, () => {
+    const edit = isEditMode(store.state);
+    const all = (action: 'select' | 'deselect' | 'invert') => () =>
+      store.execute(edit ? EditSelectAllOp(action) : SelectAllOp(action));
+    return [
+      { label: 'All', shortcut: 'A', action: all('select') },
+      { label: 'None', shortcut: 'Alt A', action: all('deselect') },
+      { label: 'Invert', shortcut: 'Ctrl I', action: all('invert') },
+      'separator',
+      {
+        label: 'Box Select',
+        shortcut: 'B',
+        action: () => {
+          select.startModal();
+          refreshInteraction();
+        },
       },
-    },
-  ]);
+      ...(edit
+        ? ([
+            'separator',
+            {
+              label: 'Select More/Less',
+              submenu: [
+                { label: 'More', shortcut: 'Ctrl Numpad +', action: () => store.execute(SelectMoreLessOp(true)) },
+                { label: 'Less', shortcut: 'Ctrl Numpad -', action: () => store.execute(SelectMoreLessOp(false)) },
+              ],
+            },
+            { label: 'Select Linked', submenu: [{ label: 'Linked', shortcut: 'Ctrl L', action: () => store.execute(SelectLinkedOp) }] },
+          ] as const)
+        : []),
+    ];
+  });
 
   view.requestRender();
   const settledProjection = () => {

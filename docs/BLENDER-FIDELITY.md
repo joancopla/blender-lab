@@ -319,3 +319,49 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - [ ] ❓ Edge loop (Alt+clic): continua pels vèrtexs de 4 arestes per l'aresta que no comparteix cap cara amb l'actual; en una vora, segueix la vora mentre cada vèrtex en tingui dues. El caminador de Blender té més casos especials
 - [ ] ❓ Edge ring (Ctrl+Alt+clic): travessa quads cap a l'aresta oposada i s'atura a les cares que no són quads
 - [ ] ❓ "Non-manifold" com Select > Select All by Trait > Non Manifold: arestes amb 0, 1 o 3+ cares, i vèrtexs on les cares no formen un sol ventall
+
+## Fase 2 — Edit Mode i selecció
+
+### Entrar i sortir
+
+- [ ] Tab entra en Edit Mode amb tots els objectes de malla seleccionats (més l'actiu); Tab en torna a sortir. El selector de mode de la capçalera també
+- [ ] ❓ Cal que l'objecte actiu sigui una malla; si és la càmera o la llum, Tab no fa res
+- [ ] ❓ Una primitiva nova entra en Edit Mode amb tot seleccionat; la selecció de components es conserva en sortir i tornar a entrar
+- [ ] ❓ A l'Outliner, en Edit Mode els clics no fan res (Blender permet canviar d'objecte)
+- [ ] ❓ La capçalera en Edit Mode: "Edit Mode", botons Vertex / Edge / Face, i menús View, Select, Add, Mesh, Vertex, Edge, Face, UV (els quatre darrers encara són decoració)
+- [ ] ❓ G/R/S no fan res en Edit Mode fins a la fase 3; el panell N continua mostrant l'objecte (Blender mostra la mediana dels vèrtexs)
+
+### Modes de selecció
+
+- [ ] 1 / 2 / 3: vèrtex, aresta, cara. Shift + 1/2/3 o Shift+clic als botons els combina; almenys un queda actiu
+- [ ] Amb Emulate Numpad, la fila de números canvia de vista i 1/2/3 no canvien el mode
+- [ ] ❓ En canviar de mode: de vèrtex a cara només queden les cares amb tots els vèrtexs seleccionats; de cara a vèrtex queden els vèrtexs de les cares
+- [ ] ❓ Amb diversos modes actius, el més baix mana en la propagació (vèrtex > aresta > cara)
+
+### Selecció
+
+- [ ] Clic, Shift+clic (afegeix / fa actiu / treu), clic al buit, caixa, B, A, Alt+A, Ctrl+I, igual que al Lab 01 però amb components; el clic en un altre objecte en edició el fa actiu
+- [ ] ❓ Radi de clic: 20 px per als vèrtexs, 12 px per a les arestes; amb vèrtexs i cares actius, un vèrtex proper guanya
+- [ ] ❓ Sense X-ray, un element compta si cap cara dels objectes en edició el tapa (els altres objectes no tapen)
+- [ ] ❓ Caixa: vèrtexs dins; arestes amb els dos extrems dins; cares amb el centre dins
+- [ ] Alt+clic: edge loop; Shift+Alt+clic l'afegeix; Ctrl+Alt+clic: edge ring
+- [ ] ❓ En mode cara, Alt+clic selecciona el loop de cares travessat pel ring de l'aresta
+- [ ] ❓ Amb Emulate 3 Button Mouse, Alt+clic sense moure el ratolí fa loop select, i si s'arrossega orbita
+- [ ] ❓ Ctrl+clic (Pick Shortest Path a Blender) no fa res
+- [ ] L selecciona el que està connectat a l'element sota el cursor; Ctrl+L, a la selecció
+- [ ] ❓ Ctrl+Numpad + / −: Select More / Less amb Face Step (creix a través de les cares, diagonals incloses); a les vores obertes, Select Less no encongeix
+- [ ] ❓ Numpad . enquadra els vèrtexs seleccionats
+- [ ] ❓ Noms dels passos d'undo: "Toggle Edit Mode", "Select Mode", "Select", "Box Select", "(De)select All", "Loop Select", "Edge Ring Select", "Select Linked Pick", "Select Linked All", "Select More", "Select Less"
+
+### Dibuix
+
+- [ ] ❓ Colors: arestes #000000, arestes seleccionades #ffa000, vèrtexs #000000, seleccionats #ff8500, element actiu #ffffff, tint de cares #ffa500 al 20 %; vèrtexs de 6 px
+- [ ] ❓ Els vèrtexs només es dibuixen en mode vèrtex; els punts de cara, en mode cara i amb X-ray
+- [ ] ❓ Els objectes en Edit Mode no tenen contorn taronja
+- [ ] Alt+Z: X-ray (objectes semitransparents al 50 %), en tots dos modes; no és un pas d'undo
+- [ ] ❓ En Object Mode amb X-ray, la caixa encara només agafa els objectes visibles
+
+### Statistics (activat en aquest lab)
+
+- [ ] ❓ Object Mode: Objects seleccionats / total, i Vertices, Edges, Faces i Triangles de tota l'escena
+- [ ] ❓ Edit Mode: seleccionats / total dels objectes en edició; Triangles, total

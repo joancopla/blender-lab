@@ -13,6 +13,7 @@ export default defineConfig({
       input: {
         index: 'index.html',
         lab01: 'labs/01-viewport/index.html',
+        lab02: 'labs/02-edit-mode/index.html',
       },
     },
   },

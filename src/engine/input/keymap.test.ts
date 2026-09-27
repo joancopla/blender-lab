@@ -7,6 +7,7 @@ import {
   resolveNavKey,
   resolveKey,
   OBJECT_MODE_KEYMAP,
+  EDIT_MODE_KEYMAP,
   SCREEN_KEYMAP,
 } from './keymap';
 
@@ -130,5 +131,39 @@ describe('object mode and screen keys', () => {
       type: 'redo',
     });
     expect(resolveKey(SCREEN_KEYMAP, key('KeyZ'), DEFAULT_INPUT_PREFS)).toBeNull();
+  });
+});
+
+describe('edit mode keys', () => {
+  it('1 / 2 / 3 select modes, Shift to combine', () => {
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('Digit2'), DEFAULT_INPUT_PREFS)).toEqual({
+      type: 'selectMode',
+      kind: 'edge',
+      extend: false,
+    });
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('Digit3', { shift: true }), DEFAULT_INPUT_PREFS)).toEqual({
+      type: 'selectMode',
+      kind: 'face',
+      extend: true,
+    });
+  });
+
+  it('with Emulate Numpad, the number row changes the view instead', () => {
+    const emu = { emulate3ButtonMouse: false, emulateNumpad: true };
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('Digit1'), emu)).toBeNull();
+    expect(resolveNavKey(key('Digit1'), emu)).toEqual({ type: 'axisView', axis: 'front' });
+  });
+
+  it('Tab and Alt+Z in both modes; L, Ctrl+L, Ctrl+Numpad +/-', () => {
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('Tab'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'toggleEditMode' });
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('Tab'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'toggleEditMode' });
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('KeyZ', { alt: true }), DEFAULT_INPUT_PREFS)).toEqual({ type: 'toggleXray' });
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('KeyL', { ctrl: true }), DEFAULT_INPUT_PREFS)).toEqual({ type: 'selectLinked' });
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('NumpadAdd', { ctrl: true }), DEFAULT_INPUT_PREFS)).toEqual({
+      type: 'selectMoreLess',
+      more: true,
+    });
+    // G does nothing in Edit Mode yet.
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('KeyG'), DEFAULT_INPUT_PREFS)).toBeNull();
   });
 });

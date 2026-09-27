@@ -206,5 +206,10 @@
     "suggestEmulate3": "Sembla que intentes orbitar sense el botó del mig del ratolí. Vols activar Emulate 3 Button Mouse? Després podràs orbitar amb Alt + clic esquerre.",
     "suggestYes": "Activa-la",
     "suggestNo": "Ara no"
+  },
+  "lab02": {
+    "name": "Mode Edició i modelat bàsic",
+    "desc": "Modificar la forma dels objectes: vèrtexs, arestes i cares.",
+    "preview": "Lab 02 en construcció: de moment només hi ha l'Edit Mode i la selecció de components (prem Tab). No hi ha etapes."
   }
 }

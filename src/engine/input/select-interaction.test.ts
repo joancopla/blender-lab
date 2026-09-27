@@ -10,14 +10,14 @@ describe('SelectInteraction', () => {
     const s = new SelectInteraction();
     expect(s.pointerDown(0, NO, 100, 50)).toBe(true);
     s.pointerMove(101, 51); // under the drag threshold
-    expect(s.pointerUp(0)).toEqual({ type: 'click', x: 100, y: 50, extend: false });
+    expect(s.pointerUp(0)).toEqual({ type: 'click', x: 100, y: 50, extend: false, ctrl: false, alt: false });
     expect(s.busy).toBe(false);
   });
 
   it('shift+click extends', () => {
     const s = new SelectInteraction();
     s.pointerDown(0, SHIFT, 10, 10);
-    expect(s.pointerUp(0)).toEqual({ type: 'click', x: 10, y: 10, extend: true });
+    expect(s.pointerUp(0)).toEqual({ type: 'click', x: 10, y: 10, extend: true, ctrl: false, alt: false });
   });
 
   it('dragging makes a box; modifiers choose the mode', () => {

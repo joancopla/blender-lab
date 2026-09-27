@@ -20,7 +20,16 @@ export interface Rect {
 }
 
 export type SelectCommand =
-  | { readonly type: 'click'; readonly x: number; readonly y: number; readonly extend: boolean }
+  | {
+      readonly type: 'click';
+      readonly x: number;
+      readonly y: number;
+      /** Shift. */
+      readonly extend: boolean;
+      /** Ctrl and Alt: loops and rings in Edit Mode; nothing in Object Mode. */
+      readonly ctrl: boolean;
+      readonly alt: boolean;
+    }
   | { readonly type: 'box'; readonly rect: Rect; readonly mode: BoxMode };
 
 type State =
@@ -114,9 +123,7 @@ export class SelectInteraction {
     const s = this.state;
     if (s.kind === 'pressed' && button === 0) {
       this.state = { kind: 'idle' };
-      // FIDELITY? Ctrl+click does nothing here.
-      if (s.mods.ctrl || s.mods.alt) return null;
-      return { type: 'click', x: s.x0, y: s.y0, extend: s.mods.shift };
+      return { type: 'click', x: s.x0, y: s.y0, extend: s.mods.shift, ctrl: s.mods.ctrl, alt: s.mods.alt };
     }
     if (s.kind === 'boxing' && button === s.button) {
       this.state = { kind: 'idle' };

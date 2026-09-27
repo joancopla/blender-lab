@@ -6,7 +6,9 @@
 import type { Navigator } from '../viewport/navigator';
 import {
   type DragMode,
+  type EditModeAction,
   type InputPrefs,
+  EDIT_MODE_KEYMAP,
   type Modifiers,
   type ObjectModeAction,
   type ScreenAction,
@@ -17,7 +19,7 @@ import {
   resolveKey,
   resolveNavDrag,
 } from './keymap';
-import { type SelectCommand, SelectInteraction } from './select-interaction';
+import { DRAG_THRESHOLD_PX, type SelectCommand, SelectInteraction } from './select-interaction';
 
 /** A running modal operator (G/R/S) receives all input while it lasts. */
 export interface ModalHandler {
@@ -35,6 +37,9 @@ export interface ViewportInputOptions {
   readonly modal: () => ModalHandler | null;
   onSelect(cmd: SelectCommand): void;
   onObjectModeAction(action: ObjectModeAction): void;
+  /** Edit Mode: keys come from the Edit Mode keymap instead. */
+  editMode?(): boolean;
+  onEditModeAction?(action: EditModeAction): void;
   onScreenAction(action: ScreenAction): void;
   /** The selection interaction changed (box, modal state): redraw overlays. */
   onInteractionChange(): void;
@@ -53,7 +58,18 @@ function isTextField(target: EventTarget | null): boolean {
 
 export class ViewportInput {
   private hovered = false;
-  private navDrag: { mode: DragMode; pointerId: number; x: number; y: number } | null = null;
+  private navDrag: {
+    mode: DragMode;
+    pointerId: number;
+    x: number;
+    y: number;
+    /**
+     * Emulate 3 Button Mouse: an Alt+LMB press that is released without moving
+     * is a click (loop select in Edit Mode), not an orbit.
+     * FIDELITY? How Blender resolves Alt+click with the emulation on.
+     */
+    altClick: { x: number; y: number; mods: Modifiers; moved: boolean } | null;
+  } | null = null;
   private readonly wheel = new WheelAccumulator();
   private suspect: { x: number; y: number } | null = null;
 
@@ -123,7 +139,14 @@ export class ViewportInput {
       const mode = resolveNavDrag({ button: e.button, ...mods }, this.opts.prefs());
       if (mode) {
         e.preventDefault();
-        this.navDrag = { mode, pointerId: e.pointerId, x: e.clientX, y: e.clientY };
+        const emulatedAlt = e.button === 0 && e.altKey;
+        this.navDrag = {
+          mode,
+          pointerId: e.pointerId,
+          x: e.clientX,
+          y: e.clientY,
+          altClick: emulatedAlt ? { x: p.x, y: p.y, mods, moved: false } : null,
+        };
         this.opts.element.setPointerCapture(e.pointerId);
         return;
       }
@@ -145,6 +168,12 @@ export class ViewportInput {
       if (e.pointerId !== d.pointerId) return;
       const dx = e.clientX - d.x;
       const dy = e.clientY - d.y;
+      if (d.altClick && !d.altClick.moved) {
+        const p = this.local(e);
+        // Below the drag threshold it may still become a click.
+        if (Math.hypot(p.x - d.altClick.x, p.y - d.altClick.y) < DRAG_THRESHOLD_PX) return;
+        d.altClick.moved = true;
+      }
       d.x = e.clientX;
       d.y = e.clientY;
       if (dx === 0 && dy === 0) return;
@@ -165,7 +194,11 @@ export class ViewportInput {
     this.suspect = null;
     if (this.navDrag) {
       if (e.pointerId !== this.navDrag.pointerId) return;
+      const click = this.navDrag.altClick;
       this.navDrag = null;
+      if (click && !click.moved) {
+        this.opts.onSelect({ type: 'click', x: click.x, y: click.y, extend: click.mods.shift, ctrl: click.mods.ctrl, alt: true });
+      }
     } else {
       const cmd = this.opts.select.pointerUp(e.button);
       if (cmd) this.opts.onSelect(cmd);
@@ -220,6 +253,19 @@ export class ViewportInput {
       e.preventDefault();
       if (e.repeat && nav.type !== 'orbitStep') return;
       this.opts.navigator.apply(nav);
+      return;
+    }
+    if (this.opts.editMode?.()) {
+      const edit = resolveKey(EDIT_MODE_KEYMAP, input, prefs);
+      if (!edit) return;
+      e.preventDefault();
+      if (e.repeat && edit.type !== 'selectMoreLess') return;
+      if (edit.type === 'boxSelectModal') {
+        select.startModal();
+        this.changed();
+      } else {
+        this.opts.onEditModeAction?.(edit);
+      }
       return;
     }
     const obj = resolveKey(OBJECT_MODE_KEYMAP, input, prefs);

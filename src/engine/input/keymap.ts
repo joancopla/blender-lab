@@ -71,7 +71,9 @@ export type ObjectModeAction =
   | { readonly type: 'boxSelectModal' }
   | { readonly type: 'transform'; readonly kind: TransformKind }
   | { readonly type: 'clear'; readonly field: 'location' | 'rotation' | 'scale' }
-  | { readonly type: 'toggleSidebar' };
+  | { readonly type: 'toggleSidebar' }
+  | { readonly type: 'toggleEditMode' }
+  | { readonly type: 'toggleXray' };
 
 /** Object Mode keymap (3D Viewport). */
 export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
@@ -86,6 +88,44 @@ export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
   { code: 'KeyR', alt: true, action: { type: 'clear', field: 'rotation' } },
   { code: 'KeyS', alt: true, action: { type: 'clear', field: 'scale' } },
   { code: 'KeyN', action: { type: 'toggleSidebar' } },
+  { code: 'Tab', action: { type: 'toggleEditMode' } },
+  { code: 'KeyZ', alt: true, action: { type: 'toggleXray' } },
+];
+
+export type EditModeAction =
+  | { readonly type: 'selectMode'; readonly kind: 'vert' | 'edge' | 'face'; readonly extend: boolean }
+  | { readonly type: 'selectAll'; readonly action: SelectAllAction }
+  | { readonly type: 'boxSelectModal' }
+  | { readonly type: 'selectLinkedPick' }
+  | { readonly type: 'selectLinked' }
+  | { readonly type: 'selectMoreLess'; readonly more: boolean }
+  | { readonly type: 'toggleSidebar' }
+  | { readonly type: 'toggleEditMode' }
+  | { readonly type: 'toggleXray' };
+
+/**
+ * Edit Mode (Mesh) keymap. With Emulate Numpad on, the number row is taken by
+ * the views first, so 1 / 2 / 3 do not change the select mode (as in Blender).
+ * FIDELITY? G / R / S on components arrive in phase 3.
+ */
+export const EDIT_MODE_KEYMAP: readonly KeymapItem<EditModeAction>[] = [
+  { code: 'Digit1', action: { type: 'selectMode', kind: 'vert', extend: false } },
+  { code: 'Digit2', action: { type: 'selectMode', kind: 'edge', extend: false } },
+  { code: 'Digit3', action: { type: 'selectMode', kind: 'face', extend: false } },
+  { code: 'Digit1', shift: true, action: { type: 'selectMode', kind: 'vert', extend: true } },
+  { code: 'Digit2', shift: true, action: { type: 'selectMode', kind: 'edge', extend: true } },
+  { code: 'Digit3', shift: true, action: { type: 'selectMode', kind: 'face', extend: true } },
+  { code: 'KeyA', action: { type: 'selectAll', action: 'select' } },
+  { code: 'KeyA', alt: true, action: { type: 'selectAll', action: 'deselect' } },
+  { code: 'KeyI', ctrl: true, action: { type: 'selectAll', action: 'invert' } },
+  { code: 'KeyB', action: { type: 'boxSelectModal' } },
+  { code: 'KeyL', action: { type: 'selectLinkedPick' } },
+  { code: 'KeyL', ctrl: true, action: { type: 'selectLinked' } },
+  { code: 'NumpadAdd', ctrl: true, action: { type: 'selectMoreLess', more: true } },
+  { code: 'NumpadSubtract', ctrl: true, action: { type: 'selectMoreLess', more: false } },
+  { code: 'KeyN', action: { type: 'toggleSidebar' } },
+  { code: 'Tab', action: { type: 'toggleEditMode' } },
+  { code: 'KeyZ', alt: true, action: { type: 'toggleXray' } },
 ];
 
 export type ScreenAction = { readonly type: 'undo' } | { readonly type: 'redo' };
