@@ -145,8 +145,8 @@ Mateix format de dades que el Lab 01. Tots els textos van a `ca.json`.
 9. **Netejar una malla.** Una malla amb vèrtexs duplicats, una cara que sobra i un
    n-gon. L'alumne l'ha d'arreglar fent servir Merge by Distance, Delete i
    Dissolve. L'analitzador de topologia fa de guia.
-10. **Repte final.** Modelar un objecte senzill a partir d'un cub (per exemple, una tassa
-    o un tamboret), comparant-lo amb siluetes de referència i amb requisits de topologia
+10. **Repte final.** Modelar el tamboret del curs a partir d'un cub (vegeu
+    `specs/blender/README.md`), comparant-lo amb siluetes de referència i amb requisits de topologia
     neta. No hi ha pistes automàtiques.
 
 En acabar, un **mode lliure** amb totes les eines i l'analitzador de topologia.

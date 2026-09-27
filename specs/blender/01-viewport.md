@@ -178,7 +178,8 @@ En acabar, un **mode lliure** amb la mateixa escena i totes les eines, sense com
 
 Atura't al final de cadascuna, tal com diu `CLAUDE.md`.
 
-1. **Base i navegació.** Estructura del projecte, `coords.ts`, viewport amb graella,
+1. **Base i navegació.** Abans de res, la decisió sobre el renderer de three.js
+   (vegeu `specs/blender/README.md`). Després, estructura del projecte, `coords.ts`, viewport amb graella,
    eixos, objectes i il·luminació tipus Solid, navegació completa, gizmo, vistes,
    Auto Perspective i emulacions. Tests de les matemàtiques de càmera.
 2. **Escena i selecció.** Model de dades, selecció al viewport i a l'Outliner, contorns
