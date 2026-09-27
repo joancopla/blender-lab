@@ -9,6 +9,7 @@ import { type Vec3, add, max, min, mul, vec3 } from '../math/vec3';
 import type { Bounds, SceneCameraData } from '../viewport/view-state';
 import type { MeshData } from '../mesh/mesh-data';
 import { primitiveMesh } from '../mesh/primitives';
+import type { Modifier } from '../modifiers/types';
 
 export type PrimitiveKind = 'cube' | 'uvSphere' | 'cylinder' | 'cone' | 'torus' | 'plane';
 
@@ -39,6 +40,8 @@ export interface MeshObject extends ObjectBase {
   readonly mesh?: MeshData;
   /** Edit Mode selection; undefined means everything selected (new primitives). */
   readonly meshSelection?: ComponentSelection;
+  /** Modifier stack, evaluated in order (see modifiers/stack.ts). Missing: none. */
+  readonly modifiers?: readonly Modifier[];
 }
 
 export interface CameraObject extends ObjectBase {
