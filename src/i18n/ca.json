@@ -102,6 +102,30 @@
       "instruction": "L'escena està desendreçada. Posa cada objecte a la seva silueta: mou, gira i escala fent servir tot el que has après. Aquesta vegada no hi ha pistes.",
       "progress": "Objectes al seu lloc: {n} de {total}.",
       "success": "Repte superat!"
+    },
+    "intro": {
+      "eyebrow": "Lab 01",
+      "lead": "Aprendràs a moure't pel viewport de Blender, a canviar de vista, a seleccionar objectes i a moure'ls, girar-los i escalar-los amb precisió. Tot el que facis aquí funciona igual a Blender.",
+      "controls": {
+        "orbit": "Orbitar: botó del mig del ratolí",
+        "pan": "Desplaçar: Shift + botó del mig",
+        "zoom": "Zoom: roda del ratolí",
+        "views": "Vistes: Numpad 1, 3 i 7",
+        "select": "Seleccionar: clic esquerre",
+        "transform": "Moure, girar i escalar: G, R i S",
+        "undo": "Desfer: Ctrl + Z"
+      }
+    },
+    "real": {
+      "lead": "Tot el que has fet en aquest lab és exactament igual a Blender. Aquí tens on trobar cada cosa al programa.",
+      "navigation": "Navegació: igual que aquí. Les opcions (Orbit Sensitivity, Auto Perspective...) són a Edit > Preferences > Navigation.",
+      "emulation": "Si no tens botó del mig o teclat numèric: Edit > Preferences > Input > Emulate 3 Button Mouse i Emulate Numpad.",
+      "views": "Vistes: menú View > Viewpoint de la capçalera de la vista 3D, o les esferes del gizmo de navegació.",
+      "frame": "Enquadrar: View > Frame Selected (Numpad .) i View > Frame All (Home).",
+      "select": "Selecció: menú Select de la vista 3D (All, None, Invert, Box Select) i l'Outliner, a dalt a la dreta.",
+      "transform": "Transformacions: menú Object > Transform (Move, Rotate, Scale) i el panell N, pestanya Item.",
+      "clear": "Esborrar transformacions: Object > Clear > Location, Rotation i Scale (Alt + G, Alt + R, Alt + S).",
+      "undo": "Desfer: Edit > Undo, i Edit > Undo History per veure la llista d'operacions."
     }
   },
   "keys": {
@@ -135,7 +159,20 @@
     "enter": "Enter",
     "esc": "Esc",
     "ctrlZ": "Ctrl + Z",
-    "ctrlShiftZ": "Ctrl + Shift + Z"
+    "ctrlShiftZ": "Ctrl + Shift + Z",
+    "tab": "Tab",
+    "one": "1",
+    "two": "2",
+    "three": "3",
+    "altZ": "Alt + Z",
+    "altLmb": "Alt + clic esquerre",
+    "shiftAltLmb": "Shift + Alt + clic esquerre",
+    "e": "E",
+    "i": "I",
+    "m": "M",
+    "ctrlR": "Ctrl + R",
+    "ctrlB": "Ctrl + B",
+    "shiftZ": "Shift + Z"
   },
   "ui": {
     "backToIndex": "← Tots els labs",
@@ -153,33 +190,6 @@
     "freeText": "Tens l'escena i totes les eines, sense comprovacions. Experimenta tant com vulguis.",
     "stats": "Has trigat {time} i has fet {ops} operacions.",
     "statsNote": "És només informatiu: no hi ha rànquing."
-  },
-  "intro": {
-    "eyebrow": "Lab 01",
-    "lead": "Aprendràs a moure't pel viewport de Blender, a canviar de vista, a seleccionar objectes i a moure'ls, girar-los i escalar-los amb precisió. Tot el que facis aquí funciona igual a Blender.",
-    "controlsTitle": "Controls clau",
-    "controls": {
-      "orbit": "Orbitar: botó del mig del ratolí",
-      "pan": "Desplaçar: Shift + botó del mig",
-      "zoom": "Zoom: roda del ratolí",
-      "views": "Vistes: Numpad 1, 3 i 7",
-      "select": "Seleccionar: clic esquerre",
-      "transform": "Moure, girar i escalar: G, R i S",
-      "undo": "Desfer: Ctrl + Z"
-    },
-    "start": "Comença el lab"
-  },
-  "real": {
-    "title": "Al Blender real",
-    "lead": "Tot el que has fet en aquest lab és exactament igual a Blender. Aquí tens on trobar cada cosa al programa.",
-    "navigation": "Navegació: igual que aquí. Les opcions (Orbit Sensitivity, Auto Perspective...) són a Edit > Preferences > Navigation.",
-    "emulation": "Si no tens botó del mig o teclat numèric: Edit > Preferences > Input > Emulate 3 Button Mouse i Emulate Numpad.",
-    "views": "Vistes: menú View > Viewpoint de la capçalera de la vista 3D, o les esferes del gizmo de navegació.",
-    "frame": "Enquadrar: View > Frame Selected (Numpad .) i View > Frame All (Home).",
-    "select": "Selecció: menú Select de la vista 3D (All, None, Invert, Box Select) i l'Outliner, a dalt a la dreta.",
-    "transform": "Transformacions: menú Object > Transform (Move, Rotate, Scale) i el panell N, pestanya Item.",
-    "clear": "Esborrar transformacions: Object > Clear > Location, Rotation i Scale (Alt + G, Alt + R, Alt + S).",
-    "undo": "Desfer: Edit > Undo, i Edit > Undo History per veure la llista d'operacions."
   },
   "mobile": {
     "title": "Aquest lab necessita teclat i ratolí",
@@ -209,10 +219,180 @@
   },
   "lab02": {
     "name": "Mode Edició i modelat bàsic",
-    "desc": "Modificar la forma dels objectes: vèrtexs, arestes i cares.",
-    "preview": "Lab 02 en construcció: de moment només hi ha l'Edit Mode i la selecció de components (prem Tab). No hi ha etapes."
+    "desc": "Modificar la forma dels objectes: vèrtexs, arestes i cares. Extrude, Inset, Loop Cut, Bevel i una malla neta.",
+    "intro": {
+      "eyebrow": "Lab 02",
+      "lead": "Passaràs de moure objectes sencers a canviar-ne la forma: vèrtexs, arestes i cares. Al final modelaràs un objecte senzill a partir d'un cub, tal com ho faries a Blender.",
+      "controls": {
+        "tab": "Entrar i sortir del Mode Edició: Tab",
+        "modes": "Vèrtexs, arestes i cares: 1, 2 i 3",
+        "xray": "Veure a través (X-ray): Alt + Z",
+        "loops": "Seleccionar un edge loop: Alt + clic",
+        "move": "Moure, girar i escalar: G, R i S",
+        "extrude": "Extrude: E",
+        "inset": "Inset: I",
+        "loopcut": "Loop Cut: Ctrl + R",
+        "bevel": "Bevel: Ctrl + B",
+        "delete": "Esborrar i dissoldre: X"
+      }
+    },
+    "real": {
+      "lead": "Tot el que fas en aquest lab és igual a Blender. Aquí tens on trobar cada eina i què ha quedat fora.",
+      "editMode": "Mode Edició: Tab, o el selector de mode de la capçalera de la vista 3D.",
+      "selectModes": "Modes de selecció: 1, 2 i 3, o els tres botons al costat del selector de mode.",
+      "xray": "X-ray: Alt + Z, o el botó Toggle X-Ray a dalt a la dreta de la vista 3D.",
+      "loops": "Loops i rings: Select > Select Loops (Edge Loops, Edge Rings), Alt + clic i Ctrl + Alt + clic.",
+      "extrude": "Extrude: menú Mesh > Extrude, o E.",
+      "inset": "Inset: menú Face > Inset Faces, o I.",
+      "loopcut": "Loop Cut and Slide: menú Edge > Loop Cut and Slide, o Ctrl + R (també és una eina de la barra lateral T).",
+      "bevel": "Bevel: menú Edge > Bevel Edges (Ctrl + B) i Vertex > Bevel Vertices (Ctrl + Shift + B).",
+      "delete": "Esborrar i dissoldre: menú Mesh > Delete, o X.",
+      "merge": "Merge: menú Mesh > Merge, o M. By Distance és l'antic «Remove Doubles».",
+      "fill": "Fill: menú Vertex > New Edge/Face from Vertices, o F.",
+      "analyzer": "L'analitzador de topologia no existeix a Blender: el que fa, allà ho fas amb Select > Select All by Trait i l'overlay Statistics.",
+      "outOfScope": "Fora del lab: Proportional Editing (O), Edge Slide (G G), Knife (K), Spin, Bridge Edge Loops, Subdivide i Snapping. El Bevel del lab només fa arestes que no es toquen entre elles."
+    },
+    "common": {
+      "stayInEdit": "Aquesta etapa es fa en Mode Edició: prem Tab amb el ratolí sobre la vista.",
+      "faces": "La forma té {n} cares i n'ha de tenir {want}.",
+      "notManifold": "La malla té forats o cares de sobra. Desfés (Ctrl + Z) fins a l'últim pas que estava bé."
+    },
+    "shape": {
+      "extra": "Vista {view}: la forma coincideix en un {pct} % (cal un {min} %). Sobra forma {zone}.",
+      "missing": "Vista {view}: la forma coincideix en un {pct} % (cal un {min} %). Falta forma {zone}."
+    },
+    "zone": {
+      "top-left": "a dalt a l'esquerra",
+      "top": "a dalt",
+      "top-right": "a dalt a la dreta",
+      "left": "a l'esquerra",
+      "centre": "al centre",
+      "right": "a la dreta",
+      "bottom-left": "a baix a l'esquerra",
+      "bottom": "a baix",
+      "bottom-right": "a baix a la dreta"
+    },
+    "s1": {
+      "title": "Tab i modes de selecció",
+      "instruction": "Entra en Mode Edició amb Tab (amb el ratolí sobre la vista). Després selecciona, en ordre, els elements que el lab marca en blau: primer uns vèrtexs en mode vèrtex (1), després unes arestes en mode aresta (2) i finalment unes cares en mode cara (3). Ha de quedar seleccionat exactament el que està marcat.",
+      "hint1": "Clic selecciona un element i deixa anar la resta; Shift + clic n'afegeix. Si en sobra un, Shift + clic sobre l'element actiu el treu.",
+      "hint2": "Mira els botons de la capçalera, al costat de «Edit Mode»: indiquen el mode actiu. Si l'X-ray està activat (Alt + Z) també pots clicar elements de darrere.",
+      "enterEdit": "Primer entra en Mode Edició: Tab.",
+      "step0": "Pas {n} de 3: selecciona els tres vèrtexs marcats.",
+      "step1": "Pas {n} de 3: selecciona les quatre arestes marcades.",
+      "step2": "Pas {n} de 3: selecciona les dues cares marcades.",
+      "mode": {
+        "vert": "Canvia al mode vèrtex: tecla 1.",
+        "edge": "Canvia al mode aresta: tecla 2.",
+        "face": "Canvia al mode cara: tecla 3."
+      },
+      "success": "Molt bé! Els tres modes de selecció són la base de tot el modelat."
+    },
+    "s2": {
+      "title": "Veure a través",
+      "instruction": "Selecciona tots els vèrtexs del costat dret del cub (la meitat amb X positiva), també els que no es veuen des d'aquí. Fes servir la selecció per caixa (arrossegar, o B).",
+      "hint1": "Sense X-ray, la caixa només agafa el que es veu. Hi ha una tecla per veure a través de l'objecte.",
+      "hint2": "Prem Alt + Z per activar l'X-ray i torna a fer la caixa. Després el pots desactivar amb Alt + Z.",
+      "extra": "Hi ha {n} vèrtexs seleccionats que no són del costat dret.",
+      "missing": "Falten {n} vèrtexs del costat dret. Potser són els de darrere?",
+      "success": "Exacte. Recorda-ho: sense X-ray, seleccionar per caixa només agafa el que es veu."
+    },
+    "s3": {
+      "title": "Edge loops",
+      "instruction": "Selecciona el loop marcat en blau (l'equador de l'esfera) amb Alt + clic sobre una de les seves arestes. Després, selecciona alhora els dos loops que es marquen: el primer amb Alt + clic i el segon amb Shift + Alt + clic.",
+      "hint1": "Fes Alt + clic a prop d'una aresta del loop, no d'un vèrtex. Si surt un loop vertical, has clicat una aresta vertical.",
+      "hint2": "Per començar de nou, Alt + A ho deselecciona tot. Shift + Alt + clic afegeix un loop sense perdre el que ja tens.",
+      "step0": "Selecciona l'equador amb Alt + clic.",
+      "step1": "Ara els dos loops marcats alhora: Alt + clic al primer, Shift + Alt + clic al segon.",
+      "success": "Perfecte. Els loops són la manera ràpida de seleccionar anells sencers d'arestes."
+    },
+    "s4": {
+      "title": "Deformar",
+      "instruction": "Converteix el cub en una piràmide truncada, com la silueta: selecciona la cara de dalt, puja-la 1 m (G Z 1) i fes-la la meitat de gran (S 0.5). No cal afegir geometria.",
+      "hint1": "En mode cara (3), clica la cara de dalt. Amb G Z 1 i Enter puja exactament 1 m.",
+      "hint2": "Amb la cara seleccionada, S 0.5 i Enter l'escala a la meitat. Si t'hi equivoques, Ctrl + Z.",
+      "onlyMove": "En aquesta etapa només cal moure i escalar: la malla ha de tenir els mateixos 8 vèrtexs. Desfés (Ctrl + Z).",
+      "success": "Molt bé. Moure components és la base per donar forma a qualsevol objecte."
+    },
+    "s5": {
+      "title": "Extrude",
+      "instruction": "Fes una forma en L com la silueta: extrudeix la cara de dalt 2 m cap amunt (E 2) i després extrudeix 2 m cap a la dreta la cara +X del bloc nou.",
+      "hint1": "Selecciona la cara de dalt i prem E: la cara surt i es mou al llarg de la seva normal. Escriu 2 i prem Enter.",
+      "hint2": "Després, orbita fins a veure la cara dreta (X positiva) del bloc de dalt, selecciona-la i fes E 2 Enter.",
+      "success": "Així es modela molt sovint: extrudint cares per fer créixer la forma."
+    },
+    "s6": {
+      "title": "Inset i extrude cap endins",
+      "instruction": "Buida el cub per fer-ne un recipient obert: fes un inset a la cara de dalt (I) i després extrudeix la cara interior cap avall (E -1.5).",
+      "hint1": "Amb la cara de dalt seleccionada, prem I i apropa el ratolí al centre per fer la vora; o escriu 0.25 i Enter.",
+      "hint2": "Sense deseleccionar la cara interior, prem E, escriu -1.5 i Enter: baixa per dins i fa les parets interiors.",
+      "notHollow": "Encara no hi ha fons a dins: extrudeix la cara interior cap avall (E amb un valor negatiu).",
+      "success": "Un recipient! La malla continua tancada i neta: així la podràs subdividir o imprimir en 3D."
+    },
+    "s7": {
+      "title": "Loop cuts",
+      "instruction": "Afegeix dos talls horitzontals a la caixa amb Ctrl + R (la roda del ratolí canvia el nombre de talls; clic per confirmar i clic dret per deixar-los centrats). Després, amb els dos loops nous seleccionats, fes-los 1.4 vegades més amples només en X i Y (S Shift + Z 1.4).",
+      "hint1": "Amb Ctrl + R, passa el ratolí per sobre d'una aresta vertical: la línia groga indica on tallarà. Mou la roda fins que en surtin dos.",
+      "hint2": "Després del tall, els loops nous ja queden seleccionats. S, Shift + Z (escala en X i Y, no en Z), 1.4 i Enter.",
+      "cuts": "La caixa ha de tenir dos talls horitzontals. Ara en té {n}.",
+      "success": "Molt bé. Els loop cuts afegeixen geometria just on la necessites."
+    },
+    "s8": {
+      "title": "Bevel",
+      "instruction": "Arrodoneix les quatre arestes verticals de la caixa amb Ctrl + B i 4 segments, com la silueta (amplada d'uns 0,5 m).",
+      "hint1": "En mode aresta (2), selecciona les quatre arestes verticals: Shift + clic per afegir-les. Fes-ho amb X-ray (Alt + Z) per veure les de darrere.",
+      "hint2": "Prem Ctrl + B, mou el ratolí cap al centre per fer-lo més ample i gira la roda fins que surtin 4 segments. També pots escriure 0.5.",
+      "segments": "El bevel té {n} segments i n'hi calen {want}. Desfés i torna-ho a fer (roda del ratolí durant el bevel), o canvia-ho al panell Adjust Last Operation.",
+      "notYet": "Selecciona les quatre arestes verticals i fes el bevel amb Ctrl + B.",
+      "success": "Perfecte. El bevel fa que els objectes semblin reals: al món real no hi ha arestes perfectament vives."
+    },
+    "s9": {
+      "title": "Netejar una malla",
+      "instruction": "Aquesta malla té problemes: vèrtexs duplicats, una cara que sobra a dins i dos n-gons. Activa l'analitzador de topologia (al panell del lab) i arregla-la fins que quedi un cub net de 8 vèrtexs i 6 cares, fent servir Merge > By Distance, Delete i Dissolve.",
+      "hint1": "Amb tot seleccionat (A), M > By Distance uneix els vèrtexs duplicats. Mira a baix el missatge «Removed … vertices».",
+      "hint2": "La cara de sobra és un triangle a dins: selecciona'l en mode cara amb X-ray i esborra'l amb X > Faces. El vèrtex del mig d'una aresta es treu amb X > Dissolve Vertices.",
+      "remaining": "Queden: {dup} vèrtexs duplicats, {nm} arestes no manifold i {ngons} n-gons.",
+      "success": "Malla neta! Una bona topologia estalvia molts problemes més endavant."
+    },
+    "s10": {
+      "title": "Repte final",
+      "instruction": "Modela un tamboret com la silueta a partir del cub: un seient pla i quatre potes. Fes servir tot el que has après. Hi ha una manera amb Loop Cut i Extrude, però pots triar la teva. La malla ha de quedar neta (sense n-gons ni errors).",
+      "clean": "La forma ja s'hi assembla, però la malla té n-gons o errors: activa l'analitzador per veure'ls.",
+      "success": "Repte superat!"
+    }
   },
   "lab": {
     "bevelUnsupported": "Aquest lab només fa bevel d'arestes els vèrtexs de les quals no tenen cap altra aresta amb bevel (per exemple, les arestes verticals d'una caixa)."
+  },
+  "page": {
+    "controlsTitle": "Controls clau",
+    "start": "Comença el lab",
+    "realTitle": "Al Blender real"
+  },
+  "analyzer": {
+    "title": "Analitzador de topologia",
+    "toggle": "Mostra els problemes de la malla",
+    "help": "Una eina del lab, no de Blender: marca a la vista els n-gons, els triangles i els errors de la malla de l'objecte actiu.",
+    "clean": "Cap problema: la malla és neta.",
+    "ngons": {
+      "label": "N-gons (grocs): {n}",
+      "why": "Cares de més de quatre costats. Es deformen malament i donen problemes en subdividir. A Blender els trobes amb Select > Select All by Trait > Faces by Sides."
+    },
+    "triangles": {
+      "label": "Triangles (blaus): {n}",
+      "why": "No són un error, però en una malla de quads trenquen els loops. Mira si els pots evitar."
+    },
+    "duplicates": {
+      "label": "Vèrtexs duplicats (vermells): {n}",
+      "why": "Vèrtexs al mateix lloc que semblen un però no estan units. A Blender s'arregla amb Merge > By Distance (M)."
+    },
+    "nonManifold": {
+      "label": "Arestes no manifold (vermelles): {n}",
+      "why": "Arestes amb una sola cara, amb més de dues o sense cap: la malla té forats, cares de sobra o arestes soltes. A Blender les veus amb Select > Select All by Trait > Non Manifold."
+    },
+    "flipped": {
+      "label": "Normals invertides (magenta): {n}",
+      "why": "Cares girades del revés. A Blender s'arregla amb Mesh > Normals > Recalculate Outside (Shift + N)."
+    }
   }
 }

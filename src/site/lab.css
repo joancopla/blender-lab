@@ -432,21 +432,42 @@ body {
   font-size: 20px;
 }
 
-/* Provisional page for labs under construction. */
-.lab-preview {
-  position: fixed;
-  inset: 0;
+
+/* Topology analyser (lab tool). */
+.lab-analyzer {
+  padding: 14px;
+  border-radius: var(--lab-radius);
+  background: var(--lab-surface);
+}
+.lab-analyzer-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
   display: flex;
   flex-direction: column;
-  font: 14px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
-  color: var(--lab-text);
+  gap: 8px;
 }
-.lab-preview-banner {
-  padding: 8px 16px;
-  background: var(--lab-surface);
-  border-bottom: 1px solid var(--lab-warn);
+.lab-analyzer-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--lab-surface-2);
+  border-left: 3px solid var(--lab-muted);
 }
-.lab-preview-replica {
-  position: relative;
-  flex: 1;
+.lab-analyzer-item p {
+  margin: 4px 0 0;
+  color: var(--lab-muted);
+  font-size: 12.5px;
+}
+.lab-analyzer-item.is-ngons {
+  border-left-color: #ffd21f;
+}
+.lab-analyzer-item.is-triangles {
+  border-left-color: #3aa0ff;
+}
+.lab-analyzer-item.is-duplicates,
+.lab-analyzer-item.is-nonManifold {
+  border-left-color: #ff3b3b;
+}
+.lab-analyzer-item.is-flipped {
+  border-left-color: #ff3ea5;
 }

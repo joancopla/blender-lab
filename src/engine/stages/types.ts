@@ -10,6 +10,8 @@ import type { ViewportSize } from '../viewport/projection';
 import type { ViewProjection } from '../viewport/screen';
 import type { ViewState } from '../viewport/view-state';
 import type { Ghost } from './ghost-match';
+import type { MeshData } from '../mesh/mesh-data';
+import type { ComponentHint } from '../viewport/lab-elements';
 
 /** A symbol painted on a face (lab element, stage 1). */
 export interface FaceMarker {
@@ -48,6 +50,11 @@ export interface CheckResult {
   readonly feedback?: Feedback;
   /** Markers already seen (stage 1). */
   readonly seenMarkers?: readonly string[];
+  /**
+   * Components to point at (lab colour). Return the same array for the same
+   * step: the page only redraws them when the reference changes.
+   */
+  readonly hints?: readonly ComponentHint[];
 }
 
 export interface StageDefinition {
@@ -63,6 +70,10 @@ export interface StageDefinition {
   view?(): ViewState;
   readonly ghosts?: readonly Ghost[];
   readonly markers?: readonly FaceMarker[];
+  /** Reference shapes drawn as silhouettes (world coordinates). */
+  readonly referenceMeshes?: readonly MeshData[];
+  /** Turn the topology analyser on when the stage starts. */
+  readonly analyzer?: boolean;
   check(ctx: StageContext): CheckResult;
   /** false: no hints at all (final challenge). */
   readonly hints?: boolean;

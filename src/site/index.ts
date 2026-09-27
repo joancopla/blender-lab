@@ -5,6 +5,7 @@ import type { LabDefinition } from '../engine/lab';
 import { ProgressStore } from '../engine/stages/progress';
 import { t } from '../i18n';
 import { lab01 } from '../labs/01-viewport';
+import { lab02 } from '../labs/02-edit-mode';
 import './lab.css';
 import './site.css';
 
@@ -14,8 +15,11 @@ interface LabEntry {
   readonly number: string;
 }
 
-// Only Lab 01 for now; the rest of the index will be defined later.
-const LABS: readonly LabEntry[] = [{ lab: lab01, href: 'labs/01-viewport/', number: '01' }];
+// The rest of the index will be defined later.
+const LABS: readonly LabEntry[] = [
+  { lab: lab01, href: 'labs/01-viewport/', number: '01' },
+  { lab: lab02, href: 'labs/02-edit-mode/', number: '02' },
+];
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
   const e = document.createElement(tag);
