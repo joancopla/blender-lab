@@ -365,3 +365,47 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 
 - [ ] ❓ Object Mode: Objects seleccionats / total, i Vertices, Edges, Faces i Triangles de tota l'escena
 - [ ] ❓ Edit Mode: seleccionats / total dels objectes en edició; Triangles, total
+
+## Fase 3 — Transformar components
+
+- [ ] G/R/S en Edit Mode sobre els vèrtexs seleccionats, amb restriccions, entrada numèrica, Ctrl, Shift i cancel·lació igual que en Object Mode; pivot: Median Point dels vèrtexs
+- [ ] ❓ "Local" en Edit Mode és l'orientació de l'objecte (l'orientació Normal no es replica)
+- [ ] ❓ Amb diversos objectes en edició, la mediana és de tots els vèrtexs seleccionats
+- [ ] ❓ El panell N en Edit Mode continua mostrant l'objecte (Blender mostra "Median" dels vèrtexs)
+
+## Fase 4 — Eines, primera part
+
+- [ ] Extrude (E): amb cares seleccionades, extrusió de regió al llarg de la normal ("along normal Z"); amb arestes o vèrtexs, moviment lliure. Cancel·lar el moviment deixa la geometria extrudida al lloc
+- [ ] ❓ Noms: "Extrude Region and Move" / "Extrude and Move"; al panell Adjust, un sol valor "Move" al llarg de la normal
+- [ ] Inset (I): regió; I durant l'operació alterna Individual
+- [ ] ❓ Inset: acostar el ratolí al centre de la selecció fa la vora més gruixuda; capçalera "Thickness / Depth / Individual (I)" (Blender en mostra més)
+- [ ] Delete (X o Supr): Vertices, Edges, Faces, Only Faces, Dissolve Vertices / Edges / Faces; Limited Dissolve, Edge Collapse i Edge Loops desactivats
+- [ ] ❓ Després d'esborrar o dissoldre, no queda res seleccionat
+- [ ] ❓ Dissolve Edges també dissol els vèrtexs que queden entre dues arestes (opció "Dissolve Vertices" de Blender, activada per defecte)
+- [ ] ❓ Dissolve Vertices en un vèrtex d'una vora oberta amb més de dues arestes no fa res
+- [ ] Merge (M): At Center, Collapse, By Distance (0,0001 m); At Cursor desactivat; By Distance mostra "Removed N vertices" a la barra d'estat
+- [ ] Fill (F): dos vèrtexs → aresta; un loop tancat d'arestes → cara (orientada com les veïnes); tres o més vèrtexs solts → cara
+- [ ] ❓ Adjust Last Operation: a baix a l'esquerra, obert per defecte; canviar-hi un valor torna a fer l'operació i en substitueix el pas d'undo
+
+## Fase 5 — Eines, segona part
+
+- [ ] Loop Cut and Slide (Ctrl+R): previsualització groga en passar per sobre d'una aresta, roda per canviar el nombre de talls, clic per tallar i després lliscar; clic dret o Esc en lliscar deixa el tall centrat
+- [ ] ❓ Amb diversos talls, lliscar els mou junts mantenint l'espai entre ells
+- [ ] ❓ Capçalera: "Number of Cuts: N" i després "Factor: 0.000"
+- [ ] ❓ Els loops nous queden seleccionats
+- [ ] Bevel (Ctrl+B): la roda canvia els segments; perfil 0,5 (quart de cercle en angles rectes); amplada en mode Offset; Clamp Overlap
+- [ ] ❓ Només es fa bevel d'arestes que no comparteixen vèrtex amb una altra aresta amb bevel i els vèrtexs de les quals tenen tres arestes (el cas de les etapes). En altres casos surt un avís en català a la barra d'estat
+- [ ] ❓ Bevel de vèrtexs (Ctrl+Shift+B): només un segment
+- [ ] ❓ Acostar el ratolí al centre fa el bevel més ample; capçalera "Width / Segments / Profile"
+- [ ] ❓ Les cares noves del bevel queden seleccionades
+
+## Fase 6 — Analitzador i comprovació de formes
+
+- L'analitzador és una eina del lab (colors propis): n-gons grocs, triangles blaus, cares girades en magenta, arestes no manifold i vèrtexs duplicats en vermell, amb una frase en català de per què importa i com s'arregla a Blender
+- La comprovació de formes compara les siluetes a Front, Right i Top (64 × 64 píxels) amb IoU; la retroalimentació diu la vista i la zona (per exemple, "sobra forma a dalt a l'esquerra")
+- Les formes de referència es construeixen amb les mateixes operacions del lab (Extrude, Inset, Loop Cut, Bevel)
+
+## Fase 7 — Etapes del Lab 02
+
+- [ ] ❓ Rutes de menú del bloc "Al Blender real" (Mesh > Extrude, Face > Inset Faces, Edge > Loop Cut and Slide, Edge > Bevel Edges, Vertex > Bevel Vertices, Mesh > Delete, Mesh > Merge, Vertex > New Edge/Face from Vertices, Select > Select All by Trait, Mesh > Normals > Recalculate Outside)
+- Decisions de disseny: etapes 1 i 3 per passos, amb els elements a seleccionar marcats en blau; etapes 4 a 8 i 10 amb silueta de referència (llindar del 90 %, 88 % a l'etapa 7 i 85 % al repte); l'etapa 9 activa l'analitzador; el repte final no té pistes i mostra temps i operacions

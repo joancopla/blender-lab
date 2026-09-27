@@ -331,7 +331,7 @@
     },
     "s7": {
       "title": "Loop cuts",
-      "instruction": "Afegeix dos talls horitzontals a la caixa amb Ctrl + R (la roda del ratolí canvia el nombre de talls; clic per confirmar i clic dret per deixar-los centrats). Després, amb els dos loops nous seleccionats, fes-los 1.4 vegades més amples només en X i Y (S Shift + Z 1.4).",
+      "instruction": "Afegeix dos talls horitzontals a la caixa amb Ctrl + R (la roda del ratolí canvia el nombre de talls; clic per confirmar i clic dret per deixar-los centrats). Després, amb els dos loops nous seleccionats, fes-los 1,4 vegades més amples només en X i Y (S Shift + Z 1.4).",
       "hint1": "Amb Ctrl + R, passa el ratolí per sobre d'una aresta vertical: la línia groga indica on tallarà. Mou la roda fins que en surtin dos.",
       "hint2": "Després del tall, els loops nous ja queden seleccionats. S, Shift + Z (escala en X i Y, no en Z), 1.4 i Enter.",
       "cuts": "La caixa ha de tenir dos talls horitzontals. Ara en té {n}.",
@@ -384,7 +384,7 @@
     },
     "duplicates": {
       "label": "Vèrtexs duplicats (vermells): {n}",
-      "why": "Vèrtexs al mateix lloc que semblen un però no estan units. A Blender s'arregla amb Merge > By Distance (M)."
+      "why": "Vèrtexs al mateix lloc que semblen un de sol però no estan units. A Blender s'arregla amb Merge > By Distance (M)."
     },
     "nonManifold": {
       "label": "Arestes no manifold (vermelles): {n}",
