@@ -29,6 +29,8 @@ export interface GuideLine {
   readonly a: Vec3;
   readonly b: Vec3;
   readonly axis: AxisIndex;
+  /** Overrides the axis colour (e.g. the yellow Loop Cut preview). */
+  readonly color?: string;
 }
 
 export interface Guides {

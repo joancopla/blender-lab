@@ -27,7 +27,7 @@ export class TransformGuides {
     for (const line of guides.lines) {
       const seg = projectSegment(vp, size, line.a, line.b);
       if (!seg) continue;
-      this.svg.append(this.line(seg.a, seg.b, AXIS_COLORS[line.axis], ''));
+      this.svg.append(this.line(seg.a, seg.b, line.color ?? AXIS_COLORS[line.axis], ''));
     }
     if (guides.dashed) {
       const { from, to } = guides.dashed;

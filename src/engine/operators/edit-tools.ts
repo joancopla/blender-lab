@@ -12,6 +12,8 @@ import { extrudeEdges, extrudeRegion, extrudeVerts } from '../mesh/ops/extrude';
 import { fill } from '../mesh/ops/fill';
 import { type InsetParams, inset } from '../mesh/ops/inset';
 import { type MergeType, merge } from '../mesh/ops/merge';
+import { loopCut } from '../mesh/ops/loopcut';
+import { bevelEdges, bevelVerts, lastFaces } from '../mesh/ops/bevel';
 import {
   type ComponentSelection,
   type MeshObject,
@@ -173,4 +175,39 @@ export function translateSelection(s: SceneState, v: Vec3): SceneState {
     }
     return { mesh: { ...m, verts }, selection: sel };
   });
+}
+
+// ---------------------------------------------------------------------------
+// Loop Cut and Bevel
+
+/** Loop Cut on one object through one edge; the new loops end up selected. */
+export function loopCutScene(s: SceneState, objectId: string, edge: number, cuts: number, factor: number): SceneState {
+  return onEditObjects(s, (o, m) => {
+    if (o.id !== objectId) return null;
+    const r = loopCut(m, edge, cuts, factor);
+    return { mesh: r.mesh, selection: selectionFor(s, r.mesh, 'edge', r.newEdges) };
+  });
+}
+
+export interface BevelSceneResult {
+  readonly scene: SceneState;
+  /** Some object had a selection this lab's bevel does not support. */
+  readonly unsupported: boolean;
+}
+
+/** Bevel the selected edges (or vertices) of every edit object; the new faces end up selected. */
+export function bevelScene(s: SceneState, width: number, segments: number, vertices: boolean): BevelSceneResult {
+  let unsupported = false;
+  const scene = onEditObjects(s, (_, m, sel) => {
+    const list = vertices ? sel.verts : sel.edges;
+    if (list.length === 0) return null;
+    const mesh = vertices ? bevelVerts(m, list, width) : bevelEdges(m, list, width, segments);
+    if (!mesh) {
+      unsupported = true;
+      return null;
+    }
+    const created = vertices ? list.length : list.length * segments;
+    return { mesh, selection: selectionFor(s, mesh, 'face', lastFaces(mesh, created)) };
+  });
+  return { scene, unsupported };
 }

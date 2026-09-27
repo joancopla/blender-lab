@@ -211,5 +211,8 @@
     "name": "Mode Edició i modelat bàsic",
     "desc": "Modificar la forma dels objectes: vèrtexs, arestes i cares.",
     "preview": "Lab 02 en construcció: de moment només hi ha l'Edit Mode i la selecció de components (prem Tab). No hi ha etapes."
+  },
+  "lab": {
+    "bevelUnsupported": "Aquest lab només fa bevel d'arestes els vèrtexs de les quals no tenen cap altra aresta amb bevel (per exemple, les arestes verticals d'una caixa)."
   }
 }

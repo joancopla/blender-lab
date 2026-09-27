@@ -41,9 +41,22 @@ import { buildLayout } from './ui/layout';
 import { KeyOverlay } from './ui/key-overlay';
 import { attachMenu, openMenuAt } from './ui/menu';
 import { type AdjustValues, type AdjustableOp, AdjustPanel } from './ui/adjust-panel';
-import { DeleteOp, DissolveOp, FillOp, MergeOp, extrudeScene, insetScene, mergeScene, translateSelection } from './operators/edit-tools';
+import {
+  DeleteOp,
+  DissolveOp,
+  FillOp,
+  MergeOp,
+  bevelScene,
+  extrudeScene,
+  insetScene,
+  loopCutScene,
+  mergeScene,
+  translateSelection,
+} from './operators/edit-tools';
 import { MERGE_DISTANCE } from './mesh/ops/merge';
 import { InsetModal } from './edit/inset-modal';
+import { BevelModal, LoopCutModal } from './edit/cut-bevel-modals';
+import { t } from '../i18n';
 import { Outliner } from './ui/outliner';
 import { Sidebar } from './ui/sidebar';
 import { StatusBar } from './ui/status-bar';
@@ -402,9 +415,51 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
     );
   };
 
-  // Phase 5 (Loop Cut and Slide, Bevel) replaces these.
-  const startLoopCut = () => {};
-  const startBevel = (_vertices: boolean) => {};
+  const startLoopCut = () => {
+    if (transform || !cursor) return;
+    const base = store.state;
+    startModal(
+      new LoopCutModal(pickContext(), cursor, (v) =>
+        queueMicrotask(() =>
+          offerAdjust(
+            {
+              title: 'Loop Cut and Slide',
+              fields: [
+                { key: 'cuts', label: 'Number of Cuts', kind: 'int', min: 1, max: 100 },
+                { key: 'factor', label: 'Factor', kind: 'factor', min: -1, max: 1 },
+              ],
+              values: { cuts: v.cuts, factor: v.factor },
+            },
+            base,
+            (x) => loopCutScene(base, v.objectId, v.edge, x.cuts as number, x.factor as number),
+          ),
+        ),
+      ),
+    );
+  };
+
+  const startBevel = (vertices: boolean) => {
+    if (transform || !cursor || !BevelModal.canStart(store.state, vertices)) return;
+    const base = store.state;
+    const modal = new BevelModal(base, pickContext(), cursor, vertices, (v) =>
+      queueMicrotask(() => {
+        if (modal.unsupported) status.report(t('lab.bevelUnsupported'));
+        offerAdjust(
+          {
+            title: 'Bevel',
+            fields: [
+              { key: 'width', label: 'Width', kind: 'distance' },
+              ...(vertices ? [] : [{ key: 'segments', label: 'Segments', kind: 'int' as const, min: 1, max: 100 }]),
+            ],
+            values: { width: v.width, segments: v.segments },
+          },
+          base,
+          (x) => bevelScene(base, x.width as number, (x.segments as number) ?? 1, vertices).scene,
+        );
+      }),
+    );
+    startModal(modal);
+  };
 
   const openMergeMenu = () => {
     const p = cursor ?? { x: 100, y: 100 };

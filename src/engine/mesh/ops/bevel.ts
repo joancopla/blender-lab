@@ -103,6 +103,11 @@ export function bevelEdges(m: MeshData, edgeList: readonly number[], width: numb
   return compact(rebuild(verts, [...faces, ...strips], wires), looseVerts(m)).mesh;
 }
 
+/** Faces created by a bevel: they are appended last, so they are the final ones. */
+export function lastFaces(mesh: MeshData, count: number): number[] {
+  return Array.from({ length: count }, (_, i) => mesh.faces.length - count + i);
+}
+
 /** Vertex bevel with one segment: each vertex becomes a flat cap. */
 export function bevelVerts(m: MeshData, vertList: readonly number[], width: number): MeshData | null {
   if (vertList.length === 0) return null;
