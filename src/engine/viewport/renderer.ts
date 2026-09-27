@@ -19,13 +19,15 @@ import {
 import type { MeshData } from '../mesh/mesh-data';
 import { meshToGeometry } from './mesh-geometry';
 import { buildEditOverlay, disposeGroup } from './edit-overlay';
+import { buildAnalyzerOverlay } from './analyzer-overlay';
+import { analyzeMesh } from '../mesh/analyze';
 import { selectionOf } from '../operators/edit-mode';
 import type { DisplayedView, Navigator } from './navigator';
 import { type SelectionDisplay, buildObject, setSolidXray, setWireSelection, updateLightDisplay } from './object-meshes';
 import { type ViewportSize, CLIP_END, CLIP_START } from './projection';
 import { type ViewProjection, viewProjection } from './screen';
 import { Grid } from './grid';
-import { LabElements } from './lab-elements';
+import { type ComponentHint, LabElements } from './lab-elements';
 import type { Ghost } from '../stages/ghost-match';
 import type { FaceMarker } from '../stages/types';
 import { type OutlineState, SelectionPasses } from './selection-passes';
@@ -53,6 +55,9 @@ interface ObjectEntry {
   /** Edit Mode overlay and what it was built from. */
   overlay?: THREE.Group;
   overlayFrom?: { mesh: MeshData; sel: ComponentSelection; mode: SelectMode; xray: boolean; active: boolean };
+  /** Topology analyser overlay and the mesh it was built for. */
+  analyzer?: THREE.Group;
+  analyzerFor?: MeshData;
 }
 
 export class ViewportRenderer {
@@ -73,6 +78,7 @@ export class ViewportRenderer {
   private size: ViewportSize = { width: 1, height: 1 };
   private scheduled = false;
   private xray = false;
+  private analyzerObjectId: string | null = null;
   private lastCamera: THREE.Camera = this.perspCamera;
   private lastFrame: FrameInfo | null = null;
   private readonly drawListeners = new Set<(info: FrameInfo) => void>();
@@ -133,13 +139,24 @@ export class ViewportRenderer {
     this.requestRender();
   }
 
+  /** Topology analyser (lab tool) on one object, or off with null. */
+  setAnalyzerObject(id: string | null): void {
+    this.analyzerObjectId = id;
+    this.requestRender();
+  }
+
   get xrayEnabled(): boolean {
     return this.xray;
   }
 
   /** Ghost silhouettes and face markers of the current stage. */
-  setLabElements(ghosts: readonly Ghost[], markers: readonly FaceMarker[]): void {
-    this.labElements.set(ghosts, markers);
+  setLabElements(
+    ghosts: readonly Ghost[],
+    markers: readonly FaceMarker[],
+    meshGhosts: readonly MeshData[] = [],
+    hints: readonly ComponentHint[] = [],
+  ): void {
+    this.labElements.set(ghosts, markers, meshGhosts, hints);
     this.requestRender();
   }
 
@@ -246,6 +263,18 @@ export class ViewportRenderer {
       if (e.meshData) mesh.geometry.dispose();
       if (e.meshData) mesh.geometry = meshToGeometry(m).geometry;
       e.meshData = m;
+    }
+    const analyse = o.id === this.analyzerObjectId;
+    if (e.analyzer && (!analyse || e.analyzerFor !== m)) {
+      mesh.remove(e.analyzer);
+      disposeGroup(e.analyzer);
+      e.analyzer = undefined;
+      e.analyzerFor = undefined;
+    }
+    if (analyse && !e.analyzer) {
+      e.analyzer = buildAnalyzerOverlay(m, analyzeMesh(m), this.renderer.getPixelRatio());
+      e.analyzerFor = m;
+      mesh.add(e.analyzer);
     }
     const editing = scene.editObjectIds?.includes(o.id) ?? false;
     if (!editing) {
