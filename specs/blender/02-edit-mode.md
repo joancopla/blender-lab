@@ -4,9 +4,9 @@ Segon lab de la col·lecció. L'alumne passa de moure objectes sencers a modific
 forma: vèrtexs, arestes i cares. En acabar, ha de ser capaç de modelar un objecte senzill a
 partir d'un cub, tal com ho faria a Blender.
 
-Llegeix `CLAUDE.md` abans de res. Aquest lab reutilitza tot el motor del Lab 01: viewport,
+Llegeix `CLAUDE.md` abans de res. Aquest lab reutilitza tot el nucli comú i la part de Blender construïda al Lab 01: viewport,
 navegació, selecció, operadors G/R/S, undo, panells i executor d'etapes. No en dupliquis
-res. Si cal ampliar el motor, fes-ho de manera que el Lab 01 continuï funcionant igual, i
+res. Si cal ampliar el nucli o la part de Blender, fes-ho de manera que el Lab 01 continuï funcionant igual, i
 comprova-ho amb els seus tests.
 
 Aquest és el lab tècnicament més difícil de la col·lecció. La dificultat no és la
@@ -17,7 +17,7 @@ interfície, sinó la geometria.
 ## 1. Estructura de malla (la base de tot el lab)
 
 Abans de tocar cap interfície, cal una estructura de malla pròpia i ben testejada a
-`engine/mesh/`:
+`src/apps/blender/mesh/`:
 
 - Vèrtexs, arestes i cares, amb suport per a **n-gons** (cares de més de 4 costats), com
   a Blender.
@@ -92,7 +92,7 @@ arestes i cares esperat) i comparació visual amb Blender feta per mi.
 - **Bevel és la més complexa.** Ha de coincidir exactament amb Blender en els casos del
   lab: arestes d'un cub, amb diversos segments i profile per defecte. En casos límit que
   el lab no fa servir, es pot simplificar. Documenta aquests límits a
-  `BLENDER-FIDELITY.md`.
+  `docs/fidelity/blender.md`.
 - Fora d'abast: knife (K), spin, bridge edge loops, subdivide, i qualsevol eina
   que no sigui a la taula. Les tecles no han de fer res estrany.
 
@@ -160,7 +160,7 @@ cada eina amb el menú on es troba a Blender i expliqui què queda fora del lab.
 
 Atura't al final de cadascuna.
 
-1. **Estructura de malla.** `engine/mesh/` complet, conversió a three.js i tests de
+1. **Estructura de malla.** `src/apps/blender/mesh/` complet, conversió a three.js i tests de
    consistència. Sense interfície.
 2. **Edit Mode i selecció.** Tab, modes de selecció, visualització de components,
    X-ray, selecció (loops, rings, connectats), Statistics.
@@ -170,4 +170,4 @@ Atura't al final de cadascuna.
 5. **Eines, segona part.** Loop Cut and Slide i Bevel. És la fase amb més risc.
 6. **Analitzador i comprovació de formes.** Topologia, siluetes i IoU.
 7. **Etapes i web.** Les 10 etapes, mode lliure i pàgina del lab.
-8. **Poliment.** Rendiment, `BLENDER-FIDELITY.md` actualitzat i desplegament.
+8. **Poliment.** Rendiment, `docs/fidelity/blender.md` actualitzat i desplegament.

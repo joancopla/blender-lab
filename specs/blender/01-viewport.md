@@ -1,6 +1,6 @@
 # Lab 01 — Viewport i transformacions
 
-Primer lab de la col·lecció i, alhora, el que construeix el motor compartit. Després de fer
+Primer lab de la col·lecció i, alhora, el que construeix el nucli comú (`src/core/`) i la base de Blender (`src/apps/blender/`). Després de fer
 aquest lab, l'alumne ha de saber moure's pel viewport, canviar de vista, seleccionar
 objectes i moure'ls, rotar-los i escalar-los amb precisió, tal com ho faria a Blender.
 
@@ -172,7 +172,7 @@ En acabar, un **mode lliure** amb la mateixa escena i totes les eines, sense com
 - **Pàgina índex de la col·lecció:** llistat de labs amb estat (disponible / aviat) i
   el progrés de l'alumne. De moment només hi haurà el Lab 01; la resta de l'índex el
   definirem més endavant.
-- Estil propi, sobri i fosc, que no s'assembli a cap altre projecte existent.
+- Estil segons `docs/DESIGN.md`.
 
 ## 8. Fases
 
@@ -180,8 +180,7 @@ Atura't al final de cadascuna, tal com diu `CLAUDE.md`.
 
 1. **Base i navegació.** Estructura del projecte, `coords.ts`, viewport amb graella,
    eixos, objectes i il·luminació tipus Solid, navegació completa, gizmo, vistes,
-   Auto Perspective i emulacions. Tests de les matemàtiques de càmera. Desplegament
-   automàtic a GitHub Pages amb una GitHub Action a cada push a `main`.
+   Auto Perspective i emulacions. Tests de les matemàtiques de càmera.
 2. **Escena i selecció.** Model de dades, selecció al viewport i a l'Outliner, contorns
    de selecció, text de la capçalera del viewport.
 3. **Operadors modals.** G/R/S complets, entrada numèrica, restriccions, cancel·lació,
@@ -189,5 +188,5 @@ Atura't al final de cadascuna, tal com diu `CLAUDE.md`.
 4. **Panells.** Panell N editable, overlay de tecles i preferències del lab.
 5. **Etapes i web.** Executor d'etapes, les 9 etapes, progrés, mode lliure, pàgina del
    lab i pàgina índex.
-6. **Poliment.** Rendiment en ordinadors modestos, avís per a mòbil i
-   `BLENDER-FIDELITY.md` complet perquè el pugui validar.
+6. **Poliment i desplegament.** Rendiment en ordinadors modestos, avís per a mòbil,
+   desplegament a GitHub Pages i `docs/fidelity/blender.md` complet perquè el pugui validar.
