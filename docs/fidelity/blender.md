@@ -424,15 +424,15 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - [ ] ❓ Clicar un objecte per seleccionar-lo funciona sobre la malla avaluada (es pot clicar la meitat que fa el Mirror)
 - [ ] ❓ Noms: "Mirror", "Array"; si ja n'hi ha un amb el mateix nom a l'objecte, "Mirror.001", "Mirror.002"...
 - [ ] ❓ Un modificador nou s'afegeix al final de la pila
-- [ ] ❓ Noms a Edit > Undo History: "Add Modifier", "Remove Modifier", "Move to Index" i, per als paràmetres, l'etiqueta del camp ("Count", "Axis"...)
+- [x] Noms a Edit > Undo History: "Add Modifier", "Remove Modifier", "Move to Index" i, per als paràmetres, l'etiqueta del camp ("Count", "Axis"...)
 - Pendent per a fases posteriors: el Mode Edició encara dibuixa la malla base sense modificadors (la gàbia arriba a la Fase 4); Dimensions al panell N i l'enquadrament (Numpad .) encara fan servir la malla base
 
 ### Mirror
 
-- [ ] ❓ Valors per defecte: Axis X; Bisect i Flip desactivats; Mirror Object buit; Clipping desactivat; Merge activat a 0,001 m; Bisect Distance 0,001 m
-- [ ] ❓ Amb diversos eixos, s'aplica X, després Y i després Z, cadascun sobre el resultat de l'anterior (X+Y fa quatre còpies)
-- [ ] ❓ Merge: cada vèrtex només es fusiona amb el seu propi reflex, si la distància entre tots dos és menor que la de Merge (és a dir, si és a menys de la meitat d'aquesta distància del pla). Els dos van al punt mitjà, damunt del pla
-- [ ] ❓ Bisect sense Flip conserva el costat positiu de l'eix; amb Flip, el negatiu
+- [x] Valors per defecte: Axis X; Bisect i Flip desactivats; Mirror Object buit; Clipping desactivat; Merge activat a 0,001 m; Bisect Distance 0,001 m
+- [x] Amb diversos eixos, s'aplica X, després Y i després Z, cadascun sobre el resultat de l'anterior (X+Y fa quatre còpies)
+- [x] Merge: cada vèrtex només es fusiona amb el seu propi reflex, si la distància entre tots dos és menor que la de Merge (és a dir, si és a menys de la meitat d'aquesta distància del pla). Els dos van al punt mitjà, damunt del pla
+- [x] Bisect sense Flip conserva el costat positiu de l'eix; amb Flip, el negatiu
 - [ ] ❓ Mirror Object: el pla de simetria és el de l'origen i els eixos de l'altre objecte (inclosos la seva rotació i escala)
 - [ ] ❓ Les cares de la còpia tenen l'ordre invertit (normals cap enfora) i mantenen el primer vèrtex
 - Limitació coneguda: si el pla talla un n-gon còncau més de dues vegades, el lab en fa una sola cara (Blender en fa diverses). No passa en cap etapa
@@ -440,8 +440,8 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 
 ### Array
 
-- [ ] ❓ Valors per defecte: Fit Type Fixed Count, Count 2, Relative Offset activat (1, 0, 0), Constant Offset desactivat (1, 0, 0 m), Merge desactivat a 0,01 m, First Last desactivat
+- [x] Valors per defecte: Fit Type Fixed Count, Count 2, Relative Offset activat (1, 0, 0), Constant Offset desactivat (1, 0, 0 m), Merge desactivat a 0,01 m, First Last desactivat
 - [ ] ❓ Relative Offset es mesura sobre la caixa contenidora de la malla que arriba al modificador (no la malla base si hi ha modificadors abans)
 - [ ] ❓ Relative i Constant Offset se sumen
-- [ ] ❓ Merge: els vèrtexs de cada còpia es fusionen amb els de la còpia anterior i conserven la posició de l'anterior; amb First Last, també l'última amb la primera
-- [ ] ❓ Amb Merge, les cares on es toquen dues còpies (per exemple, dos cubs) es conserven una vegada: 3 cubs → 16 vèrtexs i 16 cares
+- [x] Merge: els vèrtexs de cada còpia es fusionen amb els de la còpia anterior i conserven la posició de l'anterior; amb First Last, també l'última amb la primera
+- [x] Amb Merge, les cares on es toquen dues còpies (per exemple, dos cubs) es conserven una vegada: 3 cubs → 16 vèrtexs i 16 cares
