@@ -1,0 +1,84 @@
+{
+  "keys": {
+    "mmb": "Botó del mig",
+    "shiftMmb": "Shift + botó del mig",
+    "ctrlMmb": "Ctrl + botó del mig",
+    "wheel": "Roda",
+    "lmb": "Clic esquerre",
+    "shiftLmb": "Shift + clic esquerre",
+    "rmb": "Clic dret",
+    "numpad1": "Numpad 1",
+    "numpad3": "Numpad 3",
+    "numpad7": "Numpad 7",
+    "ctrlNumpad1": "Ctrl + Numpad 1",
+    "numpad2": "Numpad 2",
+    "numpad4": "Numpad 4",
+    "numpad6": "Numpad 6",
+    "numpad8": "Numpad 8",
+    "numpadPeriod": "Numpad .",
+    "home": "Home",
+    "a": "A",
+    "altA": "Alt + A",
+    "b": "B",
+    "g": "G",
+    "r": "R",
+    "s": "S",
+    "x": "X",
+    "y": "Y",
+    "z": "Z",
+    "digits": "0–9",
+    "enter": "Enter",
+    "esc": "Esc",
+    "ctrlZ": "Ctrl + Z",
+    "ctrlShiftZ": "Ctrl + Shift + Z",
+    "tab": "Tab",
+    "one": "1",
+    "two": "2",
+    "three": "3",
+    "altZ": "Alt + Z",
+    "altLmb": "Alt + clic esquerre",
+    "shiftAltLmb": "Shift + Alt + clic esquerre",
+    "e": "E",
+    "i": "I",
+    "m": "M",
+    "ctrlR": "Ctrl + R",
+    "ctrlB": "Ctrl + B",
+    "shiftZ": "Shift + Z"
+  },
+  "prefs": {
+    "emulate3": "Emulate 3 Button Mouse",
+    "emulate3Help": "Si el teu ratolí no té botó del mig, activa aquesta opció i fes servir Alt + clic esquerre per orbitar. A Blender és a Edit > Preferences > Input.",
+    "emulateNumpad": "Emulate Numpad",
+    "emulateNumpadHelp": "Si el teu teclat no té teclat numèric, activa aquesta opció i fes servir la fila de números (1, 3, 7...). A Blender és a Edit > Preferences > Input.",
+    "suggestEmulate3": "Sembla que intentes orbitar sense el botó del mig del ratolí. Vols activar Emulate 3 Button Mouse? Després podràs orbitar amb Alt + clic esquerre."
+  },
+  "analyzer": {
+    "title": "Analitzador de topologia",
+    "toggle": "Mostra els problemes de la malla",
+    "help": "Una eina del lab, no de Blender: marca a la vista els n-gons, els triangles i els errors de la malla de l'objecte actiu.",
+    "clean": "Cap problema: la malla és neta.",
+    "ngons": {
+      "label": "N-gons (grocs): {n}",
+      "why": "Cares de més de quatre costats. Es deformen malament i donen problemes en subdividir. A Blender els trobes amb Select > Select All by Trait > Faces by Sides."
+    },
+    "triangles": {
+      "label": "Triangles (blaus): {n}",
+      "why": "No són un error, però en una malla de quads trenquen els loops. Mira si els pots evitar."
+    },
+    "duplicates": {
+      "label": "Vèrtexs duplicats (vermells): {n}",
+      "why": "Vèrtexs al mateix lloc que semblen un de sol però no estan units. A Blender s'arregla amb Merge > By Distance (M)."
+    },
+    "nonManifold": {
+      "label": "Arestes no manifold (vermelles): {n}",
+      "why": "Arestes amb una sola cara, amb més de dues o sense cap: la malla té forats, cares de sobra o arestes soltes. A Blender les veus amb Select > Select All by Trait > Non Manifold."
+    },
+    "flipped": {
+      "label": "Normals invertides (magenta): {n}",
+      "why": "Cares girades del revés. A Blender s'arregla amb Mesh > Normals > Recalculate Outside (Shift + N)."
+    }
+  },
+  "lab": {
+    "bevelUnsupported": "Aquest lab només fa bevel d'arestes els vèrtexs de les quals no tenen cap altra aresta amb bevel (per exemple, les arestes verticals d'una caixa)."
+  }
+}

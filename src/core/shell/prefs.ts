@@ -1,16 +1,16 @@
 /**
- * Lab preferences, saved in localStorage. Storage can be unavailable (private
- * mode, blocked cookies): every access is wrapped and falls back to defaults.
+ * Lab preferences, saved in localStorage: the program's own (e.g. Blender's
+ * Emulate 3 Button Mouse) plus the shell's (key overlay). Storage can be
+ * unavailable (private mode, blocked cookies): every access is wrapped and falls
+ * back to the defaults.
  */
-import { DEFAULT_INPUT_PREFS, type InputPrefs } from '../../apps/blender/input/keymap';
 
-export interface LabPrefs extends InputPrefs {
-  /** Screencast-Keys-like overlay of pressed keys and clicks. */
-  readonly keyOverlay: boolean;
-}
+export type PrefValues = Readonly<Record<string, boolean>>;
 
-export const DEFAULT_LAB_PREFS: LabPrefs = { ...DEFAULT_INPUT_PREFS, keyOverlay: true };
+/** Shell preference: Screencast-Keys-like overlay of pressed keys and clicks. */
+export const KEY_OVERLAY_PREF = 'keyOverlay';
 
+// Kept from the first version so saved preferences survive.
 const KEY = 'blender-lab:prefs';
 
 export interface StorageLike {
@@ -26,25 +26,23 @@ function defaultStorage(): StorageLike | null {
   }
 }
 
-export function loadPrefs(storage: StorageLike | null = defaultStorage()): LabPrefs {
+/** Saved values for the known keys; defaults for anything missing or invalid. */
+export function loadPrefs(defaults: PrefValues, storage: StorageLike | null = defaultStorage()): PrefValues {
   try {
     const raw = storage?.getItem(KEY);
-    if (!raw) return DEFAULT_LAB_PREFS;
-    const data = JSON.parse(raw) as Partial<Record<keyof LabPrefs, unknown>>;
-    const bool = (k: keyof LabPrefs) => (typeof data[k] === 'boolean' ? (data[k] as boolean) : DEFAULT_LAB_PREFS[k]);
-    return {
-      emulate3ButtonMouse: bool('emulate3ButtonMouse'),
-      emulateNumpad: bool('emulateNumpad'),
-      keyOverlay: bool('keyOverlay'),
-    };
+    if (!raw) return defaults;
+    const data = JSON.parse(raw) as Record<string, unknown>;
+    return Object.fromEntries(
+      Object.entries(defaults).map(([k, d]) => [k, typeof data[k] === 'boolean' ? (data[k] as boolean) : d]),
+    );
   } catch {
-    return DEFAULT_LAB_PREFS;
+    return defaults;
   }
 }
 
-export function savePrefs(prefs: LabPrefs, storage: StorageLike | null = defaultStorage()): void {
+export function savePrefs(values: PrefValues, storage: StorageLike | null = defaultStorage()): void {
   try {
-    storage?.setItem(KEY, JSON.stringify(prefs));
+    storage?.setItem(KEY, JSON.stringify(values));
   } catch {
     // Not saved: the preferences still apply for this visit.
   }

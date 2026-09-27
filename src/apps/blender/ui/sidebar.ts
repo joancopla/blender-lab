@@ -6,7 +6,7 @@
  */
 import { type Axis, SetTransformOp, type TransformField, readField, setField } from '../operators/set-transform';
 import { type SceneState, activeObject } from '../scene/scene';
-import type { SceneStore } from '../../../core/history/store';
+import type { SceneStore } from '../scene/store';
 import { formatAngle, formatDistance, formatScale } from './format';
 import { NumberField } from './number-field';
 

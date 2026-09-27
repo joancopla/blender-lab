@@ -22,7 +22,7 @@ import {
   objectRotation,
   selectModeOf,
 } from '../scene/scene';
-import type { OperatorCall } from '../../../core/history/store';
+import type { OperatorCall } from '../scene/store';
 import { selectionOf } from './edit-mode';
 
 type ToolResult = { mesh: MeshData; selection: ComponentSelection } | null;

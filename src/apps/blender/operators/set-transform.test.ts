@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { vec3 } from '../math/vec3';
 import { blenderDefaultScene } from '../scene/default-scene';
 import type { SceneState } from '../scene/scene';
-import { SceneStore } from '../../../core/history/store';
+import { SceneStore } from '../scene/store';
 import { SetTransformOp, dimensions, readField, setField } from './set-transform';
 
 const cubeOf = (s: SceneState) => s.objects.find((o) => o.id === 'cube')!;

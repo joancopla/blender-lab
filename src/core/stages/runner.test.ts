@@ -1,70 +1,68 @@
 import { describe, expect, it } from 'vitest';
-import { vec3 } from '../../apps/blender/math/vec3';
-import { SelectOp } from '../../apps/blender/operators/select';
-import { mesh, sceneWith } from '../../apps/blender/scene/factory';
-import { SceneStore } from '../history/store';
-import { viewProjection } from '../../apps/blender/viewport/screen';
-import { defaultViewState } from '../../apps/blender/viewport/view-state';
+import { HistoryStore } from '../history/store';
 import type { StorageLike } from '../shell/prefs';
 import { ProgressStore } from './progress';
-import { STUCK_MS, StageRunner } from './runner';
+import { type RunnerApp, STUCK_MS, StageRunner } from './runner';
 import type { LabStages, StageDefinition } from './types';
+
+/** A tiny fake program: its state is a number, a stage sets the starting value. */
+function fakeApp(): RunnerApp<number, number> & { history: HistoryStore<number> } {
+  const history = new HistoryStore(0);
+  return {
+    history,
+    load: (setup) => history.reset(setup),
+    getState: () => history.state,
+    get log() {
+      return history.log;
+    },
+  };
+}
 
 const memory = (): StorageLike => {
   const data = new Map<string, string>();
   return { getItem: (k) => data.get(k) ?? null, setItem: (k, v) => void data.set(k, v) };
 };
 
-const selectCube: StageDefinition = {
-  id: 'select-cube',
+const reachFive: StageDefinition<number, number> = {
+  id: 'reach-five',
   titleKey: 't',
   instructionKey: 'i',
   hintKeys: ['h1', 'h2'],
   successKey: 's',
   keys: [],
-  scene: () => sceneWith([mesh('cube', 'Cube', 'cube', vec3(0, 0, 0))]),
-  check: (ctx) => ({ done: ctx.scene.selectedIds.includes('cube') }),
+  setup: () => 2,
+  check: (ctx) => ({ done: ctx.state === 5 && ctx.initialState === 2 }),
 };
-const finalStage: StageDefinition = { ...selectCube, id: 'final', hints: false, stats: true };
-const LAB: LabStages = { labId: 'test', stages: [selectCube, finalStage], freeScene: () => sceneWith([]) };
+const finalStage: StageDefinition<number, number> = { ...reachFive, id: 'final', hints: false, stats: true };
+const LAB: LabStages<number, number> = { labId: 'test', stages: [reachFive, finalStage], freeSetup: () => 100 };
 
 function setup(storage = memory()) {
   let now = 0;
-  const store = new SceneStore(sceneWith([]));
-  let view = defaultViewState();
-  const size = { width: 800, height: 600 };
+  const app = fakeApp();
   const progress = new ProgressStore('test', storage);
-  const runner = new StageRunner(LAB, {
-    store,
-    view: () => view,
-    projection: () => ({
-      projection: viewProjection({ ...view, camera: null }, size, null),
-      size,
-    }),
-    resetView: (v) => (view = v),
-    progress,
-    now: () => now,
-  });
-  store.onChange(() => runner.notifyActivity());
-  return { runner, store, progress, advance: (ms: number) => (now += ms) };
+  const runner = new StageRunner(LAB, { app, progress, now: () => now });
+  app.history.onChange(() => runner.notifyActivity());
+  const setTo = (v: number) => app.history.execute({ name: 'Set', apply: () => v });
+  return { runner, app, progress, setTo, advance: (ms: number) => (now += ms) };
 }
 
 describe('StageRunner', () => {
-  it('loads the stage scene and completes it when the check passes', () => {
-    const { runner, store, progress } = setup();
+  it('loads the stage setup into the program and completes it when the check passes', () => {
+    const { runner, app, progress, setTo } = setup();
     runner.load(0);
-    expect(store.state.objects.some((o) => o.id === 'cube')).toBe(true);
+    expect(app.getState()).toBe(2);
+    expect(runner.status.interacted).toBe(false);
     expect(runner.status.completed).toBe(false);
-    store.execute(SelectOp('cube', false));
+    setTo(5);
     expect(runner.status.completed).toBe(true);
-    expect(progress.isCompleted('select-cube')).toBe(true);
+    expect(progress.isCompleted('reach-five')).toBe(true);
   });
 
   it('stays done after further changes, until restarted', () => {
-    const { runner, store } = setup();
+    const { runner, setTo } = setup();
     runner.load(0);
-    store.execute(SelectOp('cube', false));
-    store.execute(SelectOp(null, false));
+    setTo(5);
+    setTo(1);
     expect(runner.status.result.done).toBe(true);
     runner.restart();
     expect(runner.status.result.done).toBe(false);
@@ -84,14 +82,14 @@ describe('StageRunner', () => {
   });
 
   it('the final challenge has no hints and reports time and operations', () => {
-    const { runner, store, advance } = setup();
+    const { runner, setTo, advance } = setup();
     runner.load(1);
     runner.showHint();
     advance(STUCK_MS);
     runner.tick();
     expect(runner.status.hintsShown).toBe(0);
     advance(42_000);
-    store.execute(SelectOp('cube', false));
+    setTo(5);
     expect(runner.status.stats).toEqual({ seconds: 42 + STUCK_MS / 1000, operations: 1 });
   });
 
@@ -104,10 +102,11 @@ describe('StageRunner', () => {
     expect(ProgressStore.read('test', storage)).toEqual({ completed: [], current: 0 });
   });
 
-  it('free mode has no stage', () => {
-    const { runner } = setup();
+  it('free mode loads the free setup and has no stage', () => {
+    const { runner, app } = setup();
     runner.load(-1);
     expect(runner.status.index).toBe(-1);
     expect(runner.status.stage).toBeNull();
+    expect(app.getState()).toBe(100);
   });
 });

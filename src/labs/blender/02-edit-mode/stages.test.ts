@@ -6,7 +6,7 @@ import { merge } from '../../../apps/blender/mesh/ops/merge';
 import { editBox, editLoopOrRing, setSelectMode, toggleEditMode } from '../../../apps/blender/operators/edit-mode';
 import { type MeshObject, type SceneState, meshOf } from '../../../apps/blender/scene/scene';
 import { topologyOf } from '../../../apps/blender/edit/selection';
-import type { StageContext, StageDefinition } from '../../../core/stages/types';
+import type { BlenderStageContext as StageContext, BlenderStageDefinition as StageDefinition } from '../../../apps/blender/stages/types';
 import { viewProjection } from '../../../apps/blender/viewport/screen';
 import { defaultViewState } from '../../../apps/blender/viewport/view-state';
 import { has } from '../../../core/i18n';

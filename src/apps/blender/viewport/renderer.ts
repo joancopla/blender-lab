@@ -29,7 +29,7 @@ import { type ViewProjection, viewProjection } from './screen';
 import { Grid } from './grid';
 import { type ComponentHint, LabElements } from './lab-elements';
 import type { Ghost } from '../stages/ghost-match';
-import type { FaceMarker } from '../../../core/stages/types';
+import type { FaceMarker } from '../stages/types';
 import { type OutlineState, SelectionPasses } from './selection-passes';
 import { THEME } from './theme';
 

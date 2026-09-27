@@ -8,7 +8,7 @@ import { setObjectLocation, setObjectRotation } from '../coords';
 import { DEG, fromEulerXYZ } from '../math/quat';
 import { vec3 } from '../math/vec3';
 import type { Ghost } from '../stages/ghost-match';
-import type { FaceMarker } from '../../../core/stages/types';
+import type { FaceMarker } from '../stages/types';
 import { primitiveGeometry } from './primitives';
 import { meshToGeometry } from './mesh-geometry';
 import type { MeshData } from '../mesh/mesh-data';

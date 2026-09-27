@@ -3,7 +3,7 @@
  * object when nothing changes, so the store records no undo step.
  */
 import type { SceneState } from '../scene/scene';
-import type { OperatorCall } from '../../../core/history/store';
+import type { OperatorCall } from '../scene/store';
 
 function withSelection(s: SceneState, selectedIds: readonly string[], activeId: string | null): SceneState {
   // Keep scene order so comparisons and the Outliner are stable.
@@ -51,7 +51,8 @@ export function selectAll(s: SceneState, action: SelectAllAction): SceneState {
   );
 }
 
-export type BoxMode = 'set' | 'add' | 'sub';
+export type { BoxMode } from '../../../core/input/select-interaction';
+import type { BoxMode } from '../../../core/input/select-interaction';
 
 /**
  * view3d.select_box. `set` replaces the selection, `add` extends it, `sub`

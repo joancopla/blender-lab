@@ -3,7 +3,7 @@
  */
 import { type Vec3, vec3 } from '../math/vec3';
 import { type SceneObject, type SceneState, meshLocalBounds, meshOf } from '../scene/scene';
-import type { OperatorCall } from '../../../core/history/store';
+import type { OperatorCall } from '../scene/store';
 
 export type TransformField = 'location' | 'rotation' | 'scale' | 'dimensions';
 export type Axis = 0 | 1 | 2;

@@ -2,79 +2,93 @@
 
 See `CLAUDE.md` for the rules. This file describes how the code is laid out today.
 
-## Coordinates
+## Layers
 
-Everything is Blender space (Z up, metres, degrees in the UI). `engine/coords.ts` is the only
-place that knows about three.js' Y-up: the three.js scene has a root group rotated −90° around
-X, and every object, the viewport camera and the grid live inside it using Blender coordinates.
-Y-up primitive geometries are converted with `yUpGeometryToBlender`.
+`labs → apps → core`, never the other way. `src/core/layers.test.ts` parses every import and
+fails if `core` imports `apps`, `labs` or three.js, or if `apps` imports `labs`.
 
-## Viewport navigation
+- `src/core/`: anything a replica of any program would use (a 2D timeline tool included).
+- `src/apps/blender/`: everything specific to Blender (three.js lives only here).
+- `src/labs/blender/NN-name/`: stage data and Catalan texts of one lab.
+- `src/site/`: index page and HTML entry points' scripts.
+
+## The contract (`core/app-contract.ts`)
+
+`ReplicatedApp<State, Setup, Decorations>` is what the core sees of a program:
+
+- `mount(container, {preferences, suggestPreference})` / `unmount()`;
+- `getState()` (typed, read-only) and `onChange(fn)`;
+- `load(setup)`: a stage's starting point (clears history and log);
+- `log`: operations confirmed, cancelled, undone and redone since the last load
+  (`core/history/store.ts`, `LogEntry`);
+- `decorate(decorations)`: lab elements a check result asks for (Blender: hints, markers seen);
+- `overlayHost()` / `inputHost()`: where the key overlay draws and what it listens to;
+- `preferences`: boolean preferences the program offers (shown by the shell);
+- `renderLabTools?(container)`: optional lab tools in the panel (Blender: mesh analyser).
+
+Blender implements it in `apps/blender/blender-app.ts` (`BlenderApp`), over `mountBlender`
+(`apps/blender/app.ts`), which builds the replica itself.
+
+## Core
+
+- `history/store.ts`: `HistoryStore<S>`, command-pattern undo/redo, preview states for modal
+  operators, operation log. Blender's `SceneStore` is `HistoryStore<SceneState>`.
+- `input/keymap.ts`: declarative keymap items and pure matching; `WheelAccumulator`.
+  `input/select-interaction.ts`: click/box/B-modal state machine. `input/numeric-input.ts`.
+- `stages/`: generic stage types (`StageDefinition<State, Setup, Decorations>` with `setup()` and
+  `check(ctx)`), `StageRunner` (loads, re-checks on every change, hints, progress) and
+  `ProgressStore` (localStorage, try/catch).
+- `shell/`: the wrapper around the replica, styled by `docs/DESIGN.md`: lab page
+  (`lab-page.ts`), stage panel, preferences, key overlay, device warning.
+- `i18n/`: `registerTexts` (deep merge) and `t(key)`. The core registers `core/i18n/ca.json`;
+  programs and labs register theirs in a `texts.ts` next to their `ca.json`.
+- `lab.ts`: `LabDefinition` (id, name, stages, `createApp()`, page lists).
+
+## Blender (`apps/blender/`)
+
+### Coordinates
+
+Everything is Blender space (Z up, metres, degrees in the UI). `coords.ts` is the only place
+that knows about three.js' Y-up: the three.js scene has a root group rotated −90° around X, and
+every object, the viewport camera and the grid live inside it using Blender coordinates.
+
+### Stages
+
+`stages/types.ts`: `BlenderState` (scene, view, projection, size), `BlenderSetup` (scene, view,
+ghosts, markers, reference meshes, analyser), `BlenderDecorations`, and `toCoreLab` which turns
+Blender stage lists into core ones. `ghost-match.ts` and `silhouette.ts` are check helpers.
+
+### Viewport navigation
 
 - `viewport/view-state.ts`: pure functions over a `ViewState` modelled on Blender's
-  `RegionView3D` (view rotation, target, distance, projection, axis view, camera framing).
-  All navigation maths lives here and is unit-tested.
-- `viewport/projection.ts`: frustum maths (lens, sensor fit, clip range).
-- `viewport/navigator.ts`: holds the state, turns actions into new states and runs
-  Smooth View transitions. No DOM, no three.js.
-- `viewport/renderer.ts`: reads the scene and the navigator and draws them on demand. Grid is a
-  separate pass: after the objects in perspective (depth-tested floor), before them in axis
-  orthographic views (backdrop).
-- `viewport/nav-gizmo.ts`: the navigation gizmo (canvas 2D + DOM buttons).
+  `RegionView3D`. All navigation maths lives here and is unit-tested.
+- `viewport/projection.ts`: frustum maths. `viewport/navigator.ts`: state and Smooth View.
+- `viewport/renderer.ts`: draws the scene on demand. `viewport/nav-gizmo.ts`: navigation gizmo.
 
-## Input
+### Input
 
-- `input/keymap.ts`: declarative keymap and pure resolution of keys and mouse buttons, including
-  Emulate Numpad and Emulate 3 Button Mouse. Unit-tested.
-- `input/viewport-input.ts`: DOM listeners. Keys go to the viewport only while the pointer is
-  over it, as in Blender.
+- `input/keymap.ts`: Blender 5.2 keymap tables over `core/input/keymap.ts`, plus Emulate Numpad
+  and Emulate 3 Button Mouse. `input/viewport-input.ts`: DOM listeners (keys go to the viewport
+  only while the pointer is over it, as in Blender).
 
-## Scene and operators
+### Scene, meshes and operators
 
-- `scene/scene.ts` is the data model (single source of truth).
-- `scene/store.ts` (SceneStore) holds the state and the undo history. Every change is an
-  `OperatorCall` run through `execute`, which records one undo step (only if something changed)
-  and appends to the operation log used by stage checks.
-- `operators/` contains pure operator functions (`select.ts`: click, box, select all, Outliner).
+- `scene/scene.ts`: data model (single source of truth). `scene/store.ts`: `SceneStore`.
+- `mesh/`: editable meshes (vertices, edges, n-gon faces) and edit operations.
+- `operators/`: pure operator functions run through the store. `transform-session.ts` and
+  `edit/` connect modal operators to input, preview and UI.
 
-## Selection
+### Replica UI
 
-- `input/select-interaction.ts`: pure state machine for click, drag box and the B modal.
-- `viewport/picking.ts`: click picking in Blender space (ray vs primitive triangles; screen
-  distance for camera and light wires), with click cycling.
-- `viewport/selection-passes.ts`: object-ID render pass used for mesh outlines and for box
-  select (visible objects inside the rectangle).
-- `ui/outliner.ts`: Outliner rows; clicks run operators.
-
-## Modal operators and panels
-
-- `operators/transform.ts`: pure G/R/S state machine (constraints, numeric input, snapping,
-  precision). `transform-session.ts` connects it to input, the store preview and the UI.
-- `SceneStore.setPreview` shows uncommitted states (modal operators, N panel drags); confirming
-  runs one operator, cancelling logs a `cancel` entry.
-- `ui/sidebar.ts` + `ui/number-field.ts`: N panel. `ui/menu.ts`: View and Select menus.
-
-## Stages
-
-- `stages/types.ts`: a stage is data (texts as i18n keys, scene, ghosts, markers, keys) plus a
-  `check(ctx)` that reads the scene state, the view state and the operation log.
-- `stages/runner.ts`: loads stages, re-checks on every scene/view change, hints, progress.
-- `stages/ghost-match.ts`: symmetry-aware comparison with ghost silhouettes.
-- `viewport/lab-elements.ts`: ghosts and face markers (lab elements, not scene objects).
+`ui/`: header, Outliner, N panel, status bar, menus, adjust panel, statistics, analyser panel
+(`blender-ui.css`, English, as in Blender).
 
 ## Labs and pages
 
-A lab is a `LabDefinition` (`engine/lab.ts`) under `src/labs/<id>/`: id, texts, initial scene
-and stages. Adding a lab does not require touching the engine. `engine/app.ts` mounts the Blender
-replica; `site/lab-page.ts` builds the lab page (intro, lab column, replica, "Al Blender real");
-`site/index.ts` is the collection index. HTML entry points live under `labs/<id>/index.html` at
-the project root. Lab UI (Catalan, `site/lab.css`) is styled apart from the Blender replica
-(`engine/ui/blender-ui.css`).
-
-## Preferences and progress
-
-`lab-prefs.ts` (emulations, key overlay) and `stages/progress.ts` use localStorage, always
-wrapped in try/catch; without storage everything still works for the visit.
+A lab is a `LabDefinition` in `src/labs/blender/<id>/index.ts`: stages (`stages.ts`), texts
+(`ca.json` + `texts.ts`) and `createApp: () => new BlenderApp(options)`. Adding a lab does not
+touch the core. HTML entry points live under `labs/<id>/index.html` at the project root and call
+`mountLabPage(lab)` from `src/site/`.
 
 ## Deployment
 

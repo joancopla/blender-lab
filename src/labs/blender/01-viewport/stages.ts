@@ -1,12 +1,13 @@
 /**
  * Lab 01 stages: data and checks. All texts live in ca.json under "lab01".
  */
+import './texts';
 import { rotate } from '../../../apps/blender/math/quat';
 import { type Vec3, dot, vec3 } from '../../../apps/blender/math/vec3';
 import { mesh, sceneWith } from '../../../apps/blender/scene/factory';
 import { type SceneObject, type SceneState, objectWorldBounds } from '../../../apps/blender/scene/scene';
 import { type Ghost, matchesGhost } from '../../../apps/blender/stages/ghost-match';
-import type { CheckResult, FaceMarker, LabStages, StageContext, StageDefinition } from '../../../core/stages/types';
+import type { BlenderCheckResult as CheckResult, FaceMarker, BlenderLabStages as LabStages, BlenderStageContext as StageContext, BlenderStageDefinition as StageDefinition } from '../../../apps/blender/stages/types';
 import { worldToScreen } from '../../../apps/blender/viewport/screen';
 import type { AxisView } from '../../../apps/blender/viewport/view-state';
 

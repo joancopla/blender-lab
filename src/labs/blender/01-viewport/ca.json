@@ -1,0 +1,117 @@
+{
+  "lab01": {
+    "name": "Viewport i transformacions",
+    "desc": "Moure't pel viewport, canviar de vista, seleccionar objectes i moure'ls, girar-los i escalar-los amb precisió.",
+    "s1": {
+      "title": "Orbitar",
+      "instruction": "Aquest cub gran té tres cares marcades amb un símbol, i cap no es veu des d'on mires ara. Una és a sota. Orbita al voltant del cub arrossegant amb el botó del mig del ratolí fins que hagis mirat de cara les tres cares. Les que ja hagis vist es tornen verdes.",
+      "hint1": "Mantén premut el botó del mig (la roda) i mou el ratolí. Per veure la cara de sota, arrossega cap amunt fins que la vista passi per sota del terra.",
+      "hint2": "També pots girar la vista de 15 en 15 graus amb Numpad 4, 6, 8 i 2. Si el teu ratolí no té botó del mig, activa Emulate 3 Button Mouse a les preferències i orbita amb Alt + clic esquerre.",
+      "progress": "Cares trobades: {n} de {total}.",
+      "success": "Molt bé! Orbitar és el gest que faràs més vegades a Blender."
+    },
+    "s2": {
+      "title": "Desplaçar i fer zoom",
+      "instruction": "Lluny del centre hi ha una esfera petita. Porta-la al centre de la vista i apropa-t'hi fins que ocupi una bona part de la pantalla. Desplaça la vista amb Shift + botó del mig i fes zoom amb la roda.",
+      "hint1": "Shift + botó del mig arrossega la vista sense girar-la. Primer centra l'esfera i després fes zoom: el zoom s'apropa al centre de la vista, no al punt on tens el ratolí.",
+      "hint2": "Si no trobes l'esfera, allunya't amb la roda (roda avall) fins que la vegis. També pots fer zoom arrossegant amb Ctrl + botó del mig.",
+      "notVisible": "L'esfera encara no és a la vista.",
+      "notCentred": "Porta l'esfera més a prop del centre de la vista.",
+      "tooSmall": "Ja està centrada. Ara apropa-t'hi més.",
+      "success": "Perfecte. A l'etapa següent veuràs una drecera per fer això d'un sol cop."
+    },
+    "s3": {
+      "title": "Enquadrar amb precisió",
+      "instruction": "El que has fet a l'etapa anterior té una drecera. Selecciona el con (Cone) amb un clic esquerre i prem Numpad . (el punt del teclat numèric): la vista se centra en l'objecte seleccionat i s'hi apropa. Amb Home veuràs tota l'escena.",
+      "hint1": "Primer fes clic al con perquè quedi seleccionat (amb un contorn taronja). Després, amb el ratolí damunt de la vista 3D, prem el punt del teclat numèric.",
+      "hint2": "Si no trobes el con, prem Home per veure tota l'escena. Si el teu teclat no té teclat numèric, fes servir el menú View > Frame Selected de la capçalera de la vista: a Blender és igual.",
+      "selectCone": "Selecciona només el con (Cone).",
+      "frameIt": "El con ja està seleccionat. Ara prem Numpad . amb el ratolí damunt de la vista.",
+      "success": "A Blender enquadraràs els objectes així: els selecciones i prems Numpad ."
+    },
+    "s4": {
+      "title": "Vistes",
+      "instruction": "Ves a aquestes vistes, en aquest ordre: Front (Numpad 1), Right (Numpad 3), Top (Numpad 7) i Back (Ctrl + Numpad 1). El text de dalt a l'esquerra de la vista et diu on ets. Fixa-t'hi: en anar a una vista d'eix, Blender la passa a ortogràfica (sense perspectiva), perquè així pots comparar mides i alinear objectes; quan tornes a orbitar, recupera la perspectiva. Aquesta opció es diu Auto Perspective.",
+      "hint1": "Mira el text de dalt a l'esquerra: primer ha de dir «Front Orthographic», després «Right Orthographic», i així successivament. Si et saltes l'ordre, torna a la vista que toca.",
+      "hint2": "Amb Ctrl, les tecles del teclat numèric porten a la vista oposada: Ctrl + Numpad 1 és Back. Sense teclat numèric, activa Emulate Numpad i fes servir la fila de números, o fes clic a les esferes del gizmo de dalt a la dreta.",
+      "progress": "Vistes fetes: {n} de {total}. Ara toca: {view}.",
+      "success": "Ja domines les vistes. Recorda: Numpad 1, 3 i 7, i Ctrl per a la vista oposada."
+    },
+    "s5": {
+      "title": "Selecció",
+      "instruction": "Selecciona totes les esferes (Sphere, Sphere.001 i Sphere.002), i res més, i fes que l'objecte actiu sigui Sphere.001. L'objecte actiu té el contorn més clar i el seu nom surt a dalt a l'esquerra de la vista.",
+      "hint1": "Clic esquerre selecciona un objecte i deselecciona la resta. Shift + clic afegeix objectes a la selecció, i l'últim que hi afegeixes passa a ser l'actiu.",
+      "hint2": "Si un objecte ja seleccionat no és l'actiu, Shift + clic el fa actiu. També pots seleccionar a l'Outliner, a dalt a la dreta: clic, i Ctrl + clic per afegir-n'hi més.",
+      "extraOne": "Sobra un objecte a la selecció: {names}.",
+      "extraMany": "Sobren objectes a la selecció: {names}.",
+      "missingOne": "Falta un objecte per seleccionar: {names}.",
+      "missingMany": "Falten objectes per seleccionar: {names}.",
+      "wrongActive": "Tens les tres esferes, però l'objecte actiu no és el correcte: ara és {name} i ha de ser Sphere.001.",
+      "success": "Correcte! Moltes operacions de Blender fan servir l'objecte actiu, així que convé saber quin és."
+    },
+    "s6": {
+      "title": "Moure",
+      "instruction": "Porta cada cub a la seva silueta. El Cube hi pot anar com vulguis: prem G, mou el ratolí i confirma amb un clic esquerre (hi ha una tolerància de 10 cm). El Cube.001 només ha de pujar: prem G i després Z perquè només es mogui en l'eix Z. Si canvies d'opinió, clic dret cancel·la el moviment.",
+      "hint1": "Per moure un objecte, primer selecciona'l. Amb G, l'objecte segueix el ratolí en el pla de la pantalla; amb G X, G Y o G Z, només es mou en aquell eix.",
+      "hint2": "Mou el Cube primer amb G X i després amb G Y: així no canvia d'altura. Per al Cube.001, prem G Z i mou el ratolí cap amunt fins que encaixi.",
+      "progress": "Porta els dos cubs a les seves siluetes.",
+      "aDone": "El Cube ja és al seu lloc. Ara el Cube.001, només en l'eix Z.",
+      "bOffAxis": "El Cube.001 s'ha mogut en X o en Y. Desfés el moviment amb Ctrl + Z i torna-ho a provar amb G Z.",
+      "success": "Molt bé. Restringir el moviment a un eix (X, Y o Z) és la manera de moure les coses amb precisió."
+    },
+    "s7": {
+      "title": "Valors exactes",
+      "instruction": "Fes aquests tres canvis al cub amb valors exactes: puja'l 2 m en Z, gira'l 45° al voltant de Z i escala'l ×1,5. Mentre fas l'operació, escriu el número: per exemple, G Z 2 i Enter. Pots comprovar els valors al panell N (prem N).",
+      "hint1": "Mentre mous, gires o escales, escriu el valor amb el teclat: el moviment del ratolí deixa de comptar i el valor queda exacte. A la capçalera de la vista veuràs el número que escrius.",
+      "hint2": "Seqüència completa: G Z 2 Enter, R Z 45 Enter, S 1.5 Enter. Amb Backspace esborres el que has escrit.",
+      "progress": "Valors exactes: {n} de {total}.",
+      "almost": {
+        "location": "La posició és gairebé correcta, però no exacta. Desfés amb Ctrl + Z i torna-ho a fer escrivint el número: G Z 2 i Enter.",
+        "rotationDeg": "La rotació és gairebé correcta, però no exacta. Desfés amb Ctrl + Z i torna-ho a fer escrivint el número: R Z 45 i Enter.",
+        "scale": "L'escala és gairebé correcta, però no exacta. Desfés amb Ctrl + Z i torna-ho a fer escrivint el número: S 1.5 i Enter."
+      },
+      "success": "Exacte! Escriure els valors és imprescindible quan necessites precisió."
+    },
+    "s8": {
+      "title": "Cancel·lar i desfer",
+      "instruction": "Hi ha dues maneres de tirar enrere. Primer, comença a moure el cub (G), mou el ratolí i cancel·la amb clic dret: el cub torna exactament on era. Després, fes un canvi qualsevol, confirma'l i desfés-lo amb Ctrl + Z. Al final, el cub ha de quedar com al principi.",
+      "hint1": "Cancel·lar (clic dret o Esc) atura una operació que encara no has confirmat. Desfer (Ctrl + Z) tira enrere una operació que ja havies confirmat.",
+      "hint2": "Seqüència: G, mou el ratolí, clic dret. Després G, mou el ratolí, clic esquerre per confirmar i Ctrl + Z. Si desfàs massa, Ctrl + Shift + Z ho refà.",
+      "needCancel": "Comença a moure el cub amb G i cancel·la amb clic dret.",
+      "useRightClick": "Has cancel·lat amb Esc, que també funciona. En aquesta etapa, prova-ho amb el clic dret.",
+      "needUndo": "Cancel·lació feta. Ara fes un canvi, confirma'l i desfés-lo amb Ctrl + Z.",
+      "notBack": "Molt bé, però el cub encara no és com al principi. Continua desfent amb Ctrl + Z.",
+      "success": "Perfecte. Cancel·lar i desfer et permeten provar coses sense por d'espatllar res."
+    },
+    "s9": {
+      "title": "Repte final",
+      "instruction": "L'escena està desendreçada. Posa cada objecte a la seva silueta: mou, gira i escala fent servir tot el que has après. Aquesta vegada no hi ha pistes.",
+      "progress": "Objectes al seu lloc: {n} de {total}.",
+      "success": "Repte superat!"
+    },
+    "intro": {
+      "eyebrow": "Lab 01",
+      "lead": "Aprendràs a moure't pel viewport de Blender, a canviar de vista, a seleccionar objectes i a moure'ls, girar-los i escalar-los amb precisió. Tot el que facis aquí funciona igual a Blender.",
+      "controls": {
+        "orbit": "Orbitar: botó del mig del ratolí",
+        "pan": "Desplaçar: Shift + botó del mig",
+        "zoom": "Zoom: roda del ratolí",
+        "views": "Vistes: Numpad 1, 3 i 7",
+        "select": "Seleccionar: clic esquerre",
+        "transform": "Moure, girar i escalar: G, R i S",
+        "undo": "Desfer: Ctrl + Z"
+      }
+    },
+    "real": {
+      "lead": "Tot el que has fet en aquest lab és exactament igual a Blender. Aquí tens on trobar cada cosa al programa.",
+      "navigation": "Navegació: igual que aquí. Les opcions (Orbit Sensitivity, Auto Perspective...) són a Edit > Preferences > Navigation.",
+      "emulation": "Si no tens botó del mig o teclat numèric: Edit > Preferences > Input > Emulate 3 Button Mouse i Emulate Numpad.",
+      "views": "Vistes: menú View > Viewpoint de la capçalera de la vista 3D, o les esferes del gizmo de navegació.",
+      "frame": "Enquadrar: View > Frame Selected (Numpad .) i View > Frame All (Home).",
+      "select": "Selecció: menú Select de la vista 3D (All, None, Invert, Box Select) i l'Outliner, a dalt a la dreta.",
+      "transform": "Transformacions: menú Object > Transform (Move, Rotate, Scale) i el panell N, pestanya Item.",
+      "clear": "Esborrar transformacions: Object > Clear > Location, Rotation i Scale (Alt + G, Alt + R, Alt + S).",
+      "undo": "Desfer: Edit > Undo, i Edit > Undo History per veure la llista d'operacions."
+    }
+  }
+}

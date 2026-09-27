@@ -1,34 +1,33 @@
 /**
- * Stage runner: loads stages, checks them whenever the scene or the view
- * changes, handles hints and saves progress. No DOM: the lab page renders it.
+ * Stage runner: loads stages into the program, checks them whenever its state
+ * changes, handles hints and saves progress. No DOM (the shell renders it) and
+ * no knowledge of the program: it only uses the app contract.
  */
-import type { SceneState } from '../../apps/blender/scene/scene';
-import type { SceneStore } from '../history/store';
-import type { ViewportSize } from '../../apps/blender/viewport/projection';
-import type { ViewProjection } from '../../apps/blender/viewport/screen';
-import { type ViewState, defaultViewState } from '../../apps/blender/viewport/view-state';
+import type { LogEntry } from '../history/store';
 import type { ProgressStore } from './progress';
 import type { CheckResult, LabStages, StageDefinition } from './types';
 
 /** The second hint appears on its own after this long without finishing. */
 export const STUCK_MS = 90_000;
 
-export interface RunnerDeps {
-  readonly store: SceneStore;
-  /** Current logical view state. */
-  view(): ViewState;
-  /** Projection of the logical view and the viewport size. */
-  projection(): { projection: ViewProjection; size: ViewportSize };
-  resetView(state: ViewState): void;
+/** The part of the app contract the runner needs. */
+export interface RunnerApp<State, Setup> {
+  load(setup: Setup): void;
+  getState(): State;
+  readonly log: readonly LogEntry[];
+}
+
+export interface RunnerDeps<State, Setup> {
+  readonly app: RunnerApp<State, Setup>;
   readonly progress: ProgressStore;
   now(): number;
 }
 
-export interface StageStatus {
+export interface StageStatus<State = unknown, Setup = unknown, Decorations = unknown> {
   /** -1: free mode. */
   readonly index: number;
-  readonly stage: StageDefinition | null;
-  readonly result: CheckResult;
+  readonly stage: StageDefinition<State, Setup, Decorations> | null;
+  readonly result: CheckResult<Decorations>;
   /** Completed now or before (saved progress). */
   readonly completed: boolean;
   /** Number of hints visible (0, 1 or 2). */
@@ -39,23 +38,23 @@ export interface StageStatus {
   readonly stats: { readonly seconds: number; readonly operations: number } | null;
 }
 
-export class StageRunner {
+export class StageRunner<State = unknown, Setup = unknown, Decorations = unknown> {
   private index = 0;
   private memory = new Map<string, unknown>();
-  private initialScene: SceneState | null = null;
+  private initialState: State | null = null;
   private startedAt = 0;
   private hintsShown = 0;
-  private result: CheckResult = { done: false };
+  private result: CheckResult<Decorations> = { done: false };
   private doneAt: number | null = null;
   private interacted = false;
   private listeners = new Set<() => void>();
 
   constructor(
-    readonly lab: LabStages,
-    private readonly deps: RunnerDeps,
+    readonly lab: LabStages<State, Setup, Decorations>,
+    private readonly deps: RunnerDeps<State, Setup>,
   ) {}
 
-  get stages(): readonly StageDefinition[] {
+  get stages(): readonly StageDefinition<State, Setup, Decorations>[] {
     return this.lab.stages;
   }
 
@@ -64,7 +63,7 @@ export class StageRunner {
     return () => this.listeners.delete(fn);
   }
 
-  /** Loads a stage (or free mode with -1) from its initial scene and view. */
+  /** Loads a stage (or free mode with -1) into the program. */
   load(index: number): void {
     const stage = this.lab.stages[index] ?? null;
     this.index = stage ? index : -1;
@@ -72,12 +71,10 @@ export class StageRunner {
     this.hintsShown = 0;
     this.result = { done: false };
     this.doneAt = null;
-    this.interacted = false;
     this.startedAt = this.deps.now();
-    const scene = stage ? stage.scene() : this.lab.freeScene();
-    this.initialScene = scene;
-    this.deps.store.reset(scene);
-    this.deps.resetView(stage?.view?.() ?? defaultViewState());
+    this.initialState = null;
+    this.deps.app.load(stage ? stage.setup() : this.lab.freeSetup());
+    this.initialState = this.deps.app.getState();
     // Loading itself is not student activity.
     this.interacted = false;
     this.deps.progress.setCurrent(this.index);
@@ -88,14 +85,14 @@ export class StageRunner {
     this.load(this.index);
   }
 
-  get status(): StageStatus {
+  get status(): StageStatus<State, Setup, Decorations> {
     const stage = this.lab.stages[this.index] ?? null;
     const completed = stage ? this.result.done || this.deps.progress.isCompleted(stage.id) : false;
     const stats =
       stage?.stats && this.doneAt !== null
         ? {
             seconds: Math.round((this.doneAt - this.startedAt) / 1000),
-            operations: this.deps.store.log.filter((e) => e.kind === 'execute').length,
+            operations: this.deps.app.log.filter((e) => e.kind === 'execute').length,
           }
         : null;
     return { index: this.index, stage, result: this.result, completed, hintsShown: this.hintsShown, interacted: this.interacted, stats };
@@ -119,28 +116,25 @@ export class StageRunner {
     }
   }
 
-  /** Marks that the student acted (scene or view changed), then checks the stage. */
+  /** The program's state changed: the student acted. Checks the stage again. */
   notifyActivity(): void {
+    if (this.initialState === null) return; // still loading
     this.interacted = true;
     this.evaluate();
   }
 
   evaluate(): void {
     const stage = this.lab.stages[this.index];
-    if (!stage || !this.initialScene) {
+    if (!stage || this.initialState === null) {
       this.emit();
       return;
     }
     // Once done, a stage stays done until it is restarted.
     if (!this.result.done) {
-      const { projection, size } = this.deps.projection();
       this.result = stage.check({
-        scene: this.deps.store.state,
-        initialScene: this.initialScene,
-        view: this.deps.view(),
-        projection,
-        size,
-        log: this.deps.store.log,
+        state: this.deps.app.getState(),
+        initialState: this.initialState,
+        log: this.deps.app.log,
         memory: this.memory,
       });
       if (this.result.done) {

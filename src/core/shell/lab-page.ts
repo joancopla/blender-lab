@@ -1,18 +1,15 @@
 /**
- * Lab page, shared by every lab: short introduction, the lab (lab column +
- * Blender replica) and the "Al Blender real" block. Each lab only provides data
- * (texts, stages, options) through its LabDefinition.
+ * Lab page, shared by every lab and every program: short introduction, the lab
+ * (lab panel + replicated program) and the "In the real program" block. It only
+ * talks to the program through the app contract.
  */
-import { mountLab } from '../../apps/blender/app';
 import type { LabDefinition } from '../lab';
-import { type LabPrefs, loadPrefs, savePrefs } from './prefs';
-import { analyzeMesh } from '../../apps/blender/mesh/analyze';
+import { KEY_OVERLAY_PREF, type PrefValues, loadPrefs, savePrefs } from './prefs';
 import { ProgressStore } from '../stages/progress';
 import { StageRunner } from '../stages/runner';
-import { activeObject, meshOf } from '../../apps/blender/scene/scene';
-import type { ComponentHint } from '../../apps/blender/viewport/lab-elements';
 import { t } from '../i18n';
 import { showDeviceWarningIfNeeded } from './device-warning';
+import { KeyOverlay } from './key-overlay';
 import { StagePanel } from './stage-panel';
 import './shell.css';
 
@@ -23,9 +20,9 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: 
   return e;
 };
 
-export function mountLabPage(lab: LabDefinition): void {
+export function mountLabPage<State, Setup, Decorations>(lab: LabDefinition<State, Setup, Decorations>): void {
   const P = lab.page.prefix;
-  document.title = `${t(lab.nameKey)} · Blender Lab`;
+  document.title = `${t(lab.nameKey)} · ${t('site.title')}`;
   const page = document.getElementById('app')!;
   page.className = 'lab-page';
 
@@ -54,7 +51,7 @@ export function mountLabPage(lab: LabDefinition): void {
   const replica = el('div', 'lab-replica');
   shell.append(panel, replica);
 
-  // --- In real Blender -----------------------------------------------------------
+  // --- In the real program -------------------------------------------------------
   const real = el('section', 'lab-real');
   const realList = el('ul');
   for (const k of lab.page.real) realList.append(el('li', undefined, t(`${P}.real.${k}`)));
@@ -62,25 +59,32 @@ export function mountLabPage(lab: LabDefinition): void {
 
   page.append(intro, shell, real, el('footer', 'lab-footer', t('site.footer')));
 
-  // --- Preferences and the suggestion to enable Emulate 3 Button Mouse ------------
-  let prefs: LabPrefs = loadPrefs();
-  const prefsSection = el('section', 'lab-prefs');
+  // --- The program ---------------------------------------------------------------
+  const app = lab.createApp();
+  const defaults: PrefValues = {
+    ...Object.fromEntries(app.preferences.map((p) => [p.key, p.default])),
+    [KEY_OVERLAY_PREF]: true,
+  };
+  let prefs = loadPrefs(defaults);
+
   const toast = el('div', 'lab-toast');
   toast.hidden = true;
   toast.setAttribute('role', 'status');
   replica.append(toast);
-  let suggestionDismissed = false;
+  const dismissed = new Set<string>();
 
-  function suggestEmulation(): void {
-    if (suggestionDismissed || prefs.emulate3ButtonMouse || !toast.hidden) return;
+  /** The program asks to suggest a preference (e.g. Emulate 3 Button Mouse). */
+  function suggest(key: string): void {
+    const def = app.preferences.find((p) => p.key === key);
+    if (!def?.suggestKey || dismissed.has(key) || prefs[key] || !toast.hidden) return;
     const close = () => {
       toast.hidden = true;
-      suggestionDismissed = true;
+      dismissed.add(key);
     };
     const yes = el('button', 'lab-button lab-button-primary', t('prefs.suggestYes'));
     yes.type = 'button';
     yes.addEventListener('click', () => {
-      setPrefs({ ...prefs, emulate3ButtonMouse: true });
+      setPrefs({ ...prefs, [key]: true });
       close();
     });
     const no = el('button', 'lab-button', t('prefs.suggestNo'));
@@ -88,138 +92,63 @@ export function mountLabPage(lab: LabDefinition): void {
     no.addEventListener('click', close);
     const actions = el('div', 'lab-toast-actions');
     actions.append(yes, no);
-    toast.replaceChildren(el('p', undefined, t('prefs.suggestEmulate3')), actions);
+    toast.replaceChildren(el('p', undefined, t(def.suggestKey)), actions);
     toast.hidden = false;
   }
 
-  // The replica gets its own element: .bl-app must not share an element with lab
-  // classes, or the result would depend on stylesheet order (it differs between dev and build).
-  const replicaHost = el('div');
-  replica.prepend(replicaHost);
-  const app = mountLab(replicaHost, lab, {
-    inputPrefs: () => prefs,
-    onNavigateWithoutMiddle: suggestEmulation,
-    statistics: lab.page.statistics,
-  });
+  // The program gets its own element: its root must not share an element with
+  // shell classes, or the result would depend on stylesheet order (it differs
+  // between dev and build).
+  const host = el('div');
+  replica.prepend(host);
+  app.mount(host, { preferences: () => prefs, suggestPreference: suggest });
+  const keyOverlay = new KeyOverlay(app.overlayHost(), app.inputHost());
+  keyOverlay.setEnabled(prefs[KEY_OVERLAY_PREF] === true);
 
-  function setPrefs(next: LabPrefs): void {
+  const prefsSection = el('section', 'lab-prefs');
+  function setPrefs(next: PrefValues): void {
     prefs = next;
     savePrefs(prefs);
     renderPrefs();
-    app.keyOverlay.setEnabled(prefs.keyOverlay);
+    keyOverlay.setEnabled(prefs[KEY_OVERLAY_PREF] === true);
   }
-  app.keyOverlay.setEnabled(prefs.keyOverlay);
-
   function renderPrefs(): void {
     prefsSection.replaceChildren(el('h2', undefined, t('prefs.title')));
-    const toggles: [keyof LabPrefs, string, string][] = [
-      ['emulate3ButtonMouse', 'prefs.emulate3', 'prefs.emulate3Help'],
-      ['emulateNumpad', 'prefs.emulateNumpad', 'prefs.emulateNumpadHelp'],
-      ['keyOverlay', 'prefs.keyOverlay', 'prefs.keyOverlayHelp'],
+    const toggles = [
+      ...app.preferences,
+      { key: KEY_OVERLAY_PREF, labelKey: 'prefs.keyOverlay', helpKey: 'prefs.keyOverlayHelp' },
     ];
-    for (const [key, label, help] of toggles) {
+    for (const { key, labelKey, helpKey } of toggles) {
       const row = el('label', 'lab-switch');
       const input = el('input');
       input.type = 'checkbox';
       input.setAttribute('role', 'switch');
-      input.checked = prefs[key];
+      input.checked = prefs[key] === true;
       input.addEventListener('change', () => setPrefs({ ...prefs, [key]: input.checked }));
       const text = el('span', 'lab-switch-text');
-      text.append(el('strong', undefined, t(label)), el('small', undefined, t(help)));
+      text.append(el('strong', undefined, t(labelKey)), el('small', undefined, t(helpKey)));
       row.append(input, text);
       prefsSection.append(row);
     }
   }
   renderPrefs();
 
-  // --- Topology analyser (labs that ask for it) -----------------------------------
-  const analyzerSection = el('section', 'lab-analyzer');
-  let analyzerOn = false;
-  let lastAnalyzed: { on: boolean; id: string | undefined; mesh: unknown } | null = null;
-  function renderAnalyzer(): void {
-    if (!lab.page.analyzer) return;
-    const active = activeObject(app.store.state);
-    app.renderer.setAnalyzerObject(analyzerOn && active?.type === 'mesh' ? active.id : null);
-    const mesh = active?.type === 'mesh' ? meshOf(active) : null;
-    // Mesh data is immutable: the same reference means the same analysis.
-    if (lastAnalyzed && lastAnalyzed.on === analyzerOn && lastAnalyzed.id === active?.id && lastAnalyzed.mesh === mesh) return;
-    lastAnalyzed = { on: analyzerOn, id: active?.id, mesh };
-    analyzerSection.replaceChildren(el('h2', undefined, t('analyzer.title')));
-    const row = el('label', 'lab-switch');
-    const input = el('input');
-    input.type = 'checkbox';
-    input.setAttribute('role', 'switch');
-    input.checked = analyzerOn;
-    input.addEventListener('change', () => {
-      analyzerOn = input.checked;
-      renderAnalyzer();
-    });
-    const text = el('span', 'lab-switch-text');
-    text.append(el('strong', undefined, t('analyzer.toggle')), el('small', undefined, t('analyzer.help')));
-    row.append(input, text);
-    analyzerSection.append(row);
-    if (!analyzerOn || !mesh) return;
-    const r = analyzeMesh(mesh);
-    const items: [string, number][] = [
-      ['ngons', r.ngons.length],
-      ['triangles', r.triangles.length],
-      ['duplicates', r.duplicates.reduce((n, g) => n + g.length - 1, 0)],
-      ['nonManifold', r.nonManifoldEdges.length],
-      ['flipped', r.flippedFaces.length],
-    ];
-    const list = el('ul', 'lab-analyzer-list');
-    let any = false;
-    for (const [k, n] of items) {
-      if (n === 0) continue;
-      any = true;
-      const li = el('li', `lab-analyzer-item is-${k}`);
-      li.append(el('strong', undefined, t(`analyzer.${k}.label`, { n })), el('p', undefined, t(`analyzer.${k}.why`)));
-      list.append(li);
-    }
-    analyzerSection.append(any ? list : el('p', 'lab-muted', t('analyzer.clean')));
-  }
-
   // --- Stages --------------------------------------------------------------------
   const progress = new ProgressStore(lab.id);
-  const runner = new StageRunner(lab.stages, {
-    store: app.store,
-    view: () => app.navigator.state,
-    projection: () => app.settledProjection(),
-    resetView: (v) => app.navigator.reset(v),
-    progress,
-    now: () => performance.now(),
-  });
-  app.store.onChange(() => {
-    runner.notifyActivity();
-    renderAnalyzer();
-  });
-  app.navigator.onChange(() => runner.notifyActivity());
-
-  let loadedIndex: number | null = null;
-  let shownHints: readonly ComponentHint[] | undefined;
-  runner.onChange(() => {
-    const s = runner.status;
-    const hints = s.result.hints;
-    if (s.index !== loadedIndex || hints !== shownHints) {
-      if (s.index !== loadedIndex && s.stage?.analyzer) analyzerOn = true;
-      loadedIndex = s.index;
-      shownHints = hints;
-      app.renderer.setLabElements(s.stage?.ghosts ?? [], s.stage?.markers ?? [], s.stage?.referenceMeshes ?? [], hints ?? []);
-      renderAnalyzer();
-    }
-    app.renderer.setSeenMarkers(s.result.seenMarkers ?? []);
-  });
+  const runner = new StageRunner(lab.stages, { app, progress, now: () => performance.now() });
+  app.onChange(() => runner.notifyActivity());
+  runner.onChange(() => app.decorate(runner.status.result.decorations));
 
   const stageBox = el('div');
-  panel.append(stageBox);
-  if (lab.page.analyzer) panel.append(analyzerSection);
-  panel.append(prefsSection);
+  const tools = el('section');
+  panel.append(stageBox, tools, prefsSection);
   new StagePanel(stageBox, runner, (id) => progress.isCompleted(id));
+  if (app.renderLabTools) app.renderLabTools(tools);
+  else tools.remove();
 
   const saved = progress.progress.current;
   runner.load(saved >= -1 && saved < lab.stages.stages.length ? saved : 0);
   window.setInterval(() => runner.tick(), 5000);
-  renderAnalyzer();
 
   showDeviceWarningIfNeeded();
 }

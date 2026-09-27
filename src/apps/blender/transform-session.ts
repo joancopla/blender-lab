@@ -7,7 +7,7 @@ import type { Modifiers } from './input/keymap';
 import type { ModalHandler } from './input/viewport-input';
 import type { Guides, ModalResult } from './operators/transform';
 import type { SceneState } from './scene/scene';
-import type { SceneStore } from '../../core/history/store';
+import type { SceneStore } from './scene/store';
 import type { StatusBar, StatusMode } from './ui/status-bar';
 import type { TransformGuides } from './ui/transform-guides';
 import type { ViewportRenderer } from './viewport/renderer';

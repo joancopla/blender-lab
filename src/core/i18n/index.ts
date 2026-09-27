@@ -1,19 +1,41 @@
-import ca from './ca.json';
+/**
+ * Catalan texts. The core registers its own (core/i18n/ca.json); programs and
+ * labs register theirs from their folders with registerTexts. Keys are dotted
+ * paths ("lab01.s1.title").
+ */
+import core from './ca.json';
 
 type Dict = { [key: string]: string | Dict };
 
-/** True if a Catalan text exists for this dotted key. */
-export function has(key: string): boolean {
-  return lookup(key) !== undefined;
+const registry: Dict = {};
+
+function merge(into: Dict, from: Dict): void {
+  for (const [k, v] of Object.entries(from)) {
+    const cur = into[k];
+    if (typeof v === 'object' && typeof cur === 'object') merge(cur, v);
+    else into[k] = typeof v === 'object' ? structuredClone(v) : v;
+  }
 }
 
+/** Adds texts (deep-merged, later registrations win on conflicts). */
+export function registerTexts(texts: Dict): void {
+  merge(registry, texts);
+}
+
+registerTexts(core as Dict);
+
 function lookup(key: string): string | undefined {
-  let node: string | Dict | undefined = ca as Dict;
+  let node: string | Dict | undefined = registry;
   for (const part of key.split('.')) {
     if (typeof node !== 'object') return undefined;
     node = node[part];
   }
   return typeof node === 'string' ? node : undefined;
+}
+
+/** True if a Catalan text exists for this dotted key. */
+export function has(key: string): boolean {
+  return lookup(key) !== undefined;
 }
 
 /**

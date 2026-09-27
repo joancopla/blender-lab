@@ -33,7 +33,7 @@ import {
   meshOf,
   selectModeOf,
 } from '../scene/scene';
-import type { OperatorCall } from '../../../core/history/store';
+import type { OperatorCall } from '../scene/store';
 
 const allSelectedCache = new WeakMap<MeshData, ComponentSelection>();
 

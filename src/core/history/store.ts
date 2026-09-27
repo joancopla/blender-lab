@@ -1,16 +1,16 @@
 /**
- * Holds the current scene state and the undo history. Every change goes through
- * `execute`, which records one undo step, like a confirmed Blender operator.
+ * Undo/redo history for any replicated program (command pattern over immutable
+ * states). Every change goes through `execute`, which records one undo step.
+ * It also keeps the operation log that stage checks read.
  */
-import type { SceneState } from '../../apps/blender/scene/scene';
 
-/** Preferences > System > Undo Steps (Blender default). */
+/** Default number of undo steps (Blender's Preferences > System > Undo Steps). */
 export const UNDO_STEPS = 32;
 
-export interface OperatorCall {
-  /** Blender operator name, as it would appear in Edit > Undo History. */
+export interface OperatorCall<S> {
+  /** Operator name, as the program shows it in its undo history. */
   readonly name: string;
-  apply(scene: SceneState): SceneState;
+  apply(state: S): S;
 }
 
 export type LogEntry =
@@ -19,24 +19,24 @@ export type LogEntry =
   | { readonly kind: 'redo'; readonly name: string }
   | { readonly kind: 'cancel'; readonly name: string; readonly via: 'rightClick' | 'escape' };
 
-interface Step {
+interface Step<S> {
   readonly name: string;
-  readonly state: SceneState;
+  readonly state: S;
 }
 
-export class SceneStore {
-  private steps: Step[];
+export class HistoryStore<S> {
+  private steps: Step<S>[];
   private index = 0;
   private listeners = new Set<() => void>();
-  private previewState: SceneState | null = null;
+  private previewState: S | null = null;
   /** Everything the student did, in order (used by stage checks). */
   readonly log: LogEntry[] = [];
 
-  constructor(initial: SceneState) {
+  constructor(initial: S) {
     this.steps = [{ name: 'Original', state: initial }];
   }
 
-  get state(): SceneState {
+  get state(): S {
     return this.steps[this.index]!.state;
   }
 
@@ -44,12 +44,12 @@ export class SceneStore {
    * What the viewport and panels show: the preview of a running modal operator,
    * or the committed state.
    */
-  get displayState(): SceneState {
+  get displayState(): S {
     return this.previewState ?? this.state;
   }
 
   /** Shows an uncommitted state while a modal operator runs (null to clear it). */
-  setPreview(state: SceneState | null): void {
+  setPreview(state: S | null): void {
     this.previewState = state;
     this.emit();
   }
@@ -78,7 +78,7 @@ export class SceneStore {
    * Runs an operator. If it changes nothing, no undo step is recorded.
    * Returns true if the scene changed.
    */
-  execute(op: OperatorCall): boolean {
+  execute(op: OperatorCall<S>): boolean {
     this.previewState = null;
     const next = op.apply(this.state);
     if (next === this.state) {
@@ -113,7 +113,7 @@ export class SceneStore {
   }
 
   /** Starts over from a new scene (stage load / reset). Clears history and log. */
-  reset(initial: SceneState): void {
+  reset(initial: S): void {
     this.previewState = null;
     this.steps = [{ name: 'Original', state: initial }];
     this.index = 0;

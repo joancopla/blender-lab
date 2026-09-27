@@ -3,6 +3,7 @@
  * Reference shapes are built with the engine's own mesh operations.
  * All texts live in ca.json under "lab02".
  */
+import './texts';
 import { selectionOf } from '../../../apps/blender/operators/edit-mode';
 import { EMPTY_SELECTION, topologyOf } from '../../../apps/blender/edit/selection';
 import { type Vec3, add, vec3 } from '../../../apps/blender/math/vec3';
@@ -25,7 +26,7 @@ import {
   selectModeOf,
 } from '../../../apps/blender/scene/scene';
 import { type ViewComparison, compareSilhouettes, objectTriangles, worldTriangles } from '../../../apps/blender/stages/silhouette';
-import type { CheckResult, Feedback, LabStages, StageDefinition } from '../../../core/stages/types';
+import type { BlenderCheckResult as CheckResult, Feedback, BlenderLabStages as LabStages, BlenderStageDefinition as StageDefinition } from '../../../apps/blender/stages/types';
 import type { ComponentHint } from '../../../apps/blender/viewport/lab-elements';
 import { t } from '../../../core/i18n';
 

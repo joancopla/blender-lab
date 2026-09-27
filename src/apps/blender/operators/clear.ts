@@ -4,7 +4,7 @@
  */
 import { vec3 } from '../math/vec3';
 import type { SceneObject, SceneState } from '../scene/scene';
-import type { OperatorCall } from '../../../core/history/store';
+import type { OperatorCall } from '../scene/store';
 
 type Field = 'location' | 'rotationDeg' | 'scale';
 

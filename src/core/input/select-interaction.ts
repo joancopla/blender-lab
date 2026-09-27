@@ -6,8 +6,10 @@
  *    Esc or RMB: cancel.
  * Pure state machine: it returns commands, the caller runs the operators.
  */
-import type { BoxMode } from '../../apps/blender/operators/select';
-import type { Modifiers } from '../../apps/blender/input/keymap';
+import type { Modifiers } from './keymap';
+
+/** Box selection mode: new selection, add to it, or remove from it. */
+export type BoxMode = 'set' | 'add' | 'sub';
 
 /** Preferences > Input > Drag Threshold (mouse), in px. */
 export const DRAG_THRESHOLD_PX = 3;

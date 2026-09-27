@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { vec3 } from '../math/vec3';
 import { mesh, sceneWith } from '../scene/factory';
 import { type MeshObject, type SceneState, isEditMode, selectModeOf } from '../scene/scene';
-import { SceneStore } from '../../../core/history/store';
+import { SceneStore } from '../scene/store';
 import {
   EditSelectOp,
   ToggleEditModeOp,

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { blenderDefaultScene } from '../scene/default-scene';
 import type { SceneState } from '../scene/scene';
-import { SceneStore } from '../../../core/history/store';
+import { SceneStore } from '../scene/store';
 import { vec3 } from '../math/vec3';
 import { BoxSelectOp, SelectAllOp, SelectOp, boxSelect, clickSelect, outlinerSelect, selectAll } from './select';
 

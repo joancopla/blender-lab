@@ -1,37 +1,18 @@
 /**
- * Stage data model. A lab is a list of stages; each stage is data plus a check
- * function that reads the scene state, the view state and the operation log
- * (never the DOM or three.js).
+ * Stage data model, for any replicated program. A lab is a list of stages; each
+ * stage is data plus a check that reads the program's state and the operation
+ * log through the app contract (never the DOM or the renderer).
+ *
+ * - State: what checks read (typed by the program).
+ * - Setup: what the program loads when a stage starts.
+ * - Decorations: lab elements a check result asks the program to show.
  */
-import type { Vec3 } from '../../apps/blender/math/vec3';
-import type { SceneState } from '../../apps/blender/scene/scene';
 import type { LogEntry } from '../history/store';
-import type { ViewportSize } from '../../apps/blender/viewport/projection';
-import type { ViewProjection } from '../../apps/blender/viewport/screen';
-import type { ViewState } from '../../apps/blender/viewport/view-state';
-import type { Ghost } from '../../apps/blender/stages/ghost-match';
-import type { MeshData } from '../../apps/blender/mesh/mesh-data';
-import type { ComponentHint } from '../../apps/blender/viewport/lab-elements';
 
-/** A symbol painted on a face (lab element, stage 1). */
-export interface FaceMarker {
-  readonly id: string;
-  readonly position: Vec3;
-  /** Outward face normal. */
-  readonly normal: Vec3;
-  readonly symbol: string;
-  /** Side of the square marker, metres. */
-  readonly size: number;
-}
-
-export interface StageContext {
-  readonly scene: SceneState;
-  readonly initialScene: SceneState;
-  /** Logical view state (end of any Smooth View transition). */
-  readonly view: ViewState;
-  /** Projection of that view, for on-screen checks. */
-  readonly projection: ViewProjection;
-  readonly size: ViewportSize;
+export interface StageContext<State> {
+  readonly state: State;
+  /** State right after the stage was loaded. */
+  readonly initialState: State;
   readonly log: readonly LogEntry[];
   /** Per-stage memory, kept between checks and cleared when the stage (re)starts. */
   readonly memory: Map<string, unknown>;
@@ -45,45 +26,32 @@ export interface Feedback {
   readonly tone: 'progress' | 'fix';
 }
 
-export interface CheckResult {
+export interface CheckResult<Decorations = unknown> {
   readonly done: boolean;
   readonly feedback?: Feedback;
-  /** Markers already seen (stage 1). */
-  readonly seenMarkers?: readonly string[];
-  /**
-   * Components to point at (lab colour). Return the same array for the same
-   * step: the page only redraws them when the reference changes.
-   */
-  readonly hints?: readonly ComponentHint[];
+  readonly decorations?: Decorations;
 }
 
-export interface StageDefinition {
+export interface StageDefinition<State = unknown, Setup = unknown, Decorations = unknown> {
   readonly id: string;
   /** i18n keys. Hints are progressive: the first with the "Pista" button, the second when stuck. */
   readonly titleKey: string;
   readonly instructionKey: string;
   readonly hintKeys: readonly string[];
   readonly successKey: string;
-  /** Keys to highlight, with Blender's names ("G", "Numpad 1", "Shift"). */
+  /** Keys to highlight: suffixes of i18n keys under "keys." ("numpad1", "g"...). */
   readonly keys: readonly string[];
-  scene(): SceneState;
-  view?(): ViewState;
-  readonly ghosts?: readonly Ghost[];
-  readonly markers?: readonly FaceMarker[];
-  /** Reference shapes drawn as silhouettes (world coordinates). */
-  readonly referenceMeshes?: readonly MeshData[];
-  /** Turn the topology analyser on when the stage starts. */
-  readonly analyzer?: boolean;
-  check(ctx: StageContext): CheckResult;
+  setup(): Setup;
+  check(ctx: StageContext<State>): CheckResult<Decorations>;
   /** false: no hints at all (final challenge). */
   readonly hints?: boolean;
   /** Show time and number of operations when done (final challenge). */
   readonly stats?: boolean;
 }
 
-export interface LabStages {
+export interface LabStages<State = unknown, Setup = unknown, Decorations = unknown> {
   readonly labId: string;
-  readonly stages: readonly StageDefinition[];
-  /** Free mode after the last stage: scene with all tools and no checks. */
-  freeScene(): SceneState;
+  readonly stages: readonly StageDefinition<State, Setup, Decorations>[];
+  /** Free mode after the last stage: all tools, no checks. */
+  freeSetup(): Setup;
 }

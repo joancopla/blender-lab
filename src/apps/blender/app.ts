@@ -1,6 +1,7 @@
 /**
- * Mounts the Blender replica for a lab: layout, viewport, navigation, selection
- * and input. The SceneStore is the single source of truth.
+ * Builds the Blender replica: layout, viewport, navigation, selection, tools and
+ * input. The SceneStore is the single source of truth. BlenderApp (blender-app.ts)
+ * wraps it in the core app contract.
  */
 import type { EditModeAction, InputPrefs, ObjectModeAction, ScreenAction } from './input/keymap';
 import { baseKind } from './edit/selection';
@@ -22,7 +23,6 @@ import { componentsInRect, pickComponent, pickEdge } from './viewport/component-
 import type { Bounds } from './viewport/view-state';
 import { type SelectCommand, SelectInteraction } from '../../core/input/select-interaction';
 import { ViewportInput } from './input/viewport-input';
-import type { LabDefinition } from '../../core/lab';
 import { ClearLocationOp, ClearRotationOp, ClearScaleOp } from './operators/clear';
 import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operators/select';
 import {
@@ -36,9 +36,9 @@ import {
   selectedObjects,
   unionBounds,
 } from './scene/scene';
-import { SceneStore } from '../../core/history/store';
+import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
-import { KeyOverlay } from '../../core/shell/key-overlay';
+import { blenderDefaultScene } from './scene/default-scene';
 import { attachMenu, openMenuAt } from './ui/menu';
 import { type AdjustValues, type AdjustableOp, AdjustPanel } from './ui/adjust-panel';
 import {
@@ -72,11 +72,12 @@ import { ViewportRenderer } from './viewport/renderer';
 import type { ViewportSize } from './viewport/projection';
 import { type ViewProjection, viewProjection } from './viewport/screen';
 
-export interface LabApp {
+export interface MountedBlender {
   readonly navigator: Navigator;
   readonly store: SceneStore;
-  readonly keyOverlay: KeyOverlay;
   readonly renderer: ViewportRenderer;
+  /** The 3D viewport element (overlays drawn over the replica go here). */
+  readonly viewport: HTMLElement;
   /** Projection of the settled view (no Smooth View in between), for stage checks. */
   settledProjection(): { projection: ViewProjection; size: ViewportSize };
 }
@@ -109,8 +110,8 @@ function selectedComponentBounds(s: SceneState): Bounds | null {
   return any ? { min: lo, max: hi } : null;
 }
 
-export function mountLab(container: HTMLElement, lab: LabDefinition, options: MountOptions): LabApp {
-  const store = new SceneStore(lab.initialScene());
+export function mountBlender(container: HTMLElement, options: MountOptions): MountedBlender {
+  const store = new SceneStore(blenderDefaultScene());
   const layout = buildLayout(container);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -543,7 +544,6 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
     onInteractionChange: refreshInteraction,
     onNavigateWithoutMiddle: options.onNavigateWithoutMiddle,
   });
-  const keyOverlay = new KeyOverlay(layout.viewport, container);
 
   const nav = (action: Parameters<Navigator['apply']>[0]) => () => navigator.apply(action);
   attachMenu(layout.viewMenu, () => [
@@ -609,5 +609,5 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
     const cam = activeCamera(store.state);
     return { projection: viewProjection(navigator.settled(), size, cam ? cameraData(store.state, cam) : null), size };
   };
-  return { navigator, store, keyOverlay, renderer: view, settledProjection };
+  return { navigator, store, renderer: view, viewport: layout.viewport, settledProjection };
 }

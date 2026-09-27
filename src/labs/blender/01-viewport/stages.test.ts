@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { vec3 } from '../../../apps/blender/math/vec3';
 import type { SceneObject, SceneState } from '../../../apps/blender/scene/scene';
-import type { LogEntry } from '../../../core/history/store';
-import type { StageContext, StageDefinition } from '../../../core/stages/types';
+import type { LogEntry } from '../../../apps/blender/scene/store';
+import type { BlenderStageContext as StageContext, BlenderStageDefinition as StageDefinition } from '../../../apps/blender/stages/types';
 import { viewProjection } from '../../../apps/blender/viewport/screen';
 import {
   AXIS_VIEW_ROTATIONS,
