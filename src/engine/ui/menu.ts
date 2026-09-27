@@ -9,6 +9,8 @@ export type MenuItem =
       readonly label: string;
       readonly shortcut?: string;
       readonly checked?: () => boolean;
+      /** Shown greyed out (entries outside the lab's scope). */
+      readonly disabled?: boolean;
       readonly action?: () => void;
       readonly submenu?: readonly MenuItem[];
     };
@@ -39,7 +41,9 @@ function build(items: readonly MenuItem[], close: () => void): HTMLDivElement {
     shortcut.className = 'bl-menu-shortcut';
     shortcut.textContent = item.submenu ? '▸' : (item.shortcut ?? '');
     row.append(check, label, shortcut);
-    if (item.submenu) {
+    if (item.disabled) {
+      row.classList.add('is-disabled');
+    } else if (item.submenu) {
       row.classList.add('has-submenu');
       row.append(build(item.submenu, close));
     } else {
@@ -97,4 +101,43 @@ export function attachMenu(anchor: HTMLElement, items: () => readonly MenuItem[]
   anchor.addEventListener('pointerenter', () => {
     if (openMenu && !anchor.classList.contains('is-open')) open();
   });
+}
+
+/**
+ * Pop-up menu at a point (X Delete, M Merge...), with an optional title like
+ * Blender's call menus. Closes on click outside or Esc.
+ */
+export function openMenuAt(host: HTMLElement, x: number, y: number, items: readonly MenuItem[], title?: string): void {
+  openMenu?.close();
+  const close = () => {
+    list.remove();
+    window.removeEventListener('pointerdown', onDown, true);
+    window.removeEventListener('keydown', onKey, true);
+    if (openMenu === handle) openMenu = null;
+  };
+  const list = build(items, close);
+  list.classList.add('bl-menu-dropdown', 'bl-menu-popup');
+  if (title) {
+    const t = document.createElement('div');
+    t.className = 'bl-menu-title';
+    t.textContent = title;
+    list.prepend(t);
+  }
+  list.style.left = `${x}px`;
+  list.style.top = `${y}px`;
+  host.append(list);
+  const onDown = (e: PointerEvent) => {
+    if (!list.contains(e.target as Node)) close();
+  };
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      e.preventDefault();
+      close();
+    }
+  };
+  const handle = { close };
+  openMenu = handle;
+  window.addEventListener('pointerdown', onDown, true);
+  window.addEventListener('keydown', onKey, true);
 }

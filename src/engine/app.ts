@@ -4,7 +4,7 @@
  */
 import type { EditModeAction, InputPrefs, ObjectModeAction, ScreenAction } from './input/keymap';
 import { baseKind } from './edit/selection';
-import { add, max, min, mul, vec3 } from './math/vec3';
+import { add, max, min, mul, scale, vec3 } from './math/vec3';
 import { rotate } from './math/quat';
 import {
   EditBoxSelectOp,
@@ -39,7 +39,11 @@ import {
 import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
 import { KeyOverlay } from './ui/key-overlay';
-import { attachMenu } from './ui/menu';
+import { attachMenu, openMenuAt } from './ui/menu';
+import { type AdjustValues, type AdjustableOp, AdjustPanel } from './ui/adjust-panel';
+import { DeleteOp, DissolveOp, FillOp, MergeOp, extrudeScene, insetScene, mergeScene, translateSelection } from './operators/edit-tools';
+import { MERGE_DISTANCE } from './mesh/ops/merge';
+import { InsetModal } from './edit/inset-modal';
 import { Outliner } from './ui/outliner';
 import { Sidebar } from './ui/sidebar';
 import { StatusBar } from './ui/status-bar';
@@ -252,6 +256,172 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
     view.setXray(xray);
   }
 
+  // --- Adjust Last Operation -------------------------------------------------
+  let adjust: {
+    op: AdjustableOp;
+    base: SceneState;
+    rerun: (values: AdjustValues) => SceneState;
+    logLength: number;
+  } | null = null;
+  let adjusting = false;
+  const adjustPanel = new AdjustPanel(layout.viewport, (values) => {
+    const a = adjust;
+    if (!a || store.log.length !== a.logLength) return;
+    adjusting = true;
+    store.undo();
+    if (store.state !== a.base) {
+      // Something else changed in between: give up, keep the state consistent.
+      store.redo();
+      adjusting = false;
+      closeAdjust();
+      return;
+    }
+    const next = a.rerun(values);
+    store.execute({ name: a.op.title, apply: () => next });
+    a.logLength = store.log.length;
+    a.op = { ...a.op, values };
+    adjusting = false;
+  });
+  function closeAdjust(): void {
+    adjust = null;
+    adjustPanel.hide();
+  }
+  /** Shows the panel for the operation just recorded. `base`: the state before it. */
+  function offerAdjust(op: AdjustableOp, base: SceneState, rerun: (values: AdjustValues) => SceneState): void {
+    adjust = { op, base, rerun, logLength: store.log.length };
+    adjustPanel.show(op);
+  }
+  store.onChange(() => {
+    if (!adjusting && adjust && store.log.length !== adjust.logLength) closeAdjust();
+  });
+
+  /** Runs a non-modal tool and offers its (field-less) Adjust panel. */
+  const runTool = (op: { name: string; apply: (s: SceneState) => SceneState }) => {
+    const base = store.state;
+    if (store.execute(op)) offerAdjust({ title: op.name, fields: [], values: {} }, base, () => op.apply(base));
+  };
+
+  const startExtrude = () => {
+    if (transform || !cursor) return;
+    const base = store.state;
+    const { scene: extruded, normal } = extrudeScene(base);
+    if (extruded === base) return;
+    const frame = view.frame;
+    const modal = new ComponentTransform('translate', extruded, frame.projection, frame.size, cursor, {
+      name: normal ? 'Extrude Region and Move' : 'Extrude and Move',
+      cancelState: extruded,
+      ...(normal
+        ? { normal, constraint: { space: 'local' as const, kind: 'axis' as const, axis: 2 as const }, localLabel: 'normal' }
+        : {}),
+    });
+    modal.onConfirmed = () => {
+      const t = modal.translation;
+      if (normal) {
+        const move = t.x * normal.x + t.y * normal.y + t.z * normal.z;
+        offerAdjust(
+          { title: modal.operatorName, fields: [{ key: 'move', label: 'Move', kind: 'distance', min: -Infinity }], values: { move } },
+          base,
+          (v) => translateSelection(extrudeScene(base).scene, scale(normal, v.move as number)),
+        );
+      } else {
+        offerAdjust({ title: modal.operatorName, fields: [], values: {} }, base, () => translateSelection(extrudeScene(base).scene, t));
+      }
+    };
+    startModal(modal);
+  };
+
+  const startInset = () => {
+    if (transform || !cursor || !InsetModal.canStart(store.state)) return;
+    const base = store.state;
+    const frame = view.frame;
+    startModal(
+      new InsetModal(base, frame.projection, frame.size, cursor, (v) =>
+        // Offered once the confirmed state is recorded (next tick).
+        queueMicrotask(() =>
+          offerAdjust(
+            {
+              title: 'Inset Faces',
+              fields: [
+                { key: 'thickness', label: 'Thickness', kind: 'distance' },
+                { key: 'depth', label: 'Depth', kind: 'distance', min: -Infinity },
+                { key: 'individual', label: 'Individual', kind: 'bool' },
+              ],
+              values: { ...v },
+            },
+            base,
+            (x) =>
+              insetScene(base, {
+                thickness: x.thickness as number,
+                depth: x.depth as number,
+                individual: x.individual as boolean,
+              }),
+          ),
+        ),
+      ),
+    );
+  };
+
+  const openDeleteMenu = () => {
+    const p = cursor ?? { x: 100, y: 100 };
+    openMenuAt(
+      layout.viewport,
+      p.x,
+      p.y,
+      [
+        { label: 'Vertices', action: () => runTool(DeleteOp('verts')) },
+        { label: 'Edges', action: () => runTool(DeleteOp('edges')) },
+        { label: 'Faces', action: () => runTool(DeleteOp('faces')) },
+        { label: 'Only Faces', action: () => runTool(DeleteOp('onlyFaces')) },
+        'separator',
+        { label: 'Dissolve Vertices', action: () => runTool(DissolveOp('verts')) },
+        { label: 'Dissolve Edges', action: () => runTool(DissolveOp('edges')) },
+        { label: 'Dissolve Faces', action: () => runTool(DissolveOp('faces')) },
+        { label: 'Limited Dissolve', disabled: true },
+        'separator',
+        { label: 'Edge Collapse', disabled: true },
+        { label: 'Edge Loops', disabled: true },
+      ],
+      'Delete',
+    );
+  };
+
+  const runMergeByDistance = (distance: number) => {
+    const base = store.state;
+    const r = mergeScene(base, 'distance', distance);
+    status.report(`Removed ${r.removed} vertice${r.removed === 1 ? '' : 's'}`);
+    if (r.scene === base) return;
+    store.execute({ name: 'Merge by Distance', apply: () => r.scene });
+    offerAdjust(
+      { title: 'Merge by Distance', fields: [{ key: 'distance', label: 'Merge Distance', kind: 'distance' }], values: { distance } },
+      base,
+      (v) => {
+        const again = mergeScene(base, 'distance', v.distance as number);
+        status.report(`Removed ${again.removed} vertice${again.removed === 1 ? '' : 's'}`);
+        return again.scene;
+      },
+    );
+  };
+
+  // Phase 5 (Loop Cut and Slide, Bevel) replaces these.
+  const startLoopCut = () => {};
+  const startBevel = (_vertices: boolean) => {};
+
+  const openMergeMenu = () => {
+    const p = cursor ?? { x: 100, y: 100 };
+    openMenuAt(
+      layout.viewport,
+      p.x,
+      p.y,
+      [
+        { label: 'At Center', action: () => runTool(MergeOp('center')) },
+        { label: 'At Cursor', disabled: true },
+        { label: 'Collapse', action: () => runTool(MergeOp('collapse')) },
+        { label: 'By Distance', action: () => runMergeByDistance(MERGE_DISTANCE) },
+      ],
+      'Merge',
+    );
+  };
+
   new ViewportInput({
     element: layout.viewport,
     navigator,
@@ -280,6 +450,20 @@ export function mountLab(container: HTMLElement, lab: LabDefinition, options: Mo
           return void store.execute(SelectMoreLessOp(a.more));
         case 'transform':
           return startTransform(a.kind);
+        case 'extrude':
+          return startExtrude();
+        case 'inset':
+          return startInset();
+        case 'deleteMenu':
+          return openDeleteMenu();
+        case 'mergeMenu':
+          return openMergeMenu();
+        case 'fill':
+          return runTool(FillOp);
+        case 'loopCut':
+          return startLoopCut();
+        case 'bevel':
+          return startBevel(a.vertices);
         case 'selectLinkedPick': {
           if (!cursor) return;
           const hit = pickComponent(pickContext(), selectModeOf(store.state), cursor.x, cursor.y);

@@ -2,7 +2,7 @@
  * Status bar hints (left side), as Blender shows them for the current context.
  * FIDELITY? Exact texts and order in 5.2.
  */
-export type StatusMode = 'idle' | 'boxModal' | 'transform';
+export type StatusMode = 'idle' | 'boxModal' | 'transform' | 'inset' | 'bevel' | 'loopcut';
 
 type Button = 'left' | 'middle' | 'right';
 
@@ -41,15 +41,46 @@ const HINTS: Record<StatusMode, readonly Hint[]> = {
     { keys: ['Ctrl'], label: 'Snap Invert' },
     { keys: ['Shift'], label: 'Precision Mode' },
   ],
+  inset: [
+    { mouse: 'left', label: 'Confirm' },
+    { mouse: 'right', label: 'Cancel' },
+    { keys: ['I'], label: 'Individual' },
+    { keys: ['Shift'], label: 'Precision Mode' },
+  ],
+  bevel: [
+    { mouse: 'left', label: 'Confirm' },
+    { mouse: 'right', label: 'Cancel' },
+    { keys: ['Wheel'], label: 'Segments' },
+    { keys: ['Shift'], label: 'Precision Mode' },
+  ],
+  loopcut: [
+    { mouse: 'left', label: 'Confirm' },
+    { mouse: 'right', label: 'Cancel' },
+    { keys: ['Wheel'], label: 'Number of Cuts' },
+  ],
 };
 
 const escape = (t: string) => t.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
 
 export class StatusBar {
   private mode: StatusMode | null = null;
+  private readonly reportEl: HTMLSpanElement;
+  private reportTimer = 0;
 
   constructor(private readonly left: HTMLElement) {
+    this.reportEl = document.createElement('span');
+    this.reportEl.className = 'bl-report';
+    this.reportEl.hidden = true;
+    left.after(this.reportEl);
     this.set('idle');
+  }
+
+  /** Short info message, like Blender's reports (e.g. "Removed 4 vertices"). */
+  report(text: string): void {
+    this.reportEl.textContent = text;
+    this.reportEl.hidden = false;
+    window.clearTimeout(this.reportTimer);
+    this.reportTimer = window.setTimeout(() => (this.reportEl.hidden = true), 4000);
   }
 
   set(mode: StatusMode): void {

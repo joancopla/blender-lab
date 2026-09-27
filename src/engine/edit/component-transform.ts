@@ -60,7 +60,10 @@ export interface ComponentTransformOptions extends TransformOptions {
 export class ComponentTransform implements ModalOperator {
   private readonly modal: TransformModal;
   private readonly points: PointRef[] = [];
+  private readonly startLocations: Vec3[] = [];
   readonly cancelState?: SceneState;
+  /** Called with the recorded state after confirming. */
+  onConfirmed?: (state: SceneState) => void;
 
   constructor(
     kind: TransformKind,
@@ -91,6 +94,7 @@ export class ComponentTransform implements ModalOperator {
         });
       }
     }
+    for (const p of pointObjects) this.startLocations.push(p.location);
     const pointScene: SceneState = {
       ...scene,
       objects: pointObjects,
@@ -104,6 +108,13 @@ export class ComponentTransform implements ModalOperator {
   static canStart(scene: SceneState): boolean {
     const ids = new Set(scene.editObjectIds ?? []);
     return scene.objects.some((o) => o.type === 'mesh' && ids.has(o.id) && selectionOf(o).verts.length > 0);
+  }
+
+  /** World translation of the selection (the first point's), e.g. for Extrude's Adjust panel. */
+  get translation(): Vec3 {
+    const moved = this.modal.preview.objects[0];
+    const start = this.startLocations[0];
+    return moved && start ? sub(moved.location, start) : vec3(0, 0, 0);
   }
 
   get operatorName(): string {

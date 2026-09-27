@@ -100,6 +100,13 @@ export type EditModeAction =
   | { readonly type: 'selectLinked' }
   | { readonly type: 'selectMoreLess'; readonly more: boolean }
   | { readonly type: 'transform'; readonly kind: TransformKind }
+  | { readonly type: 'extrude' }
+  | { readonly type: 'inset' }
+  | { readonly type: 'deleteMenu' }
+  | { readonly type: 'mergeMenu' }
+  | { readonly type: 'fill' }
+  | { readonly type: 'loopCut' }
+  | { readonly type: 'bevel'; readonly vertices: boolean }
   | { readonly type: 'toggleSidebar' }
   | { readonly type: 'toggleEditMode' }
   | { readonly type: 'toggleXray' };
@@ -126,6 +133,15 @@ export const EDIT_MODE_KEYMAP: readonly KeymapItem<EditModeAction>[] = [
   { code: 'KeyG', action: { type: 'transform', kind: 'translate' } },
   { code: 'KeyR', action: { type: 'transform', kind: 'rotate' } },
   { code: 'KeyS', action: { type: 'transform', kind: 'resize' } },
+  { code: 'KeyE', action: { type: 'extrude' } },
+  { code: 'KeyI', action: { type: 'inset' } },
+  { code: 'KeyX', action: { type: 'deleteMenu' } },
+  { code: 'Delete', action: { type: 'deleteMenu' } },
+  { code: 'KeyM', action: { type: 'mergeMenu' } },
+  { code: 'KeyF', action: { type: 'fill' } },
+  { code: 'KeyR', ctrl: true, action: { type: 'loopCut' } },
+  { code: 'KeyB', ctrl: true, action: { type: 'bevel', vertices: false } },
+  { code: 'KeyB', ctrl: true, shift: true, action: { type: 'bevel', vertices: true } },
   { code: 'KeyN', action: { type: 'toggleSidebar' } },
   { code: 'Tab', action: { type: 'toggleEditMode' } },
   { code: 'KeyZ', alt: true, action: { type: 'toggleXray' } },

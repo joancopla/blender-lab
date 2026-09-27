@@ -561,3 +561,58 @@
   display: grid;
   grid-template-columns: 72px auto;
 }
+
+.bl-report {
+  margin-left: 16px;
+  padding: 0 8px;
+  border-radius: 3px;
+  background: #3d3d3d;
+  color: var(--bl-text);
+}
+
+.bl-menu-item.is-disabled {
+  color: #6b6b6b;
+}
+.bl-menu-item.is-disabled:hover {
+  background: none;
+}
+.bl-menu-title {
+  padding: 3px 10px 5px;
+  color: var(--bl-text-dim);
+  border-bottom: 1px solid #2f2f2f;
+  margin-bottom: 3px;
+}
+
+/* Adjust Last Operation. FIDELITY? Look and size. */
+.bl-adjust {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 4;
+  min-width: 220px;
+  border-radius: 6px;
+  background: rgba(40, 40, 40, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.bl-adjust-header {
+  padding: 5px 8px;
+  cursor: default;
+}
+.bl-adjust-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 8px 4px;
+}
+.bl-adjust-label {
+  width: 70px;
+  color: var(--bl-text-dim);
+  text-align: right;
+}
+.bl-adjust-row .bl-num {
+  justify-content: center;
+}
+/* The key overlay moves up to make room. */
+.bl-viewport.has-adjust .lab-keys {
+  bottom: 120px;
+}
