@@ -524,3 +524,40 @@
 .bl-menu-item.has-submenu:hover > .bl-menu-list {
   display: block;
 }
+
+/* Edit Mode header: select mode buttons. */
+.bl-selectmode {
+  display: inline-flex;
+  margin: 0 6px 0 2px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.bl-selectmode-button {
+  width: 26px;
+  height: 20px;
+  padding: 2px 5px;
+  border: none;
+  background: #282828;
+  color: var(--bl-text);
+  cursor: pointer;
+}
+.bl-selectmode-button + .bl-selectmode-button {
+  border-left: 1px solid #1d1d1d;
+}
+.bl-selectmode-button.is-active {
+  background: var(--bl-widget-active);
+}
+.bl-selectmode-button svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+/* Statistics overlay (under the view name). */
+.bl-stats {
+  margin-top: 6px;
+}
+.bl-stats > div {
+  display: grid;
+  grid-template-columns: 72px auto;
+}

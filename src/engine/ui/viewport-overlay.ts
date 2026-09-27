@@ -6,6 +6,7 @@ import { type SceneState, activeCamera, activeObject, cameraData } from '../scen
 import type { FrameInfo } from '../viewport/renderer';
 import type { ViewState } from '../viewport/view-state';
 import { cameraFrameRect, viewName } from '../viewport/view-state';
+import { statistics } from './statistics';
 
 export class ViewportOverlay {
   private readonly text: HTMLDivElement;
@@ -15,13 +16,19 @@ export class ViewportOverlay {
   private readonly box: HTMLDivElement;
   private readonly crossH: HTMLDivElement;
   private readonly crossV: HTMLDivElement;
+  private readonly stats: HTMLDivElement;
 
-  constructor(viewport: HTMLElement) {
+  constructor(
+    viewport: HTMLElement,
+    private readonly showStatistics = false,
+  ) {
     this.text = document.createElement('div');
     this.text.className = 'bl-view-text';
     this.nameLine = document.createElement('div');
     this.contextLine = document.createElement('div');
-    this.text.append(this.nameLine, this.contextLine);
+    this.stats = document.createElement('div');
+    this.stats.className = 'bl-stats';
+    this.text.append(this.nameLine, this.contextLine, this.stats);
 
     this.cameraFrame = document.createElement('div');
     this.cameraFrame.className = 'bl-camera-frame';
@@ -67,6 +74,19 @@ export class ViewportOverlay {
     // FIDELITY? "(1)" is the current frame; the collection is the active object's one.
     const active = activeObject(scene);
     this.contextLine.textContent = `(1) Collection${active ? ` | ${active.name}` : ''}`;
+    if (this.showStatistics) {
+      this.stats.replaceChildren(
+        ...statistics(scene).map(([label, value]) => {
+          const row = document.createElement('div');
+          const l = document.createElement('span');
+          l.textContent = label;
+          const v = document.createElement('span');
+          v.textContent = value;
+          row.append(l, v);
+          return row;
+        }),
+      );
+    }
 
     const cam = activeCamera(scene);
     if (info.view.camera && cam) {

@@ -12,6 +12,13 @@ export interface LayoutRefs {
   readonly viewportHeaderText: HTMLElement;
   readonly viewMenu: HTMLElement;
   readonly selectMenu: HTMLElement;
+  /** Object Mode / Edit Mode selector. */
+  readonly modeMenu: HTMLElement;
+  /** Vertex / Edge / Face select mode buttons (Edit Mode only). */
+  readonly selectModeButtons: Record<'vert' | 'edge' | 'face', HTMLButtonElement>;
+  /** Header parts shown only in one mode. */
+  readonly objectModeOnly: readonly HTMLElement[];
+  readonly editModeOnly: readonly HTMLElement[];
   readonly outlinerBody: HTMLElement;
   readonly statusLeft: HTMLElement;
 }
@@ -56,13 +63,40 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
   const header = el('div', 'bl-header');
   const viewMenu = el('span', 'bl-menu', 'View');
   const selectMenu = el('span', 'bl-menu', 'Select');
+  const modeMenu = el('span', 'bl-dropdown', 'Object Mode');
+
+  // Vertex / Edge / Face select mode buttons. FIDELITY? Icons are simplified.
+  const selectModeGroup = el('span', 'bl-selectmode');
+  selectModeGroup.hidden = true;
+  const SELECT_MODE_ICONS = {
+    vert: '<svg viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" fill="none" stroke="currentColor" stroke-dasharray="2 1.5"/><circle cx="2.5" cy="13.5" r="2.2" fill="currentColor"/></svg>',
+    edge: '<svg viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" fill="none" stroke="currentColor" stroke-dasharray="2 1.5"/><path d="M2.5 13.5h11" stroke="currentColor" stroke-width="2.2"/></svg>',
+    face: '<svg viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" fill="currentColor" fill-opacity="0.6" stroke="currentColor"/></svg>',
+  } as const;
+  const TITLES = { vert: 'Vertex', edge: 'Edge', face: 'Face' } as const;
+  const selectModeButtons = {} as Record<'vert' | 'edge' | 'face', HTMLButtonElement>;
+  for (const k of ['vert', 'edge', 'face'] as const) {
+    const b = el('button', 'bl-selectmode-button');
+    b.type = 'button';
+    b.title = TITLES[k];
+    b.innerHTML = SELECT_MODE_ICONS[k];
+    selectModeButtons[k] = b;
+    selectModeGroup.append(b);
+  }
+
+  const objectMenu = el('span', 'bl-menu', 'Object');
+  // Edit Mode menus: decoration for now.
+  const editMenus = ['Mesh', 'Vertex', 'Edge', 'Face', 'UV'].map((t) => el('span', 'bl-menu', t));
+  for (const m of editMenus) m.hidden = true;
   header.append(
     el('span', 'bl-editor-type', '▣'),
-    el('span', 'bl-dropdown', 'Object Mode'),
+    modeMenu,
+    selectModeGroup,
     viewMenu,
     selectMenu,
     el('span', 'bl-menu', 'Add'),
-    el('span', 'bl-menu', 'Object'),
+    objectMenu,
+    ...editMenus,
   );
   const viewportHeaderText = el('span', 'bl-header-text');
   viewportHeaderText.hidden = true;
@@ -83,5 +117,17 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
   status.append(statusLeft, el('span', 'bl-spacer'), el('span', 'bl-version', '5.2.0'));
 
   container.append(topbar, main, status);
-  return { root: container, viewport, viewportHeaderText, viewMenu, selectMenu, outlinerBody, statusLeft };
+  return {
+    root: container,
+    viewport,
+    viewportHeaderText,
+    viewMenu,
+    selectMenu,
+    modeMenu,
+    selectModeButtons,
+    objectModeOnly: [objectMenu],
+    editModeOnly: [selectModeGroup, ...editMenus],
+    outlinerBody,
+    statusLeft,
+  };
 }
