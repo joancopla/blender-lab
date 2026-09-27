@@ -1,25 +1,36 @@
 {
   "site": {
-    "title": "Blender Lab",
-    "tagline": "Laboratoris interactius per aprendre Blender des de zero, al navegador. Cada lab reprodueix una part de Blender i et proposa etapes curtes amb comprovació automàtica.",
-    "labsTitle": "Laboratoris",
-    "statusAvailable": "Disponible",
+    "title": "Labs de programari creatiu",
+    "heroTitle": "Aprèn programari creatiu construint, pas a pas",
+    "tagline": "Laboratoris interactius al navegador per aprendre des de zero. Cada lab reprodueix una part del programa i et proposa etapes curtes amb comprovació automàtica.",
+    "blueprintTitle": "Plànol del repte final",
+    "blueprintEmpty": "El plànol es completarà a mesura que avancis: cada etapa superada hi afegeix línies.",
+    "views": {
+      "front": "Alçat",
+      "side": "Perfil",
+      "top": "Planta"
+    },
+    "labsTitle": "Labs",
+    "start": "Comença el Lab {n}",
+    "continue": "Continua el Lab {n}",
+    "review": "Repassa el Lab {n}",
+    "stages": "{n}/{total} etapes",
+    "statusDone": "Completat",
+    "statusInProgress": "En curs",
+    "statusNotStarted": "No començat",
     "statusSoon": "Aviat",
-    "progress": "{n} de {total} etapes superades",
-    "progressNone": "Encara no l'has començat",
-    "progressDone": "Completat",
-    "open": "Obre el lab",
     "resetProgress": "Reinicia el progrés",
-    "resetProgressConfirm": "Segur? Fes clic de nou per esborrar-lo",
-    "footer": "Fet per a l'aula. Tot el que s'aprèn aquí es fa igual a Blender 5.2."
+    "resetProgressConfirm": "Fes clic de nou per esborrar-lo",
+    "progressReset": "Progrés reiniciat",
+    "footer": "Projecte educatiu independent, fet per a l'aula. No està vinculat a cap fabricant de programari."
   },
   "ui": {
     "backToIndex": "← Tots els labs",
     "stageOf": "Etapa {n} de {total}",
     "stagesNav": "Etapes",
     "keys": "Tecles",
-    "hint": "Pista",
-    "hintTitle": "Pista",
+    "hint": "Mostra una pista",
+    "hintTitle": "Pista {n}",
     "reset": "Reinicia l'etapa",
     "prev": "Anterior",
     "next": "Següent",
@@ -28,12 +39,20 @@
     "free": "Mode lliure",
     "freeText": "Tens l'escena i totes les eines, sense comprovacions. Experimenta tant com vulguis.",
     "stats": "Has trigat {time} i has fet {ops} operacions.",
-    "statsNote": "És només informatiu: no hi ha rànquing."
+    "statsNote": "És només informatiu: no hi ha rànquing.",
+    "resetDone": "Etapa reiniciada",
+    "stepDone": "Superada",
+    "panel": "Panell del lab",
+    "fold": "Plega",
+    "unfold": "Desplega el panell",
+    "stageShort": "Etapa {n}"
   },
   "page": {
     "controlsTitle": "Controls clau",
     "start": "Comença el lab",
-    "realTitle": "Al Blender real"
+    "realTitle": "Al Blender real",
+    "labNumber": "Lab {n}",
+    "index": "Índex"
   },
   "mobile": {
     "title": "Aquest lab necessita teclat i ratolí",
@@ -55,5 +74,12 @@
     "keyOverlayHelp": "Mostra a baix a l'esquerra les tecles i els clics, com el complement Screencast Keys.",
     "suggestYes": "Activa-la",
     "suggestNo": "Ara no"
+  },
+  "theme": {
+    "label": "Mode: {mode}",
+    "system": "sistema",
+    "light": "clar",
+    "dark": "fosc",
+    "help": "Canvia entre el mode clar, el fosc i el del sistema"
   }
 }

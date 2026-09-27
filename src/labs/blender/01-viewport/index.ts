@@ -5,6 +5,7 @@ import { LAB01_STAGES } from './stages';
 
 export const lab01: LabDefinition<BlenderState, BlenderSetup, BlenderDecorations> = {
   id: '01-viewport',
+  number: '01',
   nameKey: 'lab01.name',
   descKey: 'lab01.desc',
   stages: toCoreLab(LAB01_STAGES),

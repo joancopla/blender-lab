@@ -5,6 +5,7 @@ import { LAB02_STAGES } from './stages';
 
 export const lab02: LabDefinition<BlenderState, BlenderSetup, BlenderDecorations> = {
   id: '02-edit-mode',
+  number: '02',
   nameKey: 'lab02.name',
   descKey: 'lab02.desc',
   stages: toCoreLab(LAB02_STAGES),

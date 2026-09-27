@@ -80,5 +80,9 @@
   },
   "lab": {
     "bevelUnsupported": "Aquest lab només fa bevel d'arestes els vèrtexs de les quals no tenen cap altra aresta amb bevel (per exemple, les arestes verticals d'una caixa)."
+  },
+  "app": {
+    "name": "Blender",
+    "version": "Blender 5.2 LTS"
   }
 }

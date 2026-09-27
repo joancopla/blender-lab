@@ -18,6 +18,7 @@ export class KeyOverlay {
   readonly element: HTMLDivElement;
   private items: Item[] = [];
   private enabled = true;
+  private readonly listeners = new Set<(text: string) => void>();
 
   constructor(parent: HTMLElement, watch: HTMLElement) {
     this.element = document.createElement('div');
@@ -62,7 +63,14 @@ export class KeyOverlay {
     }
   }
 
+  /** Every key or click seen, even while the overlay is hidden (stage panel key chips). */
+  onPress(fn: (text: string) => void): () => void {
+    this.listeners.add(fn);
+    return () => this.listeners.delete(fn);
+  }
+
   private push(text: string): void {
+    for (const fn of this.listeners) fn(text);
     if (!this.enabled) return;
     const last = this.items[this.items.length - 1];
     if (last && last.text === text) {

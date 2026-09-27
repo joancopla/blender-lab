@@ -1,7 +1,8 @@
 /**
- * Lab page, shared by every lab and every program: short introduction, the lab
- * (lab panel + replicated program) and the "In the real program" block. It only
- * talks to the program through the app contract.
+ * Lab page, shared by every lab and every program (DESIGN.md, "Pàgina de lab"):
+ * short introduction, then the lab itself (title block, replicated program and
+ * a foldable stage panel on the right), then the "In the real program" block.
+ * It only talks to the program through the app contract.
  */
 import type { LabDefinition } from '../lab';
 import { KEY_OVERLAY_PREF, type PrefValues, loadPrefs, savePrefs } from './prefs';
@@ -10,8 +11,12 @@ import { StageRunner } from '../stages/runner';
 import { t } from '../i18n';
 import { showDeviceWarningIfNeeded } from './device-warning';
 import { KeyOverlay } from './key-overlay';
+import { renderPrefSwitches } from './prefs-panel';
 import { StagePanel } from './stage-panel';
+import { themeButton } from './theme';
 import './shell.css';
+
+const PANEL_KEY = 'blender-lab:panel';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
   const e = document.createElement(tag);
@@ -20,9 +25,26 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: 
   return e;
 };
 
+function loadFolded(): boolean {
+  try {
+    return window.localStorage.getItem(PANEL_KEY) === 'folded';
+  } catch {
+    return false;
+  }
+}
+
+function saveFolded(folded: boolean): void {
+  try {
+    window.localStorage.setItem(PANEL_KEY, folded ? 'folded' : 'open');
+  } catch {
+    // Not saved: it still applies for this visit.
+  }
+}
+
 export function mountLabPage<State, Setup, Decorations>(lab: LabDefinition<State, Setup, Decorations>): void {
   const P = lab.page.prefix;
-  document.title = `${t(lab.nameKey)} · ${t('site.title')}`;
+  const labLabel = t('page.labNumber', { n: lab.number });
+  document.title = `${labLabel} · ${t(lab.nameKey)} — ${t('site.title')}`;
   const page = document.getElementById('app')!;
   page.className = 'lab-page';
 
@@ -36,20 +58,62 @@ export function mountLabPage<State, Setup, Decorations>(lab: LabDefinition<State
   start.href = '#lab';
   intro.append(
     back,
-    el('p', 'lab-eyebrow', t(`${P}.intro.eyebrow`)),
-    el('h1', undefined, t(lab.nameKey)),
+    el('p', 'lab-eyebrow', labLabel),
+    el('h1', 'lab-title', t(lab.nameKey)),
     el('p', 'lab-lead', t(`${P}.intro.lead`)),
     el('h2', undefined, t('page.controlsTitle')),
     controls,
     start,
   );
 
-  // --- The lab -------------------------------------------------------------------
+  // --- The lab: title block, replica and stage panel -----------------------------
   const shell = el('section', 'lab-shell');
   shell.id = 'lab';
-  const panel = el('aside', 'lab-panel');
+  shell.setAttribute('aria-label', t(lab.nameKey));
+
+  const titleBlock = el('header', 'lab-titleblock');
+  const stageCell = el('span', 'lab-tb-cell lab-tb-stage');
+  const index = el('a', 'lab-tb-cell lab-tb-link', t('page.index'));
+  index.href = '../../';
+  titleBlock.append(
+    el('span', 'lab-tb-cell lab-tb-number', labLabel),
+    el('span', 'lab-tb-cell lab-tb-title', t(lab.nameKey)),
+    stageCell,
+    themeButton('lab-tb-cell lab-tb-button'),
+    index,
+  );
+
+  const body = el('div', 'lab-body');
   const replica = el('div', 'lab-replica');
-  shell.append(panel, replica);
+  const panel = el('aside', 'lab-panel');
+  panel.id = 'lab-panel';
+  panel.setAttribute('aria-label', t('ui.panel'));
+  body.append(replica, panel);
+  shell.append(titleBlock, body);
+
+  const panelHead = el('div', 'lab-panel-head');
+  const fold = el('button', 'lab-fold', t('ui.fold'));
+  fold.type = 'button';
+  fold.setAttribute('aria-controls', panel.id);
+  panelHead.append(el('h2', undefined, t('ui.stagesNav')), fold);
+  const panelScroll = el('div', 'lab-panel-scroll');
+  const tab = el('button', 'lab-panel-tab');
+  tab.type = 'button';
+  tab.setAttribute('aria-controls', panel.id);
+  panel.append(panelHead, panelScroll, tab);
+
+  function setFolded(folded: boolean, focus: boolean): void {
+    body.classList.toggle('is-folded', folded);
+    fold.setAttribute('aria-expanded', String(!folded));
+    tab.setAttribute('aria-expanded', String(!folded));
+    panelHead.hidden = folded;
+    panelScroll.hidden = folded;
+    tab.hidden = !folded;
+    saveFolded(folded);
+    if (focus) (folded ? tab : fold).focus();
+  }
+  fold.addEventListener('click', () => setFolded(true, true));
+  tab.addEventListener('click', () => setFolded(false, true));
 
   // --- In the real program -------------------------------------------------------
   const real = el('section', 'lab-real');
@@ -90,7 +154,7 @@ export function mountLabPage<State, Setup, Decorations>(lab: LabDefinition<State
     const no = el('button', 'lab-button', t('prefs.suggestNo'));
     no.type = 'button';
     no.addEventListener('click', close);
-    const actions = el('div', 'lab-toast-actions');
+    const actions = el('div', 'lab-actions');
     actions.append(yes, no);
     toast.replaceChildren(el('p', undefined, t(def.suggestKey)), actions);
     toast.hidden = false;
@@ -99,39 +163,26 @@ export function mountLabPage<State, Setup, Decorations>(lab: LabDefinition<State
   // The program gets its own element: its root must not share an element with
   // shell classes, or the result would depend on stylesheet order (it differs
   // between dev and build).
-  const host = el('div');
+  const host = el('div', 'lab-replica-host');
   replica.prepend(host);
   app.mount(host, { preferences: () => prefs, suggestPreference: suggest });
   const keyOverlay = new KeyOverlay(app.overlayHost(), app.inputHost());
   keyOverlay.setEnabled(prefs[KEY_OVERLAY_PREF] === true);
 
-  const prefsSection = el('section', 'lab-prefs');
+  const prefsSection = el('details', 'lab-prefs');
+  const prefsList = el('div');
+  prefsSection.append(el('summary', undefined, t('prefs.title')), prefsList);
+  const toggles = [
+    ...app.preferences,
+    { key: KEY_OVERLAY_PREF, labelKey: 'prefs.keyOverlay', helpKey: 'prefs.keyOverlayHelp' },
+  ];
   function setPrefs(next: PrefValues): void {
     prefs = next;
     savePrefs(prefs);
-    renderPrefs();
+    renderPrefSwitches(prefsList, toggles, prefs, setPrefs);
     keyOverlay.setEnabled(prefs[KEY_OVERLAY_PREF] === true);
   }
-  function renderPrefs(): void {
-    prefsSection.replaceChildren(el('h2', undefined, t('prefs.title')));
-    const toggles = [
-      ...app.preferences,
-      { key: KEY_OVERLAY_PREF, labelKey: 'prefs.keyOverlay', helpKey: 'prefs.keyOverlayHelp' },
-    ];
-    for (const { key, labelKey, helpKey } of toggles) {
-      const row = el('label', 'lab-switch');
-      const input = el('input');
-      input.type = 'checkbox';
-      input.setAttribute('role', 'switch');
-      input.checked = prefs[key] === true;
-      input.addEventListener('change', () => setPrefs({ ...prefs, [key]: input.checked }));
-      const text = el('span', 'lab-switch-text');
-      text.append(el('strong', undefined, t(labelKey)), el('small', undefined, t(helpKey)));
-      row.append(input, text);
-      prefsSection.append(row);
-    }
-  }
-  renderPrefs();
+  renderPrefSwitches(prefsList, toggles, prefs, setPrefs);
 
   // --- Stages --------------------------------------------------------------------
   const progress = new ProgressStore(lab.id);
@@ -139,15 +190,28 @@ export function mountLabPage<State, Setup, Decorations>(lab: LabDefinition<State
   app.onChange(() => runner.notifyActivity());
   runner.onChange(() => app.decorate(runner.status.result.decorations));
 
+  const total = lab.stages.stages.length;
+  const updateStageLabels = () => {
+    const i = runner.status.index;
+    const label = i === -1 ? t('ui.free') : t('ui.stageOf', { n: i + 1, total });
+    stageCell.textContent = label;
+    tab.textContent = i === -1 ? t('ui.free') : t('ui.stageShort', { n: i + 1 });
+    tab.title = `${t('ui.unfold')} · ${label}`;
+  };
+  runner.onChange(updateStageLabels);
+
   const stageBox = el('div');
-  const tools = el('section');
-  panel.append(stageBox, tools, prefsSection);
-  new StagePanel(stageBox, runner, (id) => progress.isCompleted(id));
+  const tools = el('section', 'lab-tools');
+  panelScroll.append(stageBox, tools, prefsSection);
+  const stagePanel = new StagePanel(stageBox, runner, (id) => progress.isCompleted(id));
+  keyOverlay.onPress((text) => stagePanel.pressed(text));
   if (app.renderLabTools) app.renderLabTools(tools);
   else tools.remove();
 
   const saved = progress.progress.current;
-  runner.load(saved >= -1 && saved < lab.stages.stages.length ? saved : 0);
+  runner.load(saved >= -1 && saved < total ? saved : 0);
+  updateStageLabels();
+  setFolded(loadFolded(), false);
   window.setInterval(() => runner.tick(), 5000);
 
   showDeviceWarningIfNeeded();

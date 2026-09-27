@@ -1,9 +1,15 @@
 /**
- * Collection index: the list of labs with their status and the student's progress.
+ * Collection index (DESIGN.md, "Pàgina índex"): title block bar, hero with the
+ * three-view blueprint and the main action, and the labs as numbered rows
+ * grouped by program.
  */
 import type { LabDefinition } from '../core/lab';
 import { ProgressStore } from '../core/stages/progress';
 import { t } from '../core/i18n';
+import { KEY_OVERLAY_PREF, type PrefValues, loadPrefs, savePrefs } from '../core/shell/prefs';
+import { renderPrefSwitches } from '../core/shell/prefs-panel';
+import { themeButton } from '../core/shell/theme';
+import { BLENDER_PREFERENCES } from '../apps/blender/blender-app';
 import { lab01 } from '../labs/blender/01-viewport';
 import { lab02 } from '../labs/blender/02-edit-mode';
 import '../core/shell/shell.css';
@@ -12,13 +18,27 @@ import './site.css';
 interface LabEntry {
   readonly lab: LabDefinition;
   readonly href: string;
-  readonly number: string;
 }
 
-// The rest of the index will be defined later.
-const LABS: readonly LabEntry[] = [
-  { lab: lab01, href: 'labs/01-viewport/', number: '01' },
-  { lab: lab02, href: 'labs/02-edit-mode/', number: '02' },
+interface ProgramGroup {
+  /** i18n key of the program name. */
+  readonly nameKey: string;
+  readonly labs: readonly LabEntry[];
+}
+
+const PROGRAMS: readonly ProgramGroup[] = [
+  {
+    nameKey: 'app.name',
+    labs: [
+      { lab: lab01, href: 'labs/01-viewport/' },
+      { lab: lab02, href: 'labs/02-edit-mode/' },
+    ],
+  },
+];
+
+const PREF_TOGGLES = [
+  ...BLENDER_PREFERENCES,
+  { key: KEY_OVERLAY_PREF, labelKey: 'prefs.keyOverlay', helpKey: 'prefs.keyOverlayHelp' },
 ];
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
@@ -28,65 +48,148 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: 
   return e;
 };
 
+interface LabProgress {
+  readonly done: number;
+  readonly total: number;
+  readonly started: boolean;
+}
+
+function progressOf(lab: LabDefinition): LabProgress {
+  const p = ProgressStore.read(lab.id);
+  const total = lab.stages.stages.length;
+  const done = lab.stages.stages.filter((s) => p.completed.includes(s.id)).length;
+  return { done, total, started: done > 0 || p.current !== 0 };
+}
+
 const root = document.getElementById('site')!;
-root.className = 'site lab-page';
+root.className = 'lab-page site-page';
+let justReset: string | null = null;
 
-function render(): void {
-  root.replaceChildren();
-  const header = el('header', 'site-header');
-  header.append(el('h1', undefined, t('site.title')), el('p', 'lab-lead', t('site.tagline')));
+function topBar(): HTMLElement {
+  const bar = el('header', 'site-top grid-paper');
+  const name = el('a', 'site-name', t('site.title'));
+  name.href = './';
+  const tools = el('div', 'site-top-tools');
 
-  const list = el('ul', 'site-labs');
-  for (const entry of LABS) {
-    const total = entry.lab.stages.stages.length;
-    const store = new ProgressStore(entry.lab.id);
-    const done = entry.lab.stages.stages.filter((s) => store.isCompleted(s.id)).length;
+  const prefs = el('details', 'site-prefs');
+  const list = el('div', 'site-prefs-list');
+  prefs.append(el('summary', 'site-top-button', t('prefs.title')), list);
+  const defaults: PrefValues = {
+    ...Object.fromEntries(BLENDER_PREFERENCES.map((p) => [p.key, p.default])),
+    [KEY_OVERLAY_PREF]: true,
+  };
+  const set = (next: PrefValues) => {
+    savePrefs(next);
+    renderPrefSwitches(list, PREF_TOGGLES, next, set);
+  };
+  renderPrefSwitches(list, PREF_TOGGLES, loadPrefs(defaults), set);
 
-    const card = el('li', 'site-card');
-    const top = el('div', 'site-card-top');
-    top.append(el('span', 'lab-eyebrow', `Lab ${entry.number}`), el('span', 'site-status', t('site.statusAvailable')));
-    const title = el('h2');
-    const link = el('a', undefined, t(entry.lab.nameKey));
-    link.href = entry.href;
-    title.append(link);
+  tools.append(prefs, themeButton('site-top-button'));
+  bar.append(name, tools);
+  return bar;
+}
 
-    const bar = el('div', 'site-progress');
-    bar.setAttribute('role', 'progressbar');
-    bar.setAttribute('aria-valuemin', '0');
-    bar.setAttribute('aria-valuemax', String(total));
-    bar.setAttribute('aria-valuenow', String(done));
-    const fill = el('div', 'site-progress-fill');
-    fill.style.width = `${(done / total) * 100}%`;
-    bar.append(fill);
-    const label =
-      done === 0 ? t('site.progressNone') : done === total ? t('site.progressDone') : t('site.progress', { n: done, total });
+function views(): HTMLElement {
+  // The drawing itself (lines per stage) comes with the blueprint phase.
+  const figure = el('figure', 'site-blueprint');
+  figure.setAttribute('aria-label', t('site.blueprintTitle'));
+  for (const v of ['front', 'side', 'top'] as const) {
+    const view = el('div', `site-view site-view-${v}`);
+    const drawing = el('div', 'site-view-drawing');
+    drawing.dataset.view = v;
+    view.append(drawing, el('span', 'site-view-label', t(`site.views.${v}`)));
+    figure.append(view);
+  }
+  figure.append(el('figcaption', 'site-blueprint-note', t('site.blueprintEmpty')));
+  return figure;
+}
 
-    const actions = el('div', 'lab-actions');
-    const open = el('a', 'lab-button lab-button-primary', t('site.open'));
-    open.href = entry.href;
-    actions.append(open);
-    if (done > 0) {
-      let armed = false;
-      const reset = el('button', 'lab-button', t('site.resetProgress'));
-      reset.type = 'button';
-      // Two clicks instead of a browser dialog.
-      reset.addEventListener('click', () => {
-        if (!armed) {
-          armed = true;
-          reset.textContent = t('site.resetProgressConfirm');
-          return;
-        }
-        store.reset();
-        render();
-      });
-      actions.append(reset);
-    }
+function mainAction(): HTMLAnchorElement {
+  const all = PROGRAMS.flatMap((g) => g.labs);
+  const next = all.find((e) => {
+    const p = progressOf(e.lab);
+    return p.done < p.total;
+  });
+  const entry = next ?? all[0]!;
+  const p = progressOf(entry.lab);
+  const key = !next ? 'site.review' : p.started ? 'site.continue' : 'site.start';
+  const a = el('a', 'lab-button lab-button-primary site-cta', t(key, { n: entry.lab.number }));
+  a.href = entry.href;
+  return a;
+}
 
-    card.append(top, title, el('p', 'lab-muted', t(entry.lab.descKey)), bar, el('p', 'site-progress-label', label), actions);
-    list.append(card);
+function labRow(entry: LabEntry, blueprint: HTMLElement): HTMLLIElement {
+  const { lab } = entry;
+  const p = progressOf(lab);
+  const row = el('li', 'site-row');
+  row.dataset.lab = lab.id;
+
+  const title = el('div', 'site-row-title');
+  const link = el('a', undefined, t(lab.nameKey));
+  link.href = entry.href;
+  title.append(link, el('p', 'site-row-desc', t(lab.descKey)));
+
+  const status =
+    p.done === p.total ? t('site.statusDone') : p.started ? t('site.statusInProgress') : t('site.statusNotStarted');
+  const state = el('div', 'site-row-state');
+  state.append(
+    el('span', 'site-row-count', t('site.stages', { n: p.done, total: p.total })),
+    el('span', p.done === p.total ? 'site-row-status is-done' : 'site-row-status', status),
+  );
+  if (justReset === lab.id) state.append(el('span', 'site-row-note', t('site.progressReset')));
+  else if (p.started) {
+    let armed = false;
+    const reset = el('button', 'lab-link-button site-row-reset', t('site.resetProgress'));
+    reset.type = 'button';
+    // Two clicks instead of a browser dialog.
+    reset.addEventListener('click', () => {
+      if (!armed) {
+        armed = true;
+        reset.textContent = t('site.resetProgressConfirm');
+        return;
+      }
+      new ProgressStore(lab.id).reset();
+      justReset = lab.id;
+      render();
+    });
+    state.append(reset);
   }
 
-  root.append(header, el('h2', 'site-section', t('site.labsTitle')), list, el('footer', 'lab-footer', t('site.footer')));
+  row.append(el('span', 'site-row-n', lab.number), title, state);
+  // Highlights this lab's lines in the blueprint.
+  const highlight = (on: boolean) => {
+    if (on) blueprint.dataset.lab = lab.id;
+    else delete blueprint.dataset.lab;
+  };
+  row.addEventListener('mouseenter', () => highlight(true));
+  row.addEventListener('mouseleave', () => highlight(false));
+  row.addEventListener('focusin', () => highlight(true));
+  row.addEventListener('focusout', () => highlight(false));
+  return row;
+}
+
+function render(): void {
+  const hero = el('section', 'site-hero');
+  const blueprint = views();
+  const text = el('div', 'site-hero-text');
+  text.append(el('h1', 'site-title', t('site.heroTitle')), el('p', 'lab-lead', t('site.tagline')), mainAction());
+  hero.append(blueprint, text);
+
+  const labs = el('section', 'site-labs');
+  labs.setAttribute('aria-labelledby', 'site-labs-title');
+  const h = el('h2', undefined, t('site.labsTitle'));
+  h.id = 'site-labs-title';
+  labs.append(h);
+  for (const group of PROGRAMS) {
+    labs.append(el('h3', 'site-program', t(group.nameKey)));
+    const list = el('ol', 'site-rows');
+    for (const entry of group.labs) list.append(labRow(entry, blueprint));
+    labs.append(list);
+  }
+
+  const main = el('main', 'site');
+  main.append(hero, labs);
+  root.replaceChildren(topBar(), main, el('footer', 'lab-footer site-footer', t('site.footer')));
 }
 
 render();

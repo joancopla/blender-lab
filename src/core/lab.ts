@@ -8,6 +8,8 @@ import type { LabStages } from './stages/types';
 export interface LabDefinition<State = unknown, Setup = unknown, Decorations = unknown> {
   /** Also the progress key in localStorage: never change it once published. */
   readonly id: string;
+  /** Position in the sequence, as shown to students ("01"). */
+  readonly number: string;
   /** i18n keys. */
   readonly nameKey: string;
   readonly descKey: string;

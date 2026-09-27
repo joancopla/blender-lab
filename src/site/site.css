@@ -1,78 +1,259 @@
-/* Collection index. Shares tokens and components with lab.css. */
+/* Collection index (DESIGN.md, "Pàgina índex"). Tokens and components come from shell.css. */
+.site-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Title block bar. */
+.site-top {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  min-height: 52px;
+  border-bottom: 1px solid var(--ink);
+  font-size: 15px;
+}
+.site-page a.site-name {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: var(--paper);
+  border-right: 1px solid var(--construction);
+  color: var(--ink);
+  font-weight: 700;
+  font-stretch: 125%;
+  font-size: var(--step-0);
+  text-decoration: none;
+}
+.site-top-tools {
+  display: flex;
+  align-items: stretch;
+}
+.site-top-button {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border: 0;
+  border-left: 1px solid var(--construction);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  list-style: none;
+}
+.site-top-button::-webkit-details-marker {
+  display: none;
+}
+.site-top-button:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.site-top-button:focus-visible {
+  outline-offset: -3px;
+}
+.site-prefs {
+  position: relative;
+  display: flex;
+}
+.site-prefs-list {
+  position: absolute;
+  top: calc(100% + 1px);
+  right: 0;
+  z-index: 5;
+  width: min(360px, calc(100vw - 32px));
+  padding: 8px 16px;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-top: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
 .site {
-  max-width: 760px;
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 48px 24px 24px;
+  box-sizing: border-box;
 }
-.site-header h1 {
-  margin: 0 0 8px;
-  font-size: clamp(32px, 5vw, 46px);
-  letter-spacing: -0.02em;
-}
-.site-section {
-  margin: 36px 0 12px;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--lab-muted);
-}
-.site-labs {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+
+/* Hero: the blueprint in three views and the main action. */
+.site-hero {
   display: grid;
-  gap: 16px;
-}
-.site-card {
-  padding: 20px;
-  border-radius: var(--lab-radius);
-  background: var(--lab-surface);
-  border: 1px solid var(--lab-border);
-}
-.site-card-top {
-  display: flex;
-  justify-content: space-between;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 48px;
   align-items: center;
 }
-.site-card .lab-eyebrow {
+.site-blueprint {
   margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
-.site-card h2 {
-  margin: 4px 0;
-  font-size: 22px;
+.site-view {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid var(--construction);
+  border-radius: var(--radius);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 16px 16px;
+  background-position: -1px -1px;
 }
-.site-card h2 a {
-  color: var(--lab-text);
+.site-view-drawing {
+  position: absolute;
+  inset: 12px 12px 32px;
+}
+.site-view-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 4px 10px;
+  border-top: 1px solid var(--construction);
+  background: var(--paper);
+  font-size: 14px;
+  font-weight: 600;
+  font-stretch: 118%;
+}
+.site-blueprint-note {
+  align-self: center;
+  color: var(--muted);
+  font-size: 15px;
+  padding: 0 4px;
+}
+
+.site-title {
+  margin: 0 0 16px;
+  font-size: clamp(var(--step-3), 4.4vw, var(--step-5));
+  font-stretch: 125% !important;
+  font-weight: 700 !important;
+  line-height: 1.05 !important;
+}
+.site-cta {
+  margin-top: 12px;
+  font-size: 17px;
+  padding: 12px 20px;
+}
+
+/* Labs as numbered rows (a real sequence), not cards. */
+.site-labs {
+  margin-top: 64px;
+}
+.site-labs h2 {
+  margin: 0 0 4px;
+  font-size: var(--step-2);
+}
+.site-program {
+  margin: 20px 0 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ink);
+  font-size: var(--step-0);
+  color: var(--muted);
+}
+.site-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.site-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--construction);
+}
+.site-row-n {
+  font-size: var(--step-2);
+  font-weight: 700;
+  font-stretch: 125%;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.site-row-title a {
+  font-size: var(--step-1);
+  font-weight: 650;
+  font-stretch: 118%;
+  color: var(--ink);
   text-decoration: none;
 }
-.site-card h2 a:hover,
-.site-card h2 a:focus-visible {
-  color: var(--lab-accent);
+.site-row-title a:hover {
+  text-decoration: underline;
 }
-.site-status {
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 12.5px;
-  background: #1f3a2f;
-  color: var(--lab-accent);
+.site-row-desc {
+  margin: 4px 0 0;
+  color: var(--muted);
+  max-width: 40rem;
 }
-.site-progress {
-  height: 6px;
-  border-radius: 3px;
-  background: var(--lab-surface-2);
-  overflow: hidden;
-  margin-top: 14px;
+.site-row-state {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  font-size: 15px;
+  text-align: right;
 }
-.site-progress-fill {
-  height: 100%;
-  background: var(--lab-accent);
+.site-row-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
 }
-.site-progress-label {
-  margin: 6px 0 14px;
-  color: var(--lab-muted);
-  font-size: 13px;
+.site-row-status {
+  font-weight: 600;
 }
-.site .lab-button {
-  display: inline-block;
-  text-decoration: none;
+.site-row-status.is-done {
+  color: var(--axis-z-text);
+}
+.site-row-reset {
+  font-size: 14px;
+}
+.site-row-note {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.site-footer {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1120px;
+}
+
+@media (max-width: 800px) {
+  .site {
+    padding-top: 28px;
+  }
+  .site-hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .site-hero-text {
+    order: -1;
+  }
+  .site-row {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+  .site-row-state {
+    grid-column: 2;
+    justify-items: start;
+    text-align: left;
+  }
+  .site-top {
+    flex-wrap: wrap;
+  }
+  .site-page a.site-name {
+    padding: 12px 16px;
+    border-right: 0;
+  }
+  .site-top-tools {
+    width: 100%;
+    border-top: 1px solid var(--construction);
+  }
+  .site-top-button {
+    padding: 12px 16px;
+  }
+  .site-prefs .site-top-button {
+    border-left: 0;
+  }
 }
