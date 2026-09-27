@@ -4,6 +4,7 @@
  */
 import type { ReplicatedApp } from './app-contract';
 import type { LabStages } from './stages/types';
+import type { Blueprint } from './shell/blueprint';
 
 export interface LabDefinition<State = unknown, Setup = unknown, Decorations = unknown> {
   /** Also the progress key in localStorage: never change it once published. */
@@ -14,6 +15,8 @@ export interface LabDefinition<State = unknown, Setup = unknown, Decorations = u
   readonly nameKey: string;
   readonly descKey: string;
   readonly stages: LabStages<State, Setup, Decorations>;
+  /** Blueprint of the course's final challenge, shown as a miniature in the lab panel. */
+  readonly blueprint?: Blueprint;
   /** Creates the replicated program for this lab (not mounted yet). */
   createApp(): ReplicatedApp<State, Setup, Decorations>;
   /** The lab page: i18n prefix ("lab01") and the keys of its lists under it. */

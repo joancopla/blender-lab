@@ -773,6 +773,101 @@ body {
   outline-offset: 2px;
 }
 
+
+/* --- Blueprint (index hero and lab panel miniature) ------------------------------ */
+.bp-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  --bp-stroke: 0.45;
+}
+.bp-line path {
+  fill: none;
+  stroke: var(--text-faint);
+  stroke-width: var(--bp-stroke);
+  stroke-dasharray: 1.4 1.2;
+  stroke-linejoin: round;
+  opacity: 0.55;
+  transition:
+    stroke 0.15s,
+    opacity 0.15s;
+}
+.bp-line text {
+  fill: var(--text-faint);
+  font: 500 3.2px var(--mono);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  opacity: 0.55;
+}
+.bp-line.is-earned path {
+  stroke: var(--accent);
+  stroke-dasharray: none;
+  opacity: 1;
+}
+.bp-line.is-earned text {
+  fill: var(--accent);
+  opacity: 1;
+}
+/* Technical drawing conventions, kept once earned. */
+.bp-line.is-earned.bp-hidden path {
+  stroke-dasharray: 1.2 0.9;
+}
+.bp-line.bp-axis path {
+  stroke-width: calc(var(--bp-stroke) * 0.6);
+  stroke-dasharray: 4 1 0.6 1;
+}
+.bp-line.bp-dimension path {
+  stroke-width: calc(var(--bp-stroke) * 0.6);
+}
+/* Hovering a lab on the index: its lines stand out, the rest steps back. */
+.bp-has-highlight .bp-line path,
+.bp-has-highlight .bp-line text {
+  opacity: 0.25;
+}
+.bp-has-highlight .bp-line.is-highlight path,
+.bp-has-highlight .bp-line.is-highlight text {
+  opacity: 1;
+}
+.bp-has-highlight .bp-line.is-highlight:not(.is-earned) path {
+  stroke: var(--text);
+}
+/* A line just earned draws itself (under a second). */
+.bp-line.is-drawing path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: bp-draw 0.8s ease-out forwards;
+}
+@keyframes bp-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.lab-blueprint {
+  margin: 12px 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.lab-blueprint-view {
+  aspect-ratio: 1;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background-color: var(--surface-low);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+.lab-blueprint .bp-svg {
+  --bp-stroke: 0.9;
+}
+.lab-blueprint .bp-line text {
+  display: none;
+}
+
 /* --- Motion ---------------------------------------------------------------------- */
 @keyframes lab-stamp {
   0% {
@@ -823,5 +918,8 @@ body {
   }
   .lab-kbd.is-pressed {
     transform: none;
+  }
+  .bp-line path {
+    transition: none;
   }
 }

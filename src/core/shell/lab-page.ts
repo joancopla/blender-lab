@@ -14,6 +14,7 @@ import { KeyOverlay } from './key-overlay';
 import { renderPrefSwitches } from './prefs-panel';
 import { StagePanel } from './stage-panel';
 import { themeButton } from './theme';
+import { BLUEPRINT_VIEWS, type IsCompleted, earnedLineIds, newlyEarned, renderBlueprintView, updateBlueprint } from './blueprint';
 import './shell.css';
 
 const PANEL_KEY = 'blender-lab:panel';
@@ -203,6 +204,34 @@ export function mountLabPage<State, Setup, Decorations>(lab: LabDefinition<State
   const stageBox = el('div');
   const tools = el('section', 'lab-tools');
   panelScroll.append(stageBox, tools, prefsSection);
+
+  // Blueprint miniature: the line earned with a stage draws itself next to the seal.
+  const blueprint = lab.blueprint;
+  if (blueprint) {
+    const others = new Map<string, readonly string[]>();
+    const isCompleted: IsCompleted = (labId, stageId) => {
+      if (labId === lab.id) return progress.isCompleted(stageId);
+      if (!others.has(labId)) others.set(labId, ProgressStore.read(labId).completed);
+      return others.get(labId)!.includes(stageId);
+    };
+    let earned = earnedLineIds(blueprint, isCompleted);
+    const mini = el('figure', 'lab-blueprint');
+    mini.setAttribute('aria-label', t('site.blueprintTitle'));
+    for (const v of BLUEPRINT_VIEWS) {
+      const cell = el('div', 'lab-blueprint-view');
+      cell.title = t(`site.views.${v}`);
+      cell.append(renderBlueprintView(blueprint, v, earned));
+      mini.append(cell);
+    }
+    panelScroll.prepend(mini);
+    runner.onChange(() => {
+      const next = earnedLineIds(blueprint, isCompleted);
+      const fresh = newlyEarned(earned, next);
+      if (fresh.length === 0 && next.size === earned.size) return;
+      earned = next;
+      updateBlueprint(mini, earned, fresh);
+    });
+  }
   const stagePanel = new StagePanel(stageBox, runner, (id) => progress.isCompleted(id));
   keyOverlay.onPress((text) => stagePanel.pressed(text));
   if (app.renderLabTools) app.renderLabTools(tools);

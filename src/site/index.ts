@@ -11,6 +11,8 @@ import { renderPrefSwitches } from '../core/shell/prefs-panel';
 import { themeButton } from '../core/shell/theme';
 import { BLENDER_PREFERENCES } from '../apps/blender/blender-app';
 import { axisText } from '../core/shell/axis-text';
+import { type BlueprintView, earnedLineIds, highlightLab, renderBlueprintView } from '../core/shell/blueprint';
+import { STOOL_BLUEPRINT } from '../labs/blender/blueprint';
 import { lab01 } from '../labs/blender/01-viewport';
 import { lab02 } from '../labs/blender/02-edit-mode';
 import '../core/shell/shell.css';
@@ -110,13 +112,14 @@ function topBar(): HTMLElement {
 }
 
 function views(): HTMLElement {
-  // The drawing itself (lines per stage) comes with the blueprint phase.
+  const earned = earnedLineIds(STOOL_BLUEPRINT, (labId, stageId) => ProgressStore.read(labId).completed.includes(stageId));
   const figure = el('figure', 'site-blueprint grid-paper');
   figure.setAttribute('aria-label', t('site.blueprintTitle'));
   for (const v of ['front', 'side', 'top'] as const) {
     const view = el('div', `site-view site-view-${v}`);
     const drawing = el('div', 'site-view-drawing');
     drawing.dataset.view = v;
+    drawing.append(renderBlueprintView(STOOL_BLUEPRINT, v as BlueprintView, earned));
     view.append(drawing, el('span', 'site-view-label', t(`site.views.${v}`)));
     figure.append(view);
   }
@@ -183,10 +186,7 @@ function labRow(entry: LabEntry, blueprint: HTMLElement): HTMLLIElement {
   bar.append(fill);
   row.append(el('span', 'site-row-n', lab.number), title, state, bar);
   // Highlights this lab's lines in the blueprint.
-  const highlight = (on: boolean) => {
-    if (on) blueprint.dataset.lab = lab.id;
-    else delete blueprint.dataset.lab;
-  };
+  const highlight = (on: boolean) => highlightLab(blueprint, on ? lab.id : null);
   row.addEventListener('mouseenter', () => highlight(true));
   row.addEventListener('mouseleave', () => highlight(false));
   row.addEventListener('focusin', () => highlight(true));
