@@ -35,9 +35,21 @@ import {
 } from '../scene/scene';
 import type { OperatorCall } from '../scene/store';
 
-/** The object's Edit Mode selection (new primitives: everything selected). */
+const allSelectedCache = new WeakMap<MeshData, ComponentSelection>();
+
+/**
+ * The object's Edit Mode selection (new primitives: everything selected). The
+ * same object is returned for the same state, so callers can compare references.
+ */
 export function selectionOf(o: MeshObject): ComponentSelection {
-  return o.meshSelection ?? selectAllComponents(meshOf(o));
+  if (o.meshSelection) return o.meshSelection;
+  const m = meshOf(o);
+  let all = allSelectedCache.get(m);
+  if (!all) {
+    all = selectAllComponents(m);
+    allSelectedCache.set(m, all);
+  }
+  return all;
 }
 
 const sameList = (a: readonly number[], b: readonly number[]) => a.length === b.length && a.every((x, i) => x === b[i]);

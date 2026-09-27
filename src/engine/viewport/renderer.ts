@@ -6,9 +6,22 @@ import * as THREE from 'three';
 import { createBlenderSpaceRoot, setObjectLocation, setObjectRotation } from '../coords';
 import { rotate } from '../math/quat';
 import { type Vec3, dot, sub, vec3 } from '../math/vec3';
-import { type SceneState, activeCamera, cameraData, objectRotation } from '../scene/scene';
+import {
+  type ComponentSelection,
+  type SceneState,
+  type SelectMode,
+  activeCamera,
+  cameraData,
+  meshOf,
+  objectRotation,
+  selectModeOf,
+} from '../scene/scene';
+import type { MeshData } from '../mesh/mesh-data';
+import { meshToGeometry } from './mesh-geometry';
+import { buildEditOverlay, disposeGroup } from './edit-overlay';
+import { selectionOf } from '../operators/edit-mode';
 import type { DisplayedView, Navigator } from './navigator';
-import { type SelectionDisplay, buildObject, setWireSelection, updateLightDisplay } from './object-meshes';
+import { type SelectionDisplay, buildObject, setSolidXray, setWireSelection, updateLightDisplay } from './object-meshes';
 import { type ViewportSize, CLIP_END, CLIP_START } from './projection';
 import { type ViewProjection, viewProjection } from './screen';
 import { Grid } from './grid';
@@ -35,6 +48,11 @@ interface ObjectEntry {
   /** ID used by the selection passes (scene index + 1). */
   readonly passId: number;
   selection: SelectionDisplay | null;
+  /** Mesh data the geometry was built from. */
+  meshData?: MeshData;
+  /** Edit Mode overlay and what it was built from. */
+  overlay?: THREE.Group;
+  overlayFrom?: { mesh: MeshData; sel: ComponentSelection; mode: SelectMode; xray: boolean; active: boolean };
 }
 
 export class ViewportRenderer {
@@ -54,6 +72,7 @@ export class ViewportRenderer {
   private objectsKey = '';
   private size: ViewportSize = { width: 1, height: 1 };
   private scheduled = false;
+  private xray = false;
   private lastCamera: THREE.Camera = this.perspCamera;
   private lastFrame: FrameInfo | null = null;
   private readonly drawListeners = new Set<(info: FrameInfo) => void>();
@@ -105,6 +124,17 @@ export class ViewportRenderer {
     const metresPerPixelAt = (p: Vec3) =>
       vp.orthographic ? perPixel : perPixel * Math.max(CLIP_START, dot(sub(p, vp.eye), forward));
     return { view, size, projection: vp, metresPerPixelAt };
+  }
+
+  /** X-ray (Alt+Z), a viewport shading setting (not part of the scene or undo). */
+  setXray(on: boolean): void {
+    this.xray = on;
+    setSolidXray(on);
+    this.requestRender();
+  }
+
+  get xrayEnabled(): boolean {
+    return this.xray;
   }
 
   /** Ghost silhouettes and face markers of the current stage. */
@@ -204,7 +234,51 @@ export class ViewportRenderer {
           : 'selected';
       if (e.type !== 'mesh' && selection !== e.selection) setWireSelection(e.root, selection);
       e.selection = selection;
+      if (o.type === 'mesh') this.syncMesh(e, o, scene);
     }
+  }
+
+  /** Rebuilds the geometry when the mesh changes, and the Edit Mode overlay when needed. */
+  private syncMesh(e: ObjectEntry, o: Extract<SceneState['objects'][number], { type: 'mesh' }>, scene: SceneState): void {
+    const m = meshOf(o);
+    const mesh = e.root as THREE.Mesh;
+    if (e.meshData !== m) {
+      if (e.meshData) mesh.geometry.dispose();
+      if (e.meshData) mesh.geometry = meshToGeometry(m).geometry;
+      e.meshData = m;
+    }
+    const editing = scene.editObjectIds?.includes(o.id) ?? false;
+    if (!editing) {
+      if (e.overlay) {
+        mesh.remove(e.overlay);
+        disposeGroup(e.overlay);
+        e.overlay = undefined;
+        e.overlayFrom = undefined;
+      }
+      return;
+    }
+    const from = { mesh: m, sel: selectionOf(o), mode: selectModeOf(scene), xray: this.xray, active: o.id === scene.activeId };
+    const prev = e.overlayFrom;
+    const same =
+      prev &&
+      prev.mesh === from.mesh &&
+      prev.sel === from.sel &&
+      prev.mode === from.mode &&
+      prev.xray === from.xray &&
+      prev.active === from.active;
+    if (same) return;
+    if (e.overlay) {
+      mesh.remove(e.overlay);
+      disposeGroup(e.overlay);
+    }
+    e.overlay = buildEditOverlay(m, from.sel, {
+      mode: from.mode,
+      xray: from.xray,
+      pixelRatio: this.renderer.getPixelRatio(),
+      showActive: from.active,
+    });
+    e.overlayFrom = from;
+    mesh.add(e.overlay);
   }
 
   private draw(): void {
@@ -276,6 +350,11 @@ export class ViewportRenderer {
     for (const e of this.objects.values()) {
       if (e.type !== 'mesh' || !e.root.visible) continue;
       meshRoots.set(e.root, e.passId);
+      // Objects in Edit Mode show their components instead of an outline.
+      if (e.overlay) {
+        states.set(e.passId, 0);
+        continue;
+      }
       states.set(e.passId, e.selection === 'active' ? 2 : e.selection === 'selected' ? 1 : 0);
     }
     if ([...states.values()].some((s) => s > 0)) {

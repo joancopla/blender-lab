@@ -21,6 +21,10 @@ function getSolidMaterial(): THREE.Material {
       specular: new THREE.Color(0x1a1a1a),
       shininess: 20,
       flatShading: true,
+      // Pushed back a little so Edit Mode edges and vertices on the surface stay visible.
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
       side: THREE.DoubleSide,
     });
   }
@@ -69,6 +73,16 @@ function buildLight(_light: LightObject): THREE.Object3D {
   ground.name = 'groundLine';
   group.add(ground);
   return group;
+}
+
+/** X-ray (Alt+Z): solid objects become see-through. FIDELITY? Blender's default X-ray alpha is 0.5. */
+export function setSolidXray(on: boolean): void {
+  const m = getSolidMaterial() as THREE.MeshPhongMaterial;
+  if (m.transparent === on) return;
+  m.transparent = on;
+  m.opacity = on ? 0.5 : 1;
+  m.depthWrite = !on;
+  m.needsUpdate = true;
 }
 
 export function buildObject(o: SceneObject, isSceneCamera: boolean, renderAspect: number): THREE.Object3D {
