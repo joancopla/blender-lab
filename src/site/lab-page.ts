@@ -1,4 +1,4 @@
-import { lab01 } from '../labs/01-viewport';
-import { mountLabPage } from './lab-page-core';
+import { lab01 } from '../labs/blender/01-viewport';
+import { mountLabPage } from '../core/shell/lab-page';
 
 mountLabPage(lab01);

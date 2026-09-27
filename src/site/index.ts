@@ -1,12 +1,12 @@
 /**
  * Collection index: the list of labs with their status and the student's progress.
  */
-import type { LabDefinition } from '../engine/lab';
-import { ProgressStore } from '../engine/stages/progress';
-import { t } from '../i18n';
-import { lab01 } from '../labs/01-viewport';
-import { lab02 } from '../labs/02-edit-mode';
-import './lab.css';
+import type { LabDefinition } from '../core/lab';
+import { ProgressStore } from '../core/stages/progress';
+import { t } from '../core/i18n';
+import { lab01 } from '../labs/blender/01-viewport';
+import { lab02 } from '../labs/blender/02-edit-mode';
+import '../core/shell/shell.css';
 import './site.css';
 
 interface LabEntry {
