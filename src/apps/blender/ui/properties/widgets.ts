@@ -91,6 +91,41 @@ export function checkboxWidget(label: string, get: () => boolean, set: (v: boole
   };
 }
 
+/**
+ * A checkbox and a number on one row, the number greyed out while the box is
+ * off (Normals > Auto Smooth and its angle).
+ */
+export function checkNumberWidget(
+  label: string,
+  check: { get(): boolean; set(v: boolean): void },
+  spec: Omit<NumberSpec, 'label' | 'inner'>,
+): Widget {
+  const box = el('button', 'bl-mp-check');
+  box.type = 'button';
+  box.setAttribute('role', 'checkbox');
+  box.setAttribute('aria-label', label);
+  noFocus(box);
+  const mark = el('span', 'bl-mp-check-box');
+  box.append(mark);
+  box.addEventListener('click', () => check.set(!check.get()));
+  const number = numberWidget({ ...spec, label: '' });
+  const field = number.element.lastElementChild as HTMLElement;
+  const control = el('div', 'bl-mp-check-number');
+  control.append(box, field);
+  return {
+    element: splitRow(label, control),
+    update: () => {
+      const on = check.get();
+      box.classList.toggle('is-on', on);
+      box.setAttribute('aria-checked', String(on));
+      mark.textContent = on ? '✓' : '';
+      field.classList.toggle('is-inactive', !on);
+      number.update();
+    },
+    dispose: number.dispose,
+  };
+}
+
 export interface Choice<T> {
   readonly value: T;
   readonly label: string;

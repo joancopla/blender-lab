@@ -523,7 +523,7 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] Si no hi ha cap malla seleccionada, o ja estan totes així, no fa res i no afegeix cap pas de desfer
 - [ ] Un cub amb Subdivision i Shade Smooth es veu arrodonit i llis; amb Shade Flat, amb facetes
 - [ ] ❓ "Keep Sharp Edges" (activat per defecte a Shade Smooth) no fa res al lab perquè no hi ha arestes marcades com a *sharp*
-- Pendent per a la Fase 4: el panell Normals de la pestanya Object Data (casella Auto Smooth i angle)
+- El panell Normals de la pestanya Object Data (casella Auto Smooth i angle) arriba a la Fase 4: vegeu "Pestanya Object Data"
 
 ### Solidify
 
@@ -590,3 +590,13 @@ Etiqueta a l'esquerra i control a la dreta, com a Blender. Només hi ha els par�
 - [ ] ❓ Després d'aplicar, en entrar a Edit Mode tota la malla està seleccionada
 - [ ] La malla aplicada conserva el suavitzat de les cares (Shade Smooth)
 - Decisió del lab: si el Bevel del lab no sap fer aquella malla, no s'aplica i surt l'avís del lab
+
+### Pestanya Object Data (malla)
+
+- [ ] ❓ A dalt, "Cube › Cube" (objecte › dades de malla)
+- [ ] ❓ Panells i ordre: Vertex Groups, Shape Keys, UV Maps, Color Attributes, Attributes, Normals, Texture Space, Remesh, Geometry Data, Custom Properties. Només Normals funciona; els altres es veuen apagats
+- [ ] ❓ Normals comença plegat
+- [x] Normals: casella Auto Smooth i l'angle al costat (30° per defecte), tal com va descriure Joan
+- [ ] ❓ Amb la casella desactivada, l'angle es veu apagat però es pot canviar
+- [ ] ❓ Noms a Undo History: "Auto Smooth" i "Angle"; l'angle va de 0° a 180°
+- [ ] Canviar la casella o l'angle es veu al moment al viewport (amb les cares suaus)

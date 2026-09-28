@@ -2,7 +2,26 @@ import { describe, expect, it } from 'vitest';
 import { blenderDefaultScene } from '../scene/default-scene';
 import { type MeshObject, type SceneState, meshOf } from '../scene/scene';
 import { SceneStore } from '../scene/store';
-import { ShadeAutoSmoothOp, ShadeFlatOp, ShadeSmoothOp } from './shade';
+import { SetAutoSmoothOp, ShadeAutoSmoothOp, ShadeFlatOp, ShadeSmoothOp, setAutoSmooth } from './shade';
+
+describe('Object Data > Normals > Auto Smooth', () => {
+  it('toggles the checkbox and sets the angle, limited to 0–180°', () => {
+    const s = selected(['cube']);
+    const on = setAutoSmooth(s, 'cube', { autoSmooth: true });
+    expect(cubeOf(on).autoSmooth).toBe(true);
+    expect(cubeOf(setAutoSmooth(on, 'cube', { angleDeg: 45 })).autoSmoothAngleDeg).toBe(45);
+    expect(cubeOf(setAutoSmooth(on, 'cube', { angleDeg: 400 })).autoSmoothAngleDeg).toBe(180);
+    // The default angle (30°) and an unchanged checkbox change nothing.
+    expect(setAutoSmooth(s, 'cube', { autoSmooth: false, angleDeg: 30 })).toBe(s);
+  });
+
+  it('each change is one undo step named after the property', () => {
+    const store = new SceneStore(selected(['cube']));
+    expect(store.execute(SetAutoSmoothOp('cube', { autoSmooth: true }, 'Auto Smooth'))).toBe(true);
+    expect(store.execute(SetAutoSmoothOp('cube', { angleDeg: 60 }, 'Angle'))).toBe(true);
+    expect(store.log.slice(-2).map((e) => e.name)).toEqual(['Auto Smooth', 'Angle']);
+  });
+});
 
 const cubeOf = (s: SceneState) => s.objects.find((o) => o.id === 'cube') as MeshObject;
 const selected = (ids: string[]): SceneState => ({ ...blenderDefaultScene(), selectedIds: ids, activeId: ids[0] ?? null });

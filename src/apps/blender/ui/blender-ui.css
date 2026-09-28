@@ -320,6 +320,37 @@
   white-space: nowrap;
   color: var(--bl-text-dim);
 }
+.bl-mp-check-number {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.bl-num.is-inactive {
+  opacity: 0.5;
+}
+/* Object Data tab: Blender's panels, only Normals working. */
+.bl-data-panel {
+  margin-bottom: 2px;
+  border-radius: 4px;
+  background: #3d3d3d;
+}
+.bl-data-panel.is-inactive {
+  opacity: 0.45;
+}
+.bl-data-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px;
+}
+.bl-data-header.is-interactive {
+  cursor: pointer;
+}
+.bl-data-arrow {
+  width: 10px;
+}
 .bl-mp-stacked {
   margin: 4px 0 2px;
 }

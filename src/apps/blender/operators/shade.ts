@@ -11,7 +11,7 @@
  * FIDELITY? "Keep Sharp Edges" keeps edges marked sharp; the lab has none.
  */
 import { withSmooth } from '../mesh/mesh-data';
-import { type MeshObject, type SceneObject, type SceneState, meshOf } from '../scene/scene';
+import { DEFAULT_AUTO_SMOOTH_ANGLE_DEG, type MeshObject, type SceneObject, type SceneState, meshOf } from '../scene/scene';
 import type { OperatorCall } from '../scene/store';
 
 export type Shading = 'smooth' | 'autoSmooth' | 'flat';
@@ -33,6 +33,36 @@ export function shadeObjects(s: SceneState, shading: Shading): SceneState {
   });
   return changed ? { ...s, objects } : s;
 }
+
+/** Object Data > Normals: the Auto Smooth checkbox and its angle (0–180°). */
+export function setAutoSmooth(
+  s: SceneState,
+  objectId: string,
+  patch: { readonly autoSmooth?: boolean; readonly angleDeg?: number },
+): SceneState {
+  let changed = false;
+  const objects = s.objects.map((o): SceneObject => {
+    if (o.type !== 'mesh' || o.id !== objectId) return o;
+    let next: MeshObject = o;
+    if (patch.autoSmooth !== undefined && patch.autoSmooth !== (o.autoSmooth ?? false)) {
+      next = { ...next, autoSmooth: patch.autoSmooth };
+    }
+    if (patch.angleDeg !== undefined) {
+      const angle = Math.max(0, Math.min(180, patch.angleDeg));
+      if (angle !== (o.autoSmoothAngleDeg ?? DEFAULT_AUTO_SMOOTH_ANGLE_DEG)) next = { ...next, autoSmoothAngleDeg: angle };
+    }
+    if (next !== o) changed = true;
+    return next;
+  });
+  return changed ? { ...s, objects } : s;
+}
+
+/** `label`: the property's label, used as the undo name ("Auto Smooth", "Angle"). */
+export const SetAutoSmoothOp = (
+  objectId: string,
+  patch: { readonly autoSmooth?: boolean; readonly angleDeg?: number },
+  label: string,
+): OperatorCall => ({ name: label, apply: (s) => setAutoSmooth(s, objectId, patch) });
 
 // FIDELITY? Undo History names.
 export const ShadeSmoothOp: OperatorCall = { name: 'Shade Smooth', apply: (s) => shadeObjects(s, 'smooth') };
