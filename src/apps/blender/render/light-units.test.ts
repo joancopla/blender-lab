@@ -34,11 +34,14 @@ describe('Blender -> three.js light units', () => {
     expect(t.intensity).toBeCloseTo(1000 / (4 * Math.PI), 9);
   });
 
-  it('Area: radiance P / πA; a disk becomes a rectangle of the same area', () => {
-    const sq = threeLight(lightData(light({ lightType: 'AREA', size: 2 })));
-    expect(sq.intensity).toBeCloseTo(1000 / (Math.PI * 4), 9);
-    const disk = threeLight(lightData(light({ lightType: 'AREA', shape: 'DISK', size: 2 })));
-    expect(disk.width! * disk.height!).toBeCloseTo(Math.PI, 9);
+  it('Area: a wide spot of intensity P / π (moved over the panel at each sample)', () => {
+    const t = threeLight(lightData(light({ lightType: 'AREA', size: 2 })));
+    expect(t.kind).toBe('spot');
+    expect(t.intensity).toBeCloseTo(1000 / Math.PI, 9);
+    expect(t.penumbra).toBe(1);
+    // Far away, on the axis, it matches the physics of a panel.
+    const o = light({ lightType: 'AREA', size: 0.2, location: vec3(0, 0, 30) });
+    expect(t.intensity / 900 / irradiance(o, vec3(0, 0, 0), vec3(0, 0, 1))).toBeCloseTo(1, 3);
   });
 
   it('World and exposure', () => {

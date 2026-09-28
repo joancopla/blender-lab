@@ -39,6 +39,7 @@ import {
   updateLightDisplay,
 } from './object-meshes';
 import { RenderSetup, type ShadingMode } from '../render/render-setup';
+import { Accumulator, halton } from '../render/accumulator';
 import { type ViewportSize, CLIP_END, CLIP_START } from './projection';
 import { type ViewProjection, viewProjection } from './screen';
 import { Grid } from './grid';
@@ -50,6 +51,10 @@ import { THEME } from './theme';
 
 /** Keeps modest classroom computers at 60 fps on high-density screens. */
 const MAX_PIXEL_RATIO = 1.5;
+
+/** three.js layers: surfaces (and the scene's lights) and what is drawn over them. */
+const SURFACE_LAYER = 0;
+const OVERLAY_LAYER = 1;
 
 export interface FrameInfo {
   readonly view: DisplayedView;
@@ -102,6 +107,18 @@ export class ViewportRenderer {
   private readonly renderSetup: RenderSetup;
   /** Overlay materials already kept out of the view transform. */
   private readonly untoned = new WeakSet<THREE.Material>();
+  private readonly accumulator: Accumulator;
+  /** Writes depth only, with the same offset as the surfaces (see object-meshes.ts). */
+  private readonly depthOnly = new THREE.MeshBasicMaterial({
+    colorWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+    side: THREE.DoubleSide,
+  });
+  private accumKey = '';
+  private readonly sceneIds = new WeakMap<SceneState, number>();
+  private nextSceneId = 0;
   private analyzerObjectId: string | null = null;
   private lastCamera: THREE.Camera = this.perspCamera;
   private lastFrame: FrameInfo | null = null;
@@ -128,6 +145,9 @@ export class ViewportRenderer {
     this.root.add(this.perspCamera, this.orthoCamera, this.lightRig, this.labElements.group);
     this.buildLightRig();
     this.renderSetup = new RenderSetup(this.renderer, this.scene, this.root);
+    this.accumulator = new Accumulator(this.renderer);
+    // Both cameras see surfaces and overlays, except in Rendered's sample pass.
+    for (const c of [this.perspCamera, this.orthoCamera]) c.layers.enableAll();
 
     navigator.onChange(() => this.requestRender());
     new ResizeObserver(() => this.resize()).observe(container);
@@ -177,6 +197,7 @@ export class ViewportRenderer {
   /** Viewport Shading (Z, header buttons): a view setting, not part of the scene or undo. */
   setShading(mode: ShadingMode): void {
     this.shading = mode;
+    this.accumulator.reset();
     this.requestRender();
   }
 
@@ -425,11 +446,92 @@ export class ViewportRenderer {
       view.distance,
     );
 
-    this.renderSetup.sync(scene, this.shading);
     // Solid's studio rig follows the view; the lit modes use the HDRI or the scene's lights.
     this.lightRig.visible = this.shading === 'SOLID' || this.shading === 'WIREFRAME';
     this.keepOverlaysUntoned();
 
+    if (this.shading === 'RENDERED') {
+      this.drawRendered(scene, camera, info);
+    } else {
+      this.renderSetup.sync(scene, this.shading);
+      this.drawDirect(camera, axisOrtho);
+    }
+    this.drawOutlines(camera);
+
+    this.lastFrame = info;
+    for (const fn of this.drawListeners) fn(info);
+  }
+
+  /**
+   * Rendered: progressive samples averaged (soft shadows, anti-aliasing),
+   * reset whenever the scene, the view or the size changes. Overlays and the
+   * grid are drawn on top of the average every frame.
+   */
+  private drawRendered(scene: SceneState, camera: THREE.Camera, info: FrameInfo): void {
+    const buffer = this.renderer.getDrawingBufferSize(new THREE.Vector2());
+    this.accumulator.setSize(buffer.x, buffer.y);
+    const vp = info.projection;
+    const key = `${this.sceneKey(scene)}|${vp.eye.x},${vp.eye.y},${vp.eye.z}|${vp.rotation.x},${vp.rotation.y},${vp.rotation.z},${vp.rotation.w}|${vp.left},${vp.right},${vp.top},${vp.bottom}|${buffer.x}x${buffer.y}`;
+    if (key !== this.accumKey) {
+      this.accumulator.reset();
+      this.accumKey = key;
+    }
+    if (!this.accumulator.finished) {
+      const k = this.accumulator.count;
+      this.renderSetup.sync(scene, 'RENDERED', k);
+      // Anti-aliasing: move the image by less than a pixel at every sample.
+      const cam = camera as THREE.PerspectiveCamera | THREE.OrthographicCamera;
+      const saved = cam.projectionMatrix.clone();
+      const jx = ((halton(k, 2) - 0.5) * 2) / buffer.x;
+      const jy = ((halton(k, 3) - 0.5) * 2) / buffer.y;
+      const e = cam.projectionMatrix.elements;
+      if (cam instanceof THREE.OrthographicCamera) {
+        e[12]! += jx;
+        e[13]! += jy;
+      } else {
+        e[8]! += jx;
+        e[9]! += jy;
+      }
+      camera.layers.set(SURFACE_LAYER);
+      this.root.updateMatrixWorld(true);
+      this.accumulator.addSample(() => this.renderer.render(this.scene, camera));
+      cam.projectionMatrix.copy(saved);
+    }
+    this.renderer.setRenderTarget(null);
+    this.renderer.clear();
+    this.accumulator.present();
+    // The surfaces' depth (no colour, no shadow maps again), so the overlays and
+    // the grid drawn next are hidden behind them.
+    const background = this.scene.background;
+    this.scene.background = null;
+    this.scene.overrideMaterial = this.depthOnly;
+    const autoShadows = this.renderer.shadowMap.autoUpdate;
+    this.renderer.shadowMap.autoUpdate = false;
+    camera.layers.set(SURFACE_LAYER);
+    this.renderer.render(this.scene, camera);
+    this.renderer.shadowMap.autoUpdate = autoShadows;
+    this.scene.overrideMaterial = null;
+    // Overlays (icons, Edit Mode cage, lab elements), without the background again.
+    camera.layers.set(OVERLAY_LAYER);
+    this.renderer.render(this.scene, camera);
+    this.scene.background = background;
+    camera.layers.enableAll();
+    this.gridRoot.updateMatrixWorld(true);
+    this.renderer.render(this.gridScene, camera);
+    if (!this.accumulator.finished) this.requestRender();
+  }
+
+  /** Changes whenever the scene state object changes (it is immutable). */
+  private sceneKey(scene: SceneState): number {
+    let id = this.sceneIds.get(scene);
+    if (id === undefined) {
+      id = ++this.nextSceneId;
+      this.sceneIds.set(scene, id);
+    }
+    return id;
+  }
+
+  private drawDirect(camera: THREE.Camera, axisOrtho: boolean): void {
     this.root.updateMatrixWorld(true);
     this.gridRoot.updateMatrixWorld(true);
     this.renderer.clear();
@@ -441,21 +543,20 @@ export class ViewportRenderer {
       this.renderer.render(this.scene, camera);
       this.renderer.render(this.gridScene, camera);
     }
-    this.drawOutlines(camera);
-
-    this.lastFrame = info;
-    for (const fn of this.drawListeners) fn(info);
   }
 
   /**
    * Grid, outlines, wires, Edit Mode overlays, icons and lab elements are
    * drawn over the image, not part of it: they skip the view transform (AgX),
-   * so their colours stay the same in every shading mode.
+   * so their colours stay the same in every shading mode, and they live on
+   * the overlay layer, left out of Rendered's averaged samples.
    */
   private keepOverlaysUntoned(): void {
     const visit = (o: THREE.Object3D) => {
       const m = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
-      for (const mat of Array.isArray(m) ? m : m ? [m] : []) {
+      const mats = Array.isArray(m) ? m : m ? [m] : [];
+      if (mats.length > 0 && !mats.some(isSurfaceMaterial)) o.layers.set(OVERLAY_LAYER);
+      for (const mat of mats) {
         if (this.untoned.has(mat) || isSurfaceMaterial(mat)) continue;
         mat.toneMapped = false;
         mat.needsUpdate = true;

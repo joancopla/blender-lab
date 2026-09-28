@@ -8,11 +8,11 @@
  *   as uniform ambient light and background, and shadows.
  * Material Preview and Rendered go through Color Management (AgX or Standard,
  * and Exposure).
- * FIDELITY? Material Preview background blur; shadows are hard here (soft
- * shadows come with the light gizmos); the Area light casts no shadow yet.
+ * Soft shadows come from the progressive samples (render/accumulator.ts): at
+ * every sample each light is moved over its surface (light-sampling.ts).
+ * FIDELITY? Material Preview background blur.
  */
 import * as THREE from 'three';
-import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { setObjectLocation, setObjectRotation } from '../coords';
 import {
   type LightObject,
@@ -23,7 +23,10 @@ import {
   worldOf,
 } from '../scene/scene';
 import { exposureFactor, threeLight, worldAmbientIntensity } from './light-units';
+import { lightSample } from './light-sampling';
 import { studioPixels } from './studio-hdri';
+import { fromEulerXYZ, mulQuat, rotate } from '../math/quat';
+import { add, mul, vec3 } from '../math/vec3';
 
 export type ShadingMode = 'WIREFRAME' | 'SOLID' | 'MATERIAL' | 'RENDERED';
 
@@ -46,8 +49,6 @@ function equirect(pixels: Float32Array, width: number, height: number): THREE.Da
   return tex;
 }
 
-let rectAreaReady = false;
-
 export class RenderSetup {
   private readonly lights = new Map<string, LightEntry>();
   private readonly ambient = new THREE.AmbientLight(0xffffff, 0);
@@ -66,8 +67,11 @@ export class RenderSetup {
     this.root.add(this.ambient);
   }
 
-  /** Brings three.js in line with the mode and the scene. */
-  sync(state: SceneState, mode: ShadingMode): void {
+  /**
+   * Brings three.js in line with the mode and the scene. `sample`: the
+   * progressive sample being rendered (the lights are moved for it).
+   */
+  sync(state: SceneState, mode: ShadingMode, sample = 0): void {
     const lit = mode === 'MATERIAL' || mode === 'RENDERED';
     const cm = colorManagementOf(state);
     this.renderer.toneMapping = !lit
@@ -96,7 +100,7 @@ export class RenderSetup {
     this.ambient.color.setRGB(world.color.x, world.color.y, world.color.z, THREE.LinearSRGBColorSpace);
     this.ambient.intensity = worldAmbientIntensity(world);
 
-    this.syncLights(mode === 'RENDERED' ? state.objects.filter((o): o is LightObject => o.type === 'light') : []);
+    this.syncLights(mode === 'RENDERED' ? state.objects.filter((o): o is LightObject => o.type === 'light') : [], sample);
   }
 
   private studioTextures() {
@@ -124,7 +128,7 @@ export class RenderSetup {
     return this.worldTexture;
   }
 
-  private syncLights(lights: readonly LightObject[]): void {
+  private syncLights(lights: readonly LightObject[], sample: number): void {
     const keep = new Set(lights.map((l) => l.id));
     for (const [id, e] of this.lights) {
       if (keep.has(id)) continue;
@@ -146,19 +150,18 @@ export class RenderSetup {
         this.root.add(e.light);
       }
       const light = e.light;
-      setObjectLocation(light, o.location);
-      setObjectRotation(light, objectRotation(o));
+      // Soft shadows: this sample's point on the light (or direction of the Sun).
+      const q = objectRotation(o);
+      const s = lightSample(d, sample);
+      setObjectLocation(light, add(o.location, rotate(q, mul(s.offset, o.scale))));
+      setObjectRotation(light, mulQuat(q, fromEulerXYZ(vec3(s.tiltX, s.tiltY, 0))));
       light.color.setRGB(d.color.x, d.color.y, d.color.z, THREE.LinearSRGBColorSpace);
       light.intensity = t.intensity;
       if (light instanceof THREE.SpotLight) {
         light.angle = t.angle!;
         light.penumbra = t.penumbra!;
       }
-      if (light instanceof THREE.RectAreaLight) {
-        light.width = t.width!;
-        light.height = t.height!;
-      }
-      light.castShadow = d.useShadow && !(light instanceof THREE.RectAreaLight);
+      light.castShadow = d.useShadow;
     }
   }
 
@@ -168,17 +171,11 @@ export class RenderSetup {
       light = new THREE.PointLight(0xffffff, 1, 0, 2);
     } else if (kind === 'spot') {
       light = new THREE.SpotLight(0xffffff, 1, 0, Math.PI / 4, 0, 2);
-    } else if (kind === 'directional') {
+    } else {
       light = new THREE.DirectionalLight(0xffffff, 1);
       const cam = (light as THREE.DirectionalLight).shadow.camera;
       // FIDELITY? A fixed 20 m square around the origin for the Sun's shadow.
       Object.assign(cam, { left: -10, right: 10, top: 10, bottom: -10, near: 0.1, far: 100 });
-    } else {
-      if (!rectAreaReady) {
-        RectAreaLightUniformsLib.init();
-        rectAreaReady = true;
-      }
-      light = new THREE.RectAreaLight(0xffffff, 1, 1, 1);
     }
     // Spot and Sun shine along the light's local -Z, as in Blender: the target
     // is a child one metre in front of it.

@@ -690,3 +690,27 @@ Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot 
 - [ ] ❓ Spot Size: al lab, com a màxim 179,8°; Blend es converteix en la penombra de three.js
 - [ ] ❓ Color Management (Material Preview i Rendered): AgX per defecte, i Standard; Exposure en passos. El tone mapping AgX de three.js no és idèntic al de Blender. Encara no hi ha interfície per canviar-ho
 - [ ] La graella, els contorns, les icones de les llums i la gàbia d'Edit Mode no canvien de color en Rendered (no passen per AgX)
+
+## Fase 3 — Llums al viewport i al Properties Editor
+
+### Pestanya Object Data d'una llum (panell Light)
+
+- [ ] ❓ A dalt, "Light › Light". Panell Light obert: botons Point | Sun | Spot | Area, Color, Power (Strength al Sun), Radius (Point i Spot), Angle (Sun), Shape i Size / Size X i Y (Area), el subpanell Spot Shape (Size, Blend) a l'Spot, i Cast Shadow
+- [ ] ❓ Formats: "1000 W", "0.1 m", "45°", Strength amb dos decimals
+- [ ] ❓ Noms a Undo History: "Type", "Color", "Power" o "Strength", "Radius", "Angle", "Size", "Blend", "Shape", "Cast Shadow"
+- [ ] ❓ Límits: Power ≥ 0, Spot Size 1°–180°, Blend 0–1, Angle 0°–180°
+- [ ] ❓ Blender mostra més opcions segons el motor (EEVEE o Cycles): Soft Falloff, Max Bounces, Shadow Jitter... Al lab no hi són
+- Decisió del lab: el color es tria amb el selector del navegador, no amb la roda de color de Blender
+
+### Gizmos
+
+- [ ] ❓ Totes les llums tenen la icona circular i la línia discontínua fins a terra
+- [ ] ❓ Sun: una línia en la direcció de la llum. Spot: el con amb l'angle de Spot Size. Area: el contorn de la forma a la mida real i una línia de direcció. Longituds de les línies (al lab, 1,5 m)
+
+### Ombres toves (Rendered)
+
+- [ ] ❓ Rendered es va afinant quan la vista està quieta: fins a 32 mostres, en cadascuna les llums es desplacen per la seva superfície (Point i Spot dins de l'esfera de Radius, Sun dins de l'Angle, Area per tot el panell) i la càmera es mou menys d'un píxel. Quan canvies alguna cosa, torna a començar
+- [ ] Radius 0 (o Angle 0) fa l'ombra dura; més Radius, més tova
+- [ ] ❓ L'Area fa ombres (al lab és un Spot molt ample que es mou pel panell; la mitjana equival a tot el panell)
+- [ ] La graella, les icones i la gàbia d'Edit Mode queden tapades pels objectes també en Rendered
+- Decisió del lab: com Cycles, la imatge es refina en diverses passades; EEVEE ho fa d'una altra manera

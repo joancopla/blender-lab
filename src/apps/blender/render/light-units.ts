@@ -7,8 +7,8 @@
  *   then gives E = I · cos θ / d². Blender's Radius has no three.js equivalent
  *   here (it softens shadows; see the renderer).
  * - Sun: DirectionalLight intensity = Strength (W/m²).
- * - Area: RectAreaLight intensity is the panel's radiance L = P / (π A).
- *   Disks and ellipses become rectangles of the same area.
+ * - Area: a wide SpotLight of intensity P / π moved over the panel at every
+ *   sample (see below).
  * - World: AmbientLight intensity π · Strength (three.js gives irradiance =
  *   colour · intensity, and a uniform sky of radiance L gives E = π L).
  *
@@ -22,14 +22,11 @@ import type { LightData, WorldSettings } from '../scene/scene';
 export const POWER_CALIBRATION = 1;
 
 export interface ThreeLightSettings {
-  readonly kind: 'point' | 'spot' | 'directional' | 'rectArea';
+  readonly kind: 'point' | 'spot' | 'directional';
   readonly intensity: number;
   /** SpotLight: half angle (radians) and penumbra (0..1). */
   readonly angle?: number;
   readonly penumbra?: number;
-  /** RectAreaLight size (metres). */
-  readonly width?: number;
-  readonly height?: number;
 }
 
 export function threeLight(d: LightData): ThreeLightSettings {
@@ -47,21 +44,19 @@ export function threeLight(d: LightData): ThreeLightSettings {
     }
     case 'SUN':
       return { kind: 'directional', intensity: d.energy };
-    case 'AREA': {
-      const w = d.size;
-      const h = d.shape === 'RECTANGLE' || d.shape === 'ELLIPSE' ? d.sizeY : d.size;
-      const round = d.shape === 'DISK' || d.shape === 'ELLIPSE';
-      // A disk of diameter w (x h) has area π w h / 4: a rectangle of the same area.
-      const k = round ? Math.sqrt(Math.PI / 4) : 1;
-      const width = Math.max(1e-4, w * k);
-      const height = Math.max(1e-4, h * k);
+    case 'AREA':
+      // Each progressive sample puts the whole panel at one point of its
+      // surface (light-sampling.ts): a flat diffuse emitter whose intensity is
+      // (P / π) · cos θ, i.e. a SpotLight of intensity P / π opening to 90°
+      // with its edge fading like the cosine. Averaging the samples integrates
+      // the panel, and it casts shadows (a RectAreaLight cannot).
+      // Adaptat de cifog-lab (xavikai), labs/lighting/scene.js.
       return {
-        kind: 'rectArea',
-        intensity: (d.energy * POWER_CALIBRATION) / (Math.PI * width * height),
-        width,
-        height,
+        kind: 'spot',
+        intensity: (d.energy * POWER_CALIBRATION) / Math.PI,
+        angle: (89.5 * Math.PI) / 180,
+        penumbra: 1,
       };
-    }
   }
 }
 
