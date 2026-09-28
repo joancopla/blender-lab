@@ -23,14 +23,15 @@ Llegeix `CLAUDE.md` i `specs/blender/README.md` abans de res.
   `// FIDELITY?` amb la drecera d'Apply sobre el panell.
 - En Mode Edició, amb el modificador visible, es veu el resultat i la gàbia de la malla
   base, com a Blender.
-- Object > Shade Smooth, Shade Flat i Shade Auto Smooth. `// FIDELITY?` amb el
-  funcionament d'Auto Smooth a la sèrie 5.x (a partir de 4.1 és un modificador).
+- Object > Shade Smooth, Shade Flat i Shade Auto Smooth, també al menú del botó dret.
+  Resolt per Joan (28/09/2026): Auto Smooth no és un modificador ni va a la pila; és la
+  casella Auto Smooth de la pestanya Object Data > Normals, a 30°.
 
 ## 2. Modificadors dins d'abast
 
 | Modificador | Paràmetres |
 |---|---|
-| Subdivision Surface | Catmull-Clark / Simple, Levels Viewport, Render. Ctrl+1…5 en Object Mode per fixar nivells. |
+| Subdivision Surface | Catmull-Clark / Simple, Levels Viewport, Render. Ctrl+1…5 en Object Mode per fixar nivells (implementat, però al navegador Ctrl+1…8 canvien de pestanya: el lab ho explica i fa servir Add Modifier). |
 | Mirror | Axis X/Y/Z, Bisect, Flip, Mirror Object, Clipping, Merge amb distància. |
 | Array | Fit Type Fixed Count, Count, Relative Offset, Constant Offset, Merge. |
 | Bevel | Amount, Segments, Limit Method (None, Angle). `// FIDELITY?` amb el valor per defecte. |
@@ -55,8 +56,9 @@ Creases, pesos de bevel, modificadors de deformació, Boolean, Geometry Nodes i 
 
 ## 4. Etapes
 
-1. **Suavitzar.** Afegir Subdivision Surface a un cub, canviar els nivells i provar
-   Ctrl+2. La consigna explica per què el cub es converteix en una mena d'esfera.
+1. **Suavitzar.** Afegir Subdivision Surface a un cub amb Add Modifier i canviar els
+   nivells. La consigna explica per què el cub es converteix en una mena d'esfera, i que a
+   Blender també es fa amb Ctrl+2 (al navegador no, perquè canvia de pestanya).
 2. **Loops de suport.** Aconseguir que el cub subdividit mantingui les arestes marcades
    afegint loop cuts a prop de les vores. Es comprova per siluetes.
 3. **Mirror.** Modelar només mitja peça i completar-la amb Mirror i Clipping. Es comprova

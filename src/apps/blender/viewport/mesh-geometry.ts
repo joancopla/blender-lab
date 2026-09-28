@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { triangulateFace } from '../mesh/geometry';
 import type { MeshData } from '../mesh/mesh-data';
-import { angleSharpEdges, cornerNormals } from '../mesh/normals';
+import { cornerNormals } from '../mesh/normals';
 
 export interface MeshGeometry {
   readonly geometry: THREE.BufferGeometry;
@@ -16,7 +16,7 @@ export interface MeshGeometry {
 
 /** `autoSmoothDeg`: the object's Auto Smooth angle, or null when it is off. */
 export function meshToGeometry(m: MeshData, autoSmoothDeg: number | null = null): MeshGeometry {
-  const corner = cornerNormals(m, autoSmoothDeg === null ? undefined : angleSharpEdges(m, autoSmoothDeg));
+  const corner = cornerNormals(m, autoSmoothDeg === null ? undefined : { angleDeg: autoSmoothDeg });
   const tris = m.faces.map((_, f) => ({ f, tris: triangulateFace(m, f) }));
   const count = tris.reduce((n, t) => n + t.tris.length, 0);
   const positions = new Float32Array(count * 9);

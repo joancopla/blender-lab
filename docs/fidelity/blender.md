@@ -438,7 +438,7 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - [ ] ❓ Mirror Object: el pla de simetria és el de l'origen i els eixos de l'altre objecte (inclosos la seva rotació i escala)
 - [ ] ❓ Les cares de la còpia tenen l'ordre invertit (normals cap enfora) i mantenen el primer vèrtex
 - Limitació coneguda: si el pla talla un n-gon còncau més de dues vegades, el lab en fa una sola cara (Blender en fa diverses). No passa en cap etapa
-- Clipping: de moment només es desa el valor; l'efecte en Edit Mode arriba a la Fase 4
+- Clipping: l'efecte en Edit Mode és a la Fase 4 ("Edit Mode amb modificadors")
 
 ### Array
 
@@ -482,13 +482,13 @@ Les malles de referència de Blender es desen a `tests/fixtures/blender/` (vegeu
 - [ ] ❓ Loop Slide: quan un vèrtex nou llisca per una aresta sense bevel i les dues arestes amb bevel del costat demanen distàncies diferents, el lab fa servir la mitjana de totes dues
 - [ ] Comparar amb les malles de referència: `cube_bevel_default`, `cube_bevel_2seg`, `cube_bevel_3seg`
 - Limitació coneguda: el lab només sap fer vèrtexs amb una aresta amb bevel i tres arestes, dues arestes amb bevel (un *loop*) o tres arestes amb bevel en una cantonada. En altres casos el modificador no fa res i el lab ho avisa. Blender els fa tots
-- Pendent per a la Fase 4: l'avís de Bevel del modificador (`lab.bevelModifierUnsupported`) es mostrarà a la capçalera del modificador, a la pestanya Modifiers
+- [ ] Quan el Bevel del lab no sap fer la malla, el panell del modificador mostra l'avís del lab (en groc, sota la capçalera) i el modificador no fa res
 
 ## Fase 3 — Solidify i Shade Smooth/Flat/Auto Smooth (sense interfície)
 
 ### Suavitzat per cara (atribut de la malla)
 
-Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Encara no es veu al viewport ni hi ha cap operador que el canviï: això arriba als punts següents de la fase. Aquí es comprova com passa d'una operació a l'altra.
+Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Aquí es comprova com passa d'una operació a l'altra.
 
 - [ ] ❓ Les primitives noves (Cube, UV Sphere, Cylinder...) són planes
 - [ ] ❓ Extrude Region: les cares laterals noves tenen el suavitzat de la cara de la regió que toquen
@@ -538,7 +538,7 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] ❓ Les cares de la vora tenen el suavitzat de la cara de la seva aresta
 - [ ] Comparar amb les malles de referència: `plane_solidify_default`, `cube_solidify_02`, `cube_solidify_02_even`
 - Fora d'abast: Mode Complex, Only Rim, Flip, High Quality Normals, Clamp, Vertex Group, materials de la vora
-- Pendent per a la Fase 4: el panell a la pestanya Modifiers i l'opció al menú Add Modifier. Fins llavors no es pot provar al navegador
+- El panell és a la Fase 4 ("Paràmetres dels modificadors")
 
 ## Fase 4 — Interfície
 
@@ -557,7 +557,7 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] ❓ Llista de cada categoria (vegeu `ui/properties/add-modifier.ts`), en ordre alfabètic
 - [ ] ❓ Amb el menú obert, escriure filtra: surten resultats com "Generate ▸ Mirror"
 - [ ] ❓ Capçalera de cada modificador: fletxa per plegar, icona, nom editable, botons Edit Mode, Realtime i Render, menú ▾, × per esborrar i agafador per arrossegar
-- [ ] ❓ Menú ▾: Apply (Ctrl A), Duplicate (Shift D), Copy to Selected, Move to First, Move to Last. Apply i Copy to Selected encara desactivats (Apply arriba al punt 4)
+- [ ] ❓ Menú ▾: Apply (Ctrl A), Duplicate (Shift D), Copy to Selected, Move to First, Move to Last. Copy to Selected desactivat (fora del lab)
 - [ ] ❓ Amb el ratolí sobre un modificador: X o Supr l'esborra, Shift+D el duplica (la còpia queda just a sota, amb el nom "Subdivision.001")
 - [ ] ❓ Noms a Undo History: "Add Modifier", "Remove Modifier", "Duplicate Modifier", "Move to Index" (també per arrossegar i per Move to First/Last), "Name", "Edit Mode", "Realtime", "Render"
 - [ ] Arrossegar un modificador per l'agafador el canvia de lloc a la pila
@@ -629,3 +629,11 @@ Etiqueta a l'esquerra i control a la dreta, com a Blender. Només hi ha els par�
 - 10. Repte final: el tamboret del Lab 02 (silueta, 85 %), amb un Mirror a la pila, com a molt 24 cares a la malla base i el resultat net (sense costures obertes, duplicats ni n-gons). Sense pistes; temps i operacions en acabar
 - Al Lab 03 no hi ha analitzador de topologia: analitzaria la malla base, i al repte final una part oberta per fer Mirror semblaria plena d'errors
 - El plànol del tamboret de l'índex no canvia: el Lab 03 no hi afegeix línies
+
+## Fase 6 — Poliment
+
+- Rendiment (mesurat a l'ordinador de desenvolupament, sense GPU): un cub amb Mirror, Array de 3 i Subdivision de nivell 3 (2.304 cares) costa uns 4 ms per avaluar la pila i uns 6 ms per calcular normals i geometria a cada fotograma d'arrossegament. Abans de la fase 6 eren uns 5 i 14 ms
+- Les comprovacions de les etapes s'executen a cada canvi, també quan només gires la vista; al Lab 03 es guarden fins que canvia la malla
+- [ ] Cal mesurar-ho en un ordinador d'aula: arrossegar Levels Viewport i Count d'un Array amb el cub subdividit ha d'anar fluid, i girar la vista també
+- Estat de les caselles del Lab 03 en tancar-lo: 17 validades, 72 preguntes obertes (❓) i 29 comprovacions per fer amb Blender obert al costat
+- Pendent fora del codi: exportar de Blender les malles de referència de `tests/fixtures/blender/README.md` (Subdivision, Bevel i Solidify) perquè els tests les comparin vèrtex a vèrtex

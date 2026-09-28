@@ -83,14 +83,49 @@ Blender stage lists into core ones. `ghost-match.ts` and `silhouette.ts` are che
 - `modifiers/types.ts`: modifier data stored on `MeshObject.modifiers` (immutable, Blender defaults).
 - `modifiers/stack.ts`: `evaluatedMesh(object, scene)` runs the base mesh through the enabled
   modifiers in order, with a per-object, per-modifier cache (reference equality on the input mesh
-  and the modifier). Object Mode draws, picks and counts the evaluated mesh; Edit Mode edits the base.
-- `modifiers/mirror.ts`, `array.ts`, `bisect.ts`: the algorithms. `operators/modifiers.ts`: add,
-  remove, move and edit through the history.
+  and the modifier), so dragging a field only recomputes that modifier and the ones after it.
+  Both modes draw the evaluated mesh (Edit Mode: modifiers with "Edit Mode" on, with the base mesh
+  drawn over it as the cage); picking of objects, Statistics, Dimensions and framing use it too.
+  Edit Mode edits and picks components on the base mesh.
+- `modifiers/mirror.ts`, `array.ts`, `bisect.ts`, `subsurf.ts`, `bevel.ts`, `solidify.ts`: the
+  algorithms. `operators/modifiers.ts`: add, remove, duplicate, move, edit, Apply and Subdivision
+  Set through the history. `edit/mirror-clip.ts`: Mirror Clipping while transforming.
+
+### Shading
+
+- `MeshData.smoothFaces` (optional, parallel to `faces`) is Shade Smooth per face; every edit
+  operation and modifier carries it to the faces it creates (`smoothFrom` in `mesh-data.ts`).
+- `MeshObject.autoSmooth` / `autoSmoothAngleDeg`: Object Data > Normals > Auto Smooth, kept on the
+  object (each object has its own mesh), applied to the evaluated mesh when drawing.
+- `mesh/normals.ts`: `cornerNormals` (flat faces: face normal; smooth faces: corner-angle weighted
+  average across edges that are not sharp). `viewport/mesh-geometry.ts` copies them into the
+  three.js geometry; the material must not use `flatShading`.
+- `operators/shade.ts`: Shade Smooth / Auto Smooth / Flat and the Auto Smooth properties.
 
 ### Replica UI
 
 `ui/`: header, Outliner, N panel, status bar, menus, adjust panel, statistics, analyser panel
 (`blender-ui.css`, English, as in Blender).
+
+`ui/properties/` (shared by Labs 03–07): the Properties Editor under the Outliner.
+- `tabs.ts`: tabs in Blender's order per active object type; a lab enables some
+  (`MountOptions.propertiesTabs`), the rest are shown inactive. A stage can open one
+  (`BlenderSetup.propertiesTab`).
+- `properties-editor.ts`: tab strip and the active tab's view (`TabViewFactory`), which keeps its
+  own DOM and is updated on every change.
+- `widgets.ts`: split-layout property widgets, built once and refreshed with `update()`, so a field
+  being dragged is never rebuilt under the pointer (a drag is a store preview).
+- `modifiers-tab.ts` + `modifier-panels.ts` + `add-modifier.ts`: the Modifiers tab. `data-tab.ts`:
+  Object Data > Normals.
+
+### Performance (Lab 03 phase 6)
+
+Measured in Node on the development machine, a cube with Mirror, Array (3) and Subdivision
+(level 3), 2304 faces: evaluating the stack ~4 ms, normals and geometry ~6 ms per drag frame.
+The hot paths use numeric edge keys (`MeshTopology`, `cornerNormals`) and a fast path for convex
+quads in `triangulateFace`. Stage checks run on every change, view included, so Lab 03 caches its
+silhouette comparisons per evaluated mesh and placement. Levels Viewport is limited to 3.
+Still to be measured on a classroom computer.
 
 ## Labs and pages
 

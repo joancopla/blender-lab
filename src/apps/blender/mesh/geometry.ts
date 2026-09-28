@@ -38,6 +38,32 @@ export function faceCenter(m: MeshData, f: number): Vec3 {
 }
 
 /**
+ * Fast path for the most common face: a convex quad a b c d gives the same two
+ * triangles ear clipping would, (d, a, b) and (b, c, d). Null if it is not convex.
+ */
+function convexQuad(verts: readonly Vec3[], face: Face, n: Vec3): [number, number, number][] | null {
+  for (let i = 0; i < 4; i++) {
+    const p = verts[face[(i + 3) % 4]!]!;
+    const q = verts[face[i]!]!;
+    const r = verts[face[(i + 1) % 4]!]!;
+    // Corner turn (q - p) x (r - q), along the face normal when convex.
+    const ax = q.x - p.x;
+    const ay = q.y - p.y;
+    const az = q.z - p.z;
+    const bx = r.x - q.x;
+    const by = r.y - q.y;
+    const bz = r.z - q.z;
+    const turn = (ay * bz - az * by) * n.x + (az * bx - ax * bz) * n.y + (ax * by - ay * bx) * n.z;
+    if (!(turn > 1e-12)) return null;
+  }
+  const [a, b, c, d] = face as [number, number, number, number];
+  return [
+    [d, a, b],
+    [b, c, d],
+  ];
+}
+
+/**
  * Triangulates one face into triples of vertex indices with the same winding.
  * Ear clipping on the face projected onto its plane, so concave n-gons work.
  * Falls back to a fan if the polygon is self-intersecting.
@@ -48,6 +74,10 @@ export function triangulateFace(m: MeshData, f: number): [number, number, number
   if (face.length === 3) return [[face[0]!, face[1]!, face[2]!]];
 
   const n = newell(m.verts, face);
+  if (face.length === 4) {
+    const quad = convexQuad(m.verts, face, n);
+    if (quad) return quad;
+  }
   // 2D basis on the face plane, oriented so the polygon is counter-clockwise.
   const normal = normalize(n);
   const ref = Math.abs(normal.x) < 0.9 ? vec3(1, 0, 0) : vec3(0, 1, 0);

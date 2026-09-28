@@ -58,21 +58,61 @@ export function angleSharpEdges(m: MeshData, angleDeg: number): (e: number) => b
 }
 
 /**
- * Normal of every face corner: result[f][i] is the normal at face f's i-th
- * vertex. `sharpEdge` marks extra edges that split the shading (by edge index).
+ * Edges that split the shading besides flat faces: by edge index, or Auto
+ * Smooth's angle (edges whose faces meet at more than `angleDeg`).
  */
-export function cornerNormals(m: MeshData, sharpEdge: (e: number) => boolean = () => false): Vec3[][] {
+export type SharpEdges = ((e: number) => boolean) | { readonly angleDeg: number };
+
+/**
+ * Normal of every face corner: result[f][i] is the normal at face f's i-th
+ * vertex. Written for speed (it runs on every redraw of an edited mesh):
+ * numeric edge keys, one pass over the corners and flat arrays for the sums.
+ */
+export function cornerNormals(m: MeshData, sharp?: SharpEdges): Vec3[][] {
   const faceNormals = m.faces.map((_, f) => faceNormal(m, f));
   if (!m.smoothFaces) return m.faces.map((face, f) => face.map(() => faceNormals[f]!));
 
-  // Union-find over corners; corner id = start[f] + i.
-  const start: number[] = [];
+  // Corner id = start[f] + i.
+  const start = new Int32Array(m.faces.length);
   let total = 0;
-  for (const face of m.faces) {
-    start.push(total);
+  m.faces.forEach((face, f) => {
+    start[f] = total;
     total += face.length;
+  });
+
+  // Up to two corners per edge (the corner at the edge's first vertex in its
+  // face), and how many faces use the edge. Key: smaller * n + larger.
+  const n = m.verts.length;
+  const firstCorner = new Map<number, number>();
+  const secondCorner = new Map<number, number>();
+  const uses = new Map<number, number>();
+  const cornerFace = new Int32Array(total);
+  m.faces.forEach((face, f) => {
+    for (let i = 0; i < face.length; i++) {
+      const a = face[i]!;
+      const b = face[(i + 1) % face.length]!;
+      const key = a < b ? a * n + b : b * n + a;
+      const c = start[f]! + i;
+      cornerFace[c] = f;
+      const k = uses.get(key) ?? 0;
+      uses.set(key, k + 1);
+      if (k === 0) firstCorner.set(key, c);
+      else if (k === 1) secondCorner.set(key, c);
+    }
+  });
+
+  let isSharpEdge: (key: number, f1: number, f2: number) => boolean = () => false;
+  if (typeof sharp === 'function') {
+    const edgeIndex = new Map<number, number>();
+    m.edges.forEach(([a, b], e) => edgeIndex.set(a < b ? a * n + b : b * n + a, e));
+    isSharpEdge = (key) => sharp(edgeIndex.get(key) ?? -1);
+  } else if (sharp) {
+    const minDot = Math.cos((sharp.angleDeg * Math.PI) / 180) - 1e-9;
+    isSharpEdge = (_, f1, f2) => dot(faceNormals[f1]!, faceNormals[f2]!) < minDot;
   }
-  const parent = Array.from({ length: total }, (_, i) => i);
+
+  const parent = new Int32Array(total);
+  for (let i = 0; i < total; i++) parent[i] = i;
   const find = (x: number): number => {
     while (parent[x] !== x) {
       parent[x] = parent[parent[x]!]!;
@@ -80,44 +120,50 @@ export function cornerNormals(m: MeshData, sharpEdge: (e: number) => boolean = (
     }
     return x;
   };
-  const join = (a: number, b: number) => {
-    parent[find(a)] = find(b);
+  const next = (c: number) => {
+    const f = cornerFace[c]!;
+    const i = c - start[f]!;
+    return start[f]! + ((i + 1) % m.faces[f]!.length);
   };
 
-  const t = new MeshTopology(m);
-  t.edgeFaces.forEach((faces, e) => {
-    if (faces.length !== 2 || sharpEdge(e)) return;
-    const [f1, f2] = faces as [number, number];
-    if (!isSmooth(m, f1) || !isSmooth(m, f2)) return;
-    const [a, b] = m.edges[e]!;
-    const face1 = m.faces[f1]!;
-    const face2 = m.faces[f2]!;
-    const a1 = face1.indexOf(a);
-    const b1 = face1.indexOf(b);
-    const a2 = face2.indexOf(a);
-    const b2 = face2.indexOf(b);
-    // Consistent winding: the faces go through the edge in opposite directions.
-    const forward1 = face1[(a1 + 1) % face1.length] === b;
-    const forward2 = face2[(a2 + 1) % face2.length] === b;
-    if (forward1 === forward2) return;
-    join(start[f1]! + a1, start[f2]! + a2);
-    join(start[f1]! + b1, start[f2]! + b2);
-  });
+  for (const [key, count] of uses) {
+    if (count !== 2) continue;
+    const c1 = firstCorner.get(key)!;
+    const c2 = secondCorner.get(key)!;
+    const f1 = cornerFace[c1]!;
+    const f2 = cornerFace[c2]!;
+    if (!isSmooth(m, f1) || !isSmooth(m, f2) || isSharpEdge(key, f1, f2)) continue;
+    // Consistent winding: face 1 goes a -> b and face 2 goes b -> a.
+    const a = m.faces[f1]![c1 - start[f1]!]!;
+    const x = m.faces[f2]![c2 - start[f2]!]!;
+    if (x === a) continue;
+    // a: c1 in face 1, next(c2) in face 2; b: next(c1) in face 1, c2 in face 2.
+    parent[find(c1)] = find(next(c2));
+    parent[find(next(c1))] = find(c2);
+  }
 
-  const sum = new Map<number, Vec3>();
+  const sums = new Float64Array(total * 3);
   m.faces.forEach((face, f) => {
     if (!isSmooth(m, f)) return;
-    face.forEach((_, i) => {
-      const r = find(start[f]! + i);
-      sum.set(r, add(sum.get(r) ?? vec3(0, 0, 0), scale(faceNormals[f]!, cornerAngle(m, face, i))));
-    });
+    const fn = faceNormals[f]!;
+    for (let i = 0; i < face.length; i++) {
+      const w = cornerAngle(m, face, i);
+      const r = find(start[f]! + i) * 3;
+      sums[r] = sums[r]! + fn.x * w;
+      sums[r + 1] = sums[r + 1]! + fn.y * w;
+      sums[r + 2] = sums[r + 2]! + fn.z * w;
+    }
   });
 
-  return m.faces.map((face, f) =>
-    face.map((_, i) => {
-      if (!isSmooth(m, f)) return faceNormals[f]!;
-      const s = sum.get(find(start[f]! + i))!;
-      return length(s) > 1e-12 ? normalize(s) : faceNormals[f]!;
-    }),
-  );
+  return m.faces.map((face, f) => {
+    if (!isSmooth(m, f)) return face.map(() => faceNormals[f]!);
+    return face.map((_, i) => {
+      const r = find(start[f]! + i) * 3;
+      const x = sums[r]!;
+      const y = sums[r + 1]!;
+      const z = sums[r + 2]!;
+      const len = Math.hypot(x, y, z);
+      return len > 1e-12 ? vec3(x / len, y / len, z / len) : faceNormals[f]!;
+    });
+  });
 }

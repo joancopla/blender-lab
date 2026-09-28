@@ -113,9 +113,25 @@ function closed(m: MeshData): boolean {
   return t.isManifold() && t.eulerCharacteristic() === 2;
 }
 
+/**
+ * Silhouettes of the object as drawn against a reference. Checks run on every
+ * change, orbiting the view included, so the result is kept until the
+ * evaluated mesh or the object's placement changes.
+ */
+const silhouetteCache = new WeakMap<MeshData, { key: string; reference: MeshData; result: ViewComparison[] }>();
+function silhouettes(o: MeshObject, scene: SceneState, reference: MeshData): ViewComparison[] {
+  const m = evaluatedMesh(o, scene);
+  const key = JSON.stringify([o.location, o.rotationDeg, o.scale]);
+  const hit = silhouetteCache.get(m);
+  if (hit && hit.key === key && hit.reference === reference) return hit.result;
+  const result = compareSilhouettes(evaluatedTriangles(o, scene), worldTriangles(reference));
+  silhouetteCache.set(m, { key, reference, result });
+  return result;
+}
+
 /** Silhouette check of the object as drawn (its modifiers' result) against a world-space reference. */
 function shapeFeedback(o: MeshObject, scene: SceneState, reference: MeshData, min: number): Feedback | null {
-  const res: ViewComparison[] = compareSilhouettes(evaluatedTriangles(o, scene), worldTriangles(reference));
+  const res = silhouettes(o, scene, reference);
   const bad = res.find((r) => r.iou < min);
   if (!bad) return null;
   const view = { front: 'Front', right: 'Right', top: 'Top' }[bad.view];
@@ -129,7 +145,7 @@ function shapeFeedback(o: MeshObject, scene: SceneState, reference: MeshData, mi
 
 /** Silhouette IoUs of the object as drawn against a reference (for tests). */
 export function shapeScores(o: MeshObject, scene: SceneState, reference: MeshData): number[] {
-  return compareSilhouettes(evaluatedTriangles(o, scene), worldTriangles(reference)).map((r) => r.iou);
+  return silhouettes(o, scene, reference).map((r) => r.iou);
 }
 
 // ---------------------------------------------------------------------------

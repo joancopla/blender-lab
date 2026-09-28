@@ -6,11 +6,15 @@
  *
  * Built on demand from immutable MeshData; queries never modify it.
  */
-import { type Edge, type MeshData, edgeKey, faceEdgePairs } from './mesh-data';
+import type { Edge, MeshData } from './mesh-data';
 
 export class MeshTopology {
-  /** Edge index by canonical key. */
-  private readonly edgeIndex = new Map<string, number>();
+  /** Edge index by numeric key (smaller vertex * vertex count + larger): faster than string keys. */
+  private readonly edgeIndex = new Map<number, number>();
+  private readonly key = (a: number, b: number) => {
+    const n = this.mesh.verts.length;
+    return a < b ? a * n + b : b * n + a;
+  };
   /** Edges around each vertex (disk cycle). */
   readonly vertEdges: readonly number[][];
   /** Faces around each vertex. */
@@ -25,14 +29,14 @@ export class MeshTopology {
     const vertFaces = mesh.verts.map((): number[] => []);
     const edgeFaces = mesh.edges.map((): number[] => []);
     mesh.edges.forEach(([a, b], i) => {
-      this.edgeIndex.set(edgeKey(a, b), i);
+      this.edgeIndex.set(this.key(a, b), i);
       vertEdges[a]?.push(i);
       vertEdges[b]?.push(i);
     });
     const faceEdges = mesh.faces.map((f, fi) => {
       for (const v of f) vertFaces[v]?.push(fi);
-      return faceEdgePairs(f).map(([a, b]) => {
-        const e = this.edgeIndex.get(edgeKey(a, b));
+      return f.map((a, i) => {
+        const e = this.edgeIndex.get(this.key(a, f[(i + 1) % f.length]!));
         if (e === undefined) return -1; // reported by validateMesh
         edgeFaces[e]!.push(fi);
         return e;
@@ -45,7 +49,7 @@ export class MeshTopology {
   }
 
   findEdge(a: number, b: number): number | undefined {
-    return this.edgeIndex.get(edgeKey(a, b));
+    return this.edgeIndex.get(this.key(a, b));
   }
 
   edgeVerts(e: number): Edge {
