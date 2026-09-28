@@ -62,6 +62,7 @@ export function mountLabPage<State, Setup, Decorations>(lab: LabDefinition<State
     el('p', 'lab-eyebrow', labLabel),
     el('h1', 'lab-title', t(lab.nameKey)),
     el('p', 'lab-lead', t(`${P}.intro.lead`)),
+    ...(lab.preview ? [el('p', 'lab-note', t('page.previewNotice'))] : []),
     el('h2', undefined, t('page.controlsTitle')),
     controls,
     start,

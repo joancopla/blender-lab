@@ -204,7 +204,8 @@ export class StagePanel {
       }),
     );
     const prev = button(t('ui.prev'), () => this.runner.load(s.index === -1 ? total - 1 : s.index - 1));
-    prev.disabled = s.index === 0;
+    // No stage before this one (or none at all, in a lab that only has free mode).
+    prev.disabled = s.index === 0 || total === 0;
     const next = button(
       t('ui.next'),
       () => this.runner.load(s.index + 1 >= total ? -1 : s.index + 1),

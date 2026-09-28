@@ -19,6 +19,8 @@
     "statusInProgress": "En curs",
     "statusNotStarted": "No començat",
     "statusSoon": "Aviat",
+    "statusPreview": "En construcció",
+    "freeOnly": "Mode lliure",
     "resetProgress": "Reinicia el progrés",
     "resetProgressConfirm": "Fes clic de nou per esborrar-lo",
     "progressReset": "Progrés reiniciat",
@@ -51,6 +53,7 @@
   },
   "page": {
     "controlsTitle": "Controls clau",
+    "previewNotice": "Aquest lab encara és en construcció: de moment no té etapes. Pots provar en mode lliure el que ja funciona.",
     "start": "Comença el lab",
     "realTitle": "Al Blender real",
     "labNumber": "Lab {n}",

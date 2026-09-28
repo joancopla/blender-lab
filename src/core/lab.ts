@@ -15,6 +15,11 @@ export interface LabDefinition<State = unknown, Setup = unknown, Decorations = u
   readonly nameKey: string;
   readonly descKey: string;
   readonly stages: LabStages<State, Setup, Decorations>;
+  /**
+   * A lab still being built: only free mode so far. The index shows it as such
+   * (no stage count or progress) and the page says so.
+   */
+  readonly preview?: boolean;
   /** Blueprint of the course's final challenge, shown as a miniature in the lab panel. */
   readonly blueprint?: Blueprint;
   /** Creates the replicated program for this lab (not mounted yet). */

@@ -15,6 +15,7 @@ import { type BlueprintView, earnedLineIds, highlightLab, renderBlueprintView } 
 import { STOOL_BLUEPRINT } from '../labs/blender/blueprint';
 import { lab01 } from '../labs/blender/01-viewport';
 import { lab02 } from '../labs/blender/02-edit-mode';
+import { lab03 } from '../labs/blender/03-modifiers';
 import '../core/shell/shell.css';
 import './site.css';
 
@@ -44,6 +45,7 @@ const PROGRAMS: readonly ProgramGroup[] = [
     labs: [
       { lab: lab01, href: 'labs/01-viewport/' },
       { lab: lab02, href: 'labs/02-edit-mode/' },
+      { lab: lab03, href: 'labs/03-modifiers/' },
     ],
     shortcuts: [
       { labelKey: 'shortcuts.grab', keys: ['g'] },
@@ -128,7 +130,8 @@ function views(): HTMLElement {
 }
 
 function mainAction(): HTMLAnchorElement {
-  const all = PROGRAMS.flatMap((g) => g.labs);
+  // Labs still being built are never the main action.
+  const all = PROGRAMS.flatMap((g) => g.labs).filter((e) => !e.lab.preview);
   const next = all.find((e) => {
     const p = progressOf(e.lab);
     return p.done < p.total;
@@ -146,6 +149,7 @@ function labRow(entry: LabEntry, blueprint: HTMLElement): HTMLLIElement {
   const p = progressOf(lab);
   const row = el('li', 'site-row');
   row.dataset.lab = lab.id;
+  if (lab.preview) return previewRow(entry, row, blueprint);
   if (p.started && p.done < p.total) row.classList.add('is-current');
 
   const title = el('div', 'site-row-title');
@@ -191,6 +195,21 @@ function labRow(entry: LabEntry, blueprint: HTMLElement): HTMLLIElement {
   row.addEventListener('mouseleave', () => highlight(false));
   row.addEventListener('focusin', () => highlight(true));
   row.addEventListener('focusout', () => highlight(false));
+  return row;
+}
+
+/** A lab still being built: free mode only, no stage count or progress. */
+function previewRow(entry: LabEntry, row: HTMLLIElement, blueprint: HTMLElement): HTMLLIElement {
+  const { lab } = entry;
+  const title = el('div', 'site-row-title');
+  const link = el('a', undefined, t(lab.nameKey));
+  link.href = entry.href;
+  title.append(link, el('p', 'site-row-desc', t(lab.descKey)));
+  const state = el('div', 'site-row-state');
+  state.append(el('span', 'site-row-count', t('site.freeOnly')), el('span', 'site-row-status', t('site.statusPreview')));
+  row.append(el('span', 'site-row-n', lab.number), title, state);
+  row.addEventListener('mouseenter', () => highlightLab(blueprint, lab.id));
+  row.addEventListener('mouseleave', () => highlightLab(blueprint, null));
   return row;
 }
 
