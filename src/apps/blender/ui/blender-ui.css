@@ -547,6 +547,20 @@
 .bl-selectmode-button.is-active {
   background: var(--bl-widget-active);
 }
+.bl-header-toggle {
+  width: 26px;
+  height: 20px;
+  padding: 2px 5px;
+  border: none;
+  border-radius: 4px;
+  background: #282828;
+  color: var(--bl-text);
+  cursor: pointer;
+}
+.bl-header-toggle.is-active {
+  background: var(--bl-widget-active);
+}
+.bl-header-toggle svg,
 .bl-selectmode-button svg {
   display: block;
   width: 16px;

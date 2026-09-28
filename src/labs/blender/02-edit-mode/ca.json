@@ -74,7 +74,7 @@
       "title": "Veure a través",
       "instruction": "Selecciona tots els vèrtexs del costat dret del cub (la meitat amb X positiva), també els que no es veuen des d'aquí. Fes servir la selecció per caixa (arrossegar, o B).",
       "hint1": "Sense X-ray, la caixa només agafa el que es veu. Hi ha una tecla per veure a través de l'objecte.",
-      "hint2": "Prem Alt + Z per activar l'X-ray i torna a fer la caixa. Després el pots desactivar amb Alt + Z.",
+      "hint2": "Prem Alt + Z per activar l'X-ray i torna a fer la caixa. Després el pots desactivar amb Alt + Z. Si Alt + Z obre una altra finestra (passa en alguns ordinadors amb targeta NVIDIA), fes servir el botó Toggle X-Ray, a dalt a la dreta de la vista 3D.",
       "extra": "Hi ha {n} vèrtexs seleccionats que no són del costat dret.",
       "missing": "Falten {n} vèrtexs del costat dret. Potser són els de darrere?",
       "success": "Exacte. Recorda-ho: sense X-ray, seleccionar per caixa només agafa el que es veu."

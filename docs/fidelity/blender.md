@@ -359,6 +359,7 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - [ ] ❓ Els vèrtexs només es dibuixen en mode vèrtex; els punts de cara, en mode cara i amb X-ray
 - [ ] ❓ Els objectes en Edit Mode no tenen contorn taronja
 - [ ] Alt+Z: X-ray (objectes semitransparents al 50 %), en tots dos modes; no és un pas d'undo
+- [ ] ❓ Botó Toggle X-Ray a la dreta de la capçalera del viewport, en tots dos modes; activat, es veu ressaltat. Text d'ajuda: "Toggle X-Ray (Alt Z)". La icona és pròpia del lab, no la de Blender. Afegit perquè a molts ordinadors amb NVIDIA Alt+Z obre la superposició de la targeta gràfica i el navegador no rep la tecla
 - [ ] ❓ En Object Mode amb X-ray, la caixa encara només agafa els objectes visibles
 
 ### Statistics (activat en aquest lab)

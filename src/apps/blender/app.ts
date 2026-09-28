@@ -270,7 +270,10 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
   function toggleXray(): void {
     xray = !xray;
     view.setXray(xray);
+    layout.xrayButton.classList.toggle('is-active', xray);
+    layout.xrayButton.setAttribute('aria-pressed', String(xray));
   }
+  layout.xrayButton.addEventListener('click', toggleXray);
 
   // --- Adjust Last Operation -------------------------------------------------
   let adjust: {

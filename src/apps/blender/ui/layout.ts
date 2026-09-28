@@ -17,6 +17,8 @@ export interface LayoutRefs {
   readonly modeMenu: HTMLElement;
   /** Vertex / Edge / Face select mode buttons (Edit Mode only). */
   readonly selectModeButtons: Record<'vert' | 'edge' | 'face', HTMLButtonElement>;
+  /** Toggle X-Ray, at the right of the viewport header (both modes). */
+  readonly xrayButton: HTMLButtonElement;
   /** Header parts shown only in one mode. */
   readonly objectModeOnly: readonly HTMLElement[];
   readonly editModeOnly: readonly HTMLElement[];
@@ -101,7 +103,18 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
   );
   const viewportHeaderText = el('span', 'bl-header-text');
   viewportHeaderText.hidden = true;
-  header.append(viewportHeaderText);
+  // Toggle X-Ray: the mouse alternative to Alt+Z (which some graphics drivers
+  // take for their own overlay). Own icon: two overlapping squares, the back one seen through.
+  // FIDELITY? Tooltip text.
+  const xrayButton = el('button', 'bl-header-toggle');
+  xrayButton.type = 'button';
+  xrayButton.title = 'Toggle X-Ray (Alt Z)';
+  xrayButton.setAttribute('aria-pressed', 'false');
+  // Keep keyboard focus off it: Enter or Space later would toggle it again.
+  xrayButton.addEventListener('mousedown', (e) => e.preventDefault());
+  xrayButton.innerHTML =
+    '<svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="9" height="9" fill="none" stroke="currentColor" stroke-dasharray="2 1.5"/><rect x="5.5" y="5.5" width="9" height="9" fill="currentColor" fill-opacity="0.45" stroke="currentColor"/></svg>';
+  header.append(viewportHeaderText, el('span', 'bl-spacer'), xrayButton);
   const viewport = el('div', 'bl-viewport');
   viewArea.append(header, viewport);
 
@@ -127,6 +140,7 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
     objectMenu,
     modeMenu,
     selectModeButtons,
+    xrayButton,
     objectModeOnly: [objectMenu],
     editModeOnly: [selectModeGroup, ...editMenus],
     outlinerBody,
