@@ -52,8 +52,7 @@ export interface ViewportInputOptions {
   onNavigateWithoutMiddle?(): void;
   /**
    * Right click in the viewport: the context menu (Object Context Menu in Object
-   * Mode). Opened on release, so a right-button drag can still be told apart as
-   * an attempt to navigate. FIDELITY? Blender opens it on press.
+   * Mode). Opened on release, as Blender does.
    */
   onContextMenu?(x: number, y: number): void;
 }

@@ -4,8 +4,8 @@
  * - Selected edges forming one closed loop: a face along the loop.
  * - Three or more loose selected vertices: a face through them (ordered around their centre).
  * FIDELITY? Blender's rules for ambiguous selections; here anything else does nothing.
- * A new face is smooth when most faces sharing an edge with it are (FIDELITY?
- * Blender decides from the faces next to the selected edges).
+ * A new face is smooth when most faces sharing an edge with it are (lab
+ * decision, accepted by Joan).
  */
 import { type Vec3, add, cross, dot, length, normalize, scale, sub, vec3 } from '../../math/vec3';
 import { type MeshData, edgeKey, faceEdgePairs, isSmooth } from '../mesh-data';

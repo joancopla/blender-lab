@@ -494,9 +494,9 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] ❓ Extrude d'arestes: la cara nova té el suavitzat de la cara de l'aresta
 - [ ] ❓ Inset (regió i individual): l'anella de cares noves té el suavitzat de la cara on es fa l'Inset
 - [ ] Loop Cut: les dues parts d'una cara tallada conserven el seu suavitzat
-- [ ] ❓ Fill (F): la cara nova és suau si ho són la majoria de les cares que toquen les seves arestes; si hi ha empat, plana
-- [ ] ❓ Dissolve Faces / Edges / Vertices: la cara que en resulta té el suavitzat de la primera cara del grup (la de menor índex)
-- [ ] ❓ Bevel (Ctrl+B): la tira nova té el suavitzat d'una de les dues cares de l'aresta; si en tenen un de diferent, cal veure quina tria Blender. Amb Ctrl+Maj+B, la tapa té el d'una cara del vèrtex
+- [x] Fill (F): la cara nova és suau si ho són la majoria de les cares que toquen les seves arestes; si hi ha empat, plana (decisió del lab, acceptada per Joan)
+- [x] Dissolve Faces / Edges / Vertices: la cara que en resulta té el suavitzat de la primera cara del grup, la de menor índex (decisió del lab, acceptada per Joan)
+- [x] Bevel (Ctrl+B): la tira nova té el suavitzat d'una de les dues cares de l'aresta; amb Ctrl+Maj+B, la tapa té el d'una cara del vèrtex (decisió del lab, acceptada per Joan)
 - [ ] Mirror i Array: les còpies tenen el mateix suavitzat que l'original
 - [ ] Subdivision Surface: les cares filles tenen el suavitzat de la cara de la qual surten
 - [ ] ❓ Modificador Bevel: les tires i les cantonades tenen el suavitzat d'una cara veïna
@@ -515,10 +515,10 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 ### Shade Smooth, Shade Auto Smooth i Shade Flat (Object Mode)
 
 - [x] Clic amb el botó dret al viewport: Object Context Menu amb Shade Smooth, Shade Auto Smooth i Shade Flat (confirmat per Joan). El lab només mostra aquestes tres entrades
-- [ ] ❓ El menú s'obre en deixar anar el botó (Blender l'obre en prémer), perquè el lab pugui detectar si l'alumne arrossega amb el botó dret per intentar orbitar
+- [x] El menú s'obre en deixar anar el botó (confirmat per Joan)
 - [ ] ❓ Les mateixes tres entrades també són al menú Object de la capçalera
 - [ ] Shade Smooth: totes les cares dels objectes de malla seleccionats passen a ser suaus. Shade Flat: totes planes. Shade Auto Smooth: totes suaus i activa Auto Smooth
-- [ ] ❓ Shade Smooth i Shade Flat desactiven la casella Auto Smooth
+- [x] Shade Smooth i Shade Flat no toquen la casella Auto Smooth (confirmat per Joan)
 - [ ] ❓ Noms a Edit > Undo History: "Shade Smooth", "Shade Auto Smooth", "Shade Flat"
 - [ ] Si no hi ha cap malla seleccionada, o ja estan totes així, no fa res i no afegeix cap pas de desfer
 - [ ] Un cub amb Subdivision i Shade Smooth es veu arrodonit i llis; amb Shade Flat, amb facetes
@@ -527,7 +527,7 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 
 ### Solidify
 
-- [ ] ❓ Valors per defecte: Mode Simple, Thickness 0,01 m, Offset −1, Even Thickness desactivat, Fill Rim activat. Nom: "Solidify"
+- [x] Valors per defecte: Mode Simple, Thickness 0,01 m, Offset −1, Even Thickness desactivat, Fill Rim activat (confirmat per Joan). Nom: "Solidify"
 - [ ] ❓ Offset −1: el gruix creix darrere de les normals (la superfície original queda a fora); 1: davant; 0: centrat
 - [ ] Un pla amb Solidify fa una làmina tancada: 8 vèrtexs, 12 arestes, 6 cares, amb les normals cap enfora
 - [ ] Sense Fill Rim, les dues superfícies queden obertes, sense les cares de la vora

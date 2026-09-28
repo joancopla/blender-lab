@@ -52,7 +52,7 @@ export function deleteElements(
 /**
  * Joins groups of faces into one face each: every group must be connected and
  * its outline must be a single loop (otherwise the group is left as it was).
- * The joined face is shaded like the group's first face. FIDELITY?
+ * The joined face is shaded like the group's first face (lab decision).
  */
 function mergeFaceGroups(m: MeshData, groups: readonly (readonly number[])[]): MeshData {
   const replaced = new Set<number>();

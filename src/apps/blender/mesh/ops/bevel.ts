@@ -10,8 +10,8 @@
  * Other configurations return null (the operator then does nothing).
  * FIDELITY? Blender handles every case (corners with several beveled edges,
  * other profiles and width modes); documented as out of scope.
- * New faces are shaded like a face next to them (FIDELITY? which one when the
- * two faces of a beveled edge differ).
+ * New faces are shaded like a face next to them: the strip like the first face
+ * of its edge (lab decision).
  */
 import { type Vec3, add, cross, length, normalize, scale, sub } from '../../math/vec3';
 import { type Face, type MeshData, edgeKey, smoothFrom } from '../mesh-data';

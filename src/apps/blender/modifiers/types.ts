@@ -115,7 +115,7 @@ const base = (type: ModifierType): ModifierBase => ({
  * Merge off at 0.01 m.
  * FIDELITY? Subdivision: Catmull-Clark, Levels Viewport 1, Render 2, Use Limit Surface on.
  * FIDELITY? Bevel: Amount 0.1 m, Segments 1, Limit Method Angle (30°), Clamp Overlap on.
- * FIDELITY? Solidify: Simple, Thickness 0.01 m, Offset -1, Even Thickness off, Fill Rim on.
+ * Solidify: Simple, Thickness 0.01 m, Offset -1, Even Thickness off, Fill Rim on (confirmed).
  */
 export function newModifier(type: ModifierType): Modifier {
   if (type === 'SUBSURF') {

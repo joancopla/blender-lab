@@ -1,13 +1,13 @@
 /**
  * Shade Smooth, Shade Auto Smooth and Shade Flat (Object Context Menu and
  * Object menu), on the selected mesh objects:
- * - Shade Smooth: every face smooth, Auto Smooth off.
- * - Shade Auto Smooth: every face smooth, Auto Smooth on (Object Data >
+ * - Shade Smooth: every face smooth.
+ * - Shade Auto Smooth: every face smooth, and Auto Smooth on (Object Data >
  *   Normals, 30° by default): edges sharper than the angle stay sharp.
- * - Shade Flat: every face flat, Auto Smooth off.
+ * - Shade Flat: every face flat.
+ * Shade Smooth and Shade Flat leave the Auto Smooth checkbox as it is.
  * Modifiers carry the face shading over to the faces they create; Auto Smooth
  * applies to the result.
- * FIDELITY? Whether Shade Smooth and Shade Flat turn Auto Smooth off.
  * FIDELITY? "Keep Sharp Edges" keeps edges marked sharp; the lab has none.
  */
 import { withSmooth } from '../mesh/mesh-data';
@@ -27,7 +27,7 @@ export function shadeObjects(s: SceneState, shading: Shading): SceneState {
     const facesDone = smooth ? m.smoothFaces?.every(Boolean) === true : !m.smoothFaces?.some(Boolean);
     // Flat everywhere is the same as no attribute.
     if (!facesDone && m.faces.length > 0) next = { ...next, mesh: withSmooth(m, smooth ? m.faces.map(() => true) : undefined) };
-    if ((o.autoSmooth ?? false) !== auto) next = { ...next, autoSmooth: auto };
+    if (auto && !o.autoSmooth) next = { ...next, autoSmooth: true };
     if (next !== o) changed = true;
     return next;
   });

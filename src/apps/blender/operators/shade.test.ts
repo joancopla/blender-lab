@@ -37,15 +37,15 @@ describe('Shade Smooth / Shade Flat', () => {
     expect(meshOf(cubeOf(store.state)).smoothFaces).toBeUndefined();
   });
 
-  it('Shade Auto Smooth: smooth faces and Auto Smooth on; Smooth and Flat turn it off', () => {
+  it('Shade Auto Smooth: smooth faces and Auto Smooth on; Smooth and Flat leave the checkbox alone', () => {
     const auto = ShadeAutoSmoothOp.apply(selected(['cube']));
     expect(cubeOf(auto).autoSmooth).toBe(true);
     expect(meshOf(cubeOf(auto)).smoothFaces).toEqual([true, true, true, true, true, true]);
-    // Already smooth: Shade Smooth only turns Auto Smooth off.
-    const smooth = ShadeSmoothOp.apply(auto);
-    expect(cubeOf(smooth).autoSmooth).toBe(false);
-    expect(cubeOf(smooth).mesh).toBe(cubeOf(auto).mesh);
-    expect(cubeOf(ShadeFlatOp.apply(auto)).autoSmooth).toBe(false);
+    // Already smooth, Auto Smooth stays on: nothing to do.
+    expect(ShadeSmoothOp.apply(auto)).toBe(auto);
+    const flat = ShadeFlatOp.apply(auto);
+    expect(meshOf(cubeOf(flat)).smoothFaces).toBeUndefined();
+    expect(cubeOf(flat).autoSmooth).toBe(true);
     expect(ShadeAutoSmoothOp.apply(auto)).toBe(auto);
   });
 });
