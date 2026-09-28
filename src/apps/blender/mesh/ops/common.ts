@@ -3,13 +3,19 @@
  * removing what is no longer used. All pure: they return new MeshData.
  */
 import type { Vec3 } from '../../math/vec3';
-import { type Edge, type Face, type MeshData, edge, edgeKey, faceEdgePairs } from '../mesh-data';
+import { type Edge, type Face, type MeshData, edge, edgeKey, faceEdgePairs, smoothFrom } from '../mesh-data';
 
 /**
  * Builds a mesh from vertices and faces, keeping the given loose edges (those
  * not already used by a face) and dropping duplicates and self-edges.
+ * `smoothFaces`, parallel to `faces`, is kept as is (see smoothFrom).
  */
-export function rebuild(verts: readonly Vec3[], faces: readonly Face[], extraEdges: readonly Edge[] = []): MeshData {
+export function rebuild(
+  verts: readonly Vec3[],
+  faces: readonly Face[],
+  extraEdges: readonly Edge[] = [],
+  smoothFaces?: readonly boolean[],
+): MeshData {
   const seen = new Set<string>();
   const edges: Edge[] = [];
   const add = (a: number, b: number) => {
@@ -21,7 +27,7 @@ export function rebuild(verts: readonly Vec3[], faces: readonly Face[], extraEdg
   };
   for (const f of faces) for (const [a, b] of faceEdgePairs(f)) add(a, b);
   for (const [a, b] of extraEdges) add(a, b);
-  return { verts, edges, faces };
+  return smoothFaces ? { verts, edges, faces, smoothFaces } : { verts, edges, faces };
 }
 
 /** Edges of the mesh that no face uses (wire edges). */
@@ -67,6 +73,7 @@ export function compact(m: MeshData, keep: ReadonlySet<number> = new Set()): { m
   });
   return {
     mesh: {
+      ...m,
       verts,
       edges: m.edges.map(([a, b]) => edge(map[a]!, map[b]!)),
       faces: m.faces.map((f) => f.map((v) => map[v]!)),
@@ -92,18 +99,20 @@ export function looseVerts(m: MeshData): Set<number> {
  */
 export function remapVerts(m: MeshData, target: readonly number[]): { mesh: MeshData; map: number[] } {
   const faces: number[][] = [];
+  const sources: number[] = [];
   const faceKeys = new Set<string>();
-  for (const f of m.faces) {
+  m.faces.forEach((f, i) => {
     const loop = cleanLoop(f.map((v) => target[v]!));
-    if (!loop) continue;
+    if (!loop) return;
     const k = [...loop].sort((a, b) => a - b).join(',');
-    if (faceKeys.has(k)) continue;
+    if (faceKeys.has(k)) return;
     faceKeys.add(k);
     faces.push(loop);
-  }
+    sources.push(i);
+  });
   const loose = looseVerts(m);
   const wires = wireEdges(m).map(([a, b]) => [target[a]!, target[b]!] as const);
-  const rebuilt = rebuild(m.verts, faces, wires);
+  const rebuilt = rebuild(m.verts, faces, wires, smoothFrom(m, sources));
   const keep = new Set([...loose].map((v) => target[v]!));
   return compact(rebuilt, keep);
 }

@@ -5,7 +5,7 @@
  */
 import { type Vec3, add, cross, dot, normalize, scale, sub } from '../../math/vec3';
 import { faceNormal } from '../geometry';
-import type { Face, MeshData } from '../mesh-data';
+import { type Face, type MeshData, smoothFrom } from '../mesh-data';
 import { rebuild, wireEdges } from './common';
 import { regionBoundary, regionNormal } from './extrude';
 
@@ -68,13 +68,16 @@ function insetRegion(m: MeshData, faceList: readonly number[], p: InsetParams): 
   const regionVerts = new Set([...region].flatMap((f) => [...m.faces[f]!]));
   if (p.depth !== 0) for (const v of regionVerts) if (!dup.has(v)) verts[v] = add(verts[v]!, scale(n, p.depth));
   const faces: Face[] = m.faces.map((f, i) => (region.has(i) ? f.map((v) => dup.get(v) ?? v) : f));
+  // Ring quads are shaded like the face they come from.
   for (const [a, b] of boundary) faces.push([a, b, dup.get(b)!, dup.get(a)!]);
-  return rebuild(verts, faces, wireEdges(m));
+  const sources = [...m.faces.keys(), ...boundary.map(([a, b]) => faceOfEdge.get(`${a}>${b}`)!)];
+  return rebuild(verts, faces, wireEdges(m), smoothFrom(m, sources));
 }
 
 function insetIndividual(m: MeshData, faceList: readonly number[], p: InsetParams): MeshData {
   const verts = [...m.verts];
   const faces: Face[] = [...m.faces];
+  const sources: number[] = [...m.faces.keys()];
   for (const f of faceList) {
     const face = m.faces[f]!;
     const nrm = faceNormal(m, f);
@@ -90,7 +93,8 @@ function insetIndividual(m: MeshData, faceList: readonly number[], p: InsetParam
     face.forEach((a, i) => {
       const b = face[(i + 1) % k]!;
       faces.push([a, b, inner[(i + 1) % k]!, inner[i]!]);
+      sources.push(f);
     });
   }
-  return rebuild(verts, faces, wireEdges(m));
+  return rebuild(verts, faces, wireEdges(m), smoothFrom(m, sources));
 }

@@ -4,7 +4,7 @@
  * (what the Mirror modifier's Bisect does).
  */
 import { type Vec3, dot, lerp, scale, sub } from '../math/vec3';
-import { type Face, type MeshData, edgeKey } from '../mesh/mesh-data';
+import { type Face, type MeshData, edgeKey, smoothFrom } from '../mesh/mesh-data';
 import { compact, looseVerts, rebuild, wireEdges } from '../mesh/ops/common';
 
 /**
@@ -41,10 +41,12 @@ export function bisectMesh(m: MeshData, point: Vec3, killNormal: Vec3, eps: numb
   const crosses = (a: number, b: number) => (d[a]! < 0 && d[b]! > 0) || (d[a]! > 0 && d[b]! < 0);
 
   const faces: Face[] = [];
-  for (const f of m.faces) {
+  const sources: number[] = [];
+  m.faces.forEach((f, fi) => {
     if (f.every((v) => d[v]! <= 0)) {
       faces.push(f);
-      continue;
+      sources.push(fi);
+      return;
     }
     const out: number[] = [];
     f.forEach((v, i) => {
@@ -52,8 +54,11 @@ export function bisectMesh(m: MeshData, point: Vec3, killNormal: Vec3, eps: numb
       if (d[v]! <= 0) out.push(v);
       if (crosses(v, next)) out.push(cutVert(v, next));
     });
-    if (out.length >= 3) faces.push(out);
-  }
+    if (out.length >= 3) {
+      faces.push(out);
+      sources.push(fi);
+    }
+  });
 
   const wires: [number, number][] = [];
   for (const [a, b] of wireEdges(m)) {
@@ -61,6 +66,6 @@ export function bisectMesh(m: MeshData, point: Vec3, killNormal: Vec3, eps: numb
     else if (crosses(a, b)) wires.push(d[a]! < 0 ? [a, cutVert(a, b)] : [cutVert(a, b), b]);
   }
   const keep = new Set([...looseVerts(m)].filter((v) => d[v]! <= 0));
-  return compact(rebuild(verts, faces, wires), keep).mesh;
+  return compact(rebuild(verts, faces, wires, smoothFrom(m, sources)), keep).mesh;
 }
 

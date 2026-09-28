@@ -12,7 +12,7 @@
  *   at the same parametric points, which is the same thing.
  */
 import { type Vec3, add, scale, vec3 } from '../math/vec3';
-import { type Edge, type Face, type MeshData, edge } from '../mesh/mesh-data';
+import { type Edge, type Face, type MeshData, edge, smoothFrom, withSmooth } from '../mesh/mesh-data';
 import { MeshTopology } from '../mesh/topology';
 import type { SubsurfModifier } from './types';
 
@@ -76,19 +76,21 @@ export function subdivideOnce(m: MeshData, smooth: boolean): MeshData {
   const faceVert = (f: number) => nv + f;
   const edgeVert = (e: number) => nv + nf + e;
   const faces: Face[] = [];
+  const sources: number[] = []; // every child face is shaded like its parent
   const edges: Edge[] = [];
   m.faces.forEach((f, fi) => {
     const fe = t.faceEdges[fi]!; // fe[i] joins f[i] and f[i + 1]
     for (let i = 0; i < f.length; i++) {
       const prev = fe[(i + f.length - 1) % f.length]!;
       faces.push([f[i]!, edgeVert(fe[i]!), faceVert(fi), edgeVert(prev)]);
+      sources.push(fi);
       edges.push(edge(faceVert(fi), edgeVert(fe[i]!)));
     }
   });
   m.edges.forEach(([a, b], e) => {
     edges.push(edge(a, edgeVert(e)), edge(edgeVert(e), b));
   });
-  return { verts: [...vertPts, ...facePts, ...edgePts], edges, faces };
+  return withSmooth({ verts: [...vertPts, ...facePts, ...edgePts], edges, faces }, smoothFrom(m, sources));
 }
 
 /** Moves every vertex onto the Catmull-Clark limit surface (all faces must be quads). */

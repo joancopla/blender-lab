@@ -3,11 +3,19 @@
  * FIDELITY? Blender's Delete menu also has Edge Loops, Collapse Edges & Faces
  * and Limited Dissolve (out of scope here).
  */
-import { type Face, type MeshData, edgeKey, faceEdgePairs } from '../mesh-data';
+import { type Face, type MeshData, edgeKey, faceEdgePairs, smoothFrom, withSmooth } from '../mesh-data';
 import { MeshTopology } from '../topology';
 import { compact, looseVerts, rebuild, wireEdges } from './common';
 
 export type DeleteType = 'verts' | 'edges' | 'faces' | 'onlyFaces';
+
+/** `m` keeping only the faces that pass `keep` (with their smooth flags). */
+function keepFaces(m: MeshData, keep: (f: Face, i: number) => boolean): MeshData {
+  const ids = [...m.faces.keys()].filter((i) => keep(m.faces[i]!, i));
+  return withSmooth({ ...m, faces: ids.map((i) => m.faces[i]!) }, smoothFrom(m, ids));
+}
+
+const withEdges = (m: MeshData, edges: MeshData['edges']): MeshData => ({ ...m, edges });
 
 /**
  * - Vertices: removes them and everything that uses them.
@@ -23,34 +31,33 @@ export function deleteElements(
   const oldLoose = looseVerts(m);
   if (type === 'verts') {
     const gone = new Set(sel.verts);
-    const faces = m.faces.filter((f) => !f.some((v) => gone.has(v)));
+    const kept = keepFaces(m, (f) => !f.some((v) => gone.has(v)));
     const edges = m.edges.filter(([a, b]) => !gone.has(a) && !gone.has(b));
-    return compact({ verts: m.verts, edges, faces }, new Set([...oldLoose].filter((v) => !gone.has(v)))).mesh;
+    return compact(withEdges(kept, edges), new Set([...oldLoose].filter((v) => !gone.has(v)))).mesh;
   }
   if (type === 'edges') {
     const gone = new Set(sel.edges.map((e) => edgeKey(...m.edges[e]!)));
-    const faces = m.faces.filter((f) => !faceEdgePairs(f).some(([a, b]) => gone.has(edgeKey(a, b))));
+    const kept = keepFaces(m, (f) => !faceEdgePairs(f).some(([a, b]) => gone.has(edgeKey(a, b))));
     const edges = m.edges.filter(([a, b]) => !gone.has(edgeKey(a, b)));
-    return compact({ verts: m.verts, edges, faces }, oldLoose).mesh;
+    return compact(withEdges(kept, edges), oldLoose).mesh;
   }
   const goneFaces = new Set(sel.faces);
-  const faces = m.faces.filter((_, i) => !goneFaces.has(i));
-  if (type === 'onlyFaces') {
-    const keptEdges = m.edges;
-    return { verts: m.verts, edges: keptEdges, faces };
-  }
+  const kept = keepFaces(m, (_, i) => !goneFaces.has(i));
+  if (type === 'onlyFaces') return withEdges(kept, m.edges);
   // Faces: keep the edges still used by a remaining face, and the wire edges that were there.
-  const rebuilt = rebuild(m.verts, faces, wireEdges(m));
+  const rebuilt = rebuild(m.verts, kept.faces, wireEdges(m), kept.smoothFaces);
   return compact(rebuilt, oldLoose).mesh;
 }
 
 /**
  * Joins groups of faces into one face each: every group must be connected and
  * its outline must be a single loop (otherwise the group is left as it was).
+ * The joined face is shaded like the group's first face. FIDELITY?
  */
 function mergeFaceGroups(m: MeshData, groups: readonly (readonly number[])[]): MeshData {
   const replaced = new Set<number>();
   const added: Face[] = [];
+  const addedFrom: number[] = [];
   for (const group of groups) {
     if (group.length < 2) continue;
     const set = new Set(group);
@@ -77,10 +84,13 @@ function mergeFaceGroups(m: MeshData, groups: readonly (readonly number[])[]): M
     if (loop.length !== next.size) continue; // several outlines (holes): leave it
     for (const f of set) replaced.add(f);
     added.push(loop);
+    addedFrom.push(Math.min(...group));
   }
   if (added.length === 0) return m;
-  const faces = [...m.faces.filter((_, i) => !replaced.has(i)), ...added];
-  return compact(rebuild(m.verts, faces, wireEdges(m)), looseVerts(m)).mesh;
+  const keptIds = [...m.faces.keys()].filter((i) => !replaced.has(i));
+  const faces = [...keptIds.map((i) => m.faces[i]!), ...added];
+  const smooth = smoothFrom(m, [...keptIds, ...addedFrom]);
+  return compact(rebuild(m.verts, faces, wireEdges(m), smooth), looseVerts(m)).mesh;
 }
 
 /** Groups of faces connected through the given edges (union-find). */
@@ -144,10 +154,12 @@ export function dissolveVerts(m: MeshData, vertList: readonly number[], onlyTwoV
     const faces = topo.vertFaces[v]!;
     if (edges.length === 2) {
       const [n1, n2] = edges.map((e) => topo.otherVert(e, v));
-      const newFaces = mesh.faces.map((f) => (f.includes(v) ? f.filter((x) => x !== v) : f)).filter((f) => f.length >= 3);
+      const cut = mesh.faces.map((f) => (f.includes(v) ? f.filter((x) => x !== v) : f));
+      const ids = [...cut.keys()].filter((i) => cut[i]!.length >= 3);
       const wires = wireEdges(mesh).filter(([a, b]) => a !== v && b !== v);
       if (faces.length === 0) wires.push([n1!, n2!]);
-      mesh = compact(rebuild(mesh.verts, newFaces, wires), looseVerts(mesh)).mesh;
+      const smooth = smoothFrom(mesh, ids);
+      mesh = compact(rebuild(mesh.verts, ids.map((i) => cut[i]!), wires, smooth), looseVerts(mesh)).mesh;
       continue;
     }
     if (onlyTwoValent || !topo.isManifoldVert(v) || edges.some((e) => topo.isBoundaryEdge(e))) continue;
@@ -169,8 +181,10 @@ export function dissolveVerts(m: MeshData, vertList: readonly number[], onlyTwoV
     if (used.size !== loops.length) continue;
     if (merged[merged.length - 1] === merged[0]) merged.pop();
     const fanSet = new Set(faces);
-    const newFaces = [...mesh.faces.filter((_, i) => !fanSet.has(i)), merged];
-    mesh = compact(rebuild(mesh.verts, newFaces, wireEdges(mesh)), looseVerts(mesh)).mesh;
+    const keptIds = [...mesh.faces.keys()].filter((i) => !fanSet.has(i));
+    const newFaces = [...keptIds.map((i) => mesh.faces[i]!), merged];
+    const smooth = smoothFrom(mesh, [...keptIds, Math.min(...faces)]);
+    mesh = compact(rebuild(mesh.verts, newFaces, wireEdges(mesh), smooth), looseVerts(mesh)).mesh;
   }
   return mesh;
 }

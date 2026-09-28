@@ -10,9 +10,11 @@
  * Other configurations return null (the operator then does nothing).
  * FIDELITY? Blender handles every case (corners with several beveled edges,
  * other profiles and width modes); documented as out of scope.
+ * New faces are shaded like a face next to them (FIDELITY? which one when the
+ * two faces of a beveled edge differ).
  */
 import { type Vec3, add, cross, length, normalize, scale, sub } from '../../math/vec3';
-import { type Face, type MeshData, edgeKey } from '../mesh-data';
+import { type Face, type MeshData, edgeKey, smoothFrom } from '../mesh-data';
 import { MeshTopology } from '../topology';
 import { compact, looseVerts, rebuild, wireEdges } from './common';
 
@@ -44,6 +46,7 @@ export function bevelEdges(m: MeshData, edgeList: readonly number[], width: numb
     replaceInFace.get(f)!.set(v, run);
   };
   const strips: Face[] = [];
+  const stripFrom: number[] = [];
 
   for (const e of edgeList) {
     const faces = t.edgeFaces[e]!;
@@ -91,7 +94,10 @@ export function bevelEdges(m: MeshData, edgeList: readonly number[], width: numb
     }
     const [a0, a1] = arcs as [number[], number[]];
     // Strip quads between the two profiles; the first shares its edge with face A.
-    for (let k = 0; k < segments; k++) strips.push([a1[k]!, a0[k]!, a0[k + 1]!, a1[k + 1]!]);
+    for (let k = 0; k < segments; k++) {
+      strips.push([a1[k]!, a0[k]!, a0[k + 1]!, a1[k + 1]!]);
+      stripFrom.push(fa);
+    }
   }
 
   const faces: Face[] = m.faces.map((f, i) => {
@@ -100,7 +106,8 @@ export function bevelEdges(m: MeshData, edgeList: readonly number[], width: numb
   });
   const bevelled = new Set(edgeList.map((e) => edgeKey(...m.edges[e]!)));
   const wires = wireEdges(m).filter(([a, b]) => !bevelled.has(edgeKey(a, b)));
-  return compact(rebuild(verts, [...faces, ...strips], wires), looseVerts(m)).mesh;
+  const smooth = smoothFrom(m, [...m.faces.keys(), ...stripFrom]);
+  return compact(rebuild(verts, [...faces, ...strips], wires, smooth), looseVerts(m)).mesh;
 }
 
 /** Faces created by a bevel: they are appended last, so they are the final ones. */
@@ -153,6 +160,7 @@ export function bevelVerts(m: MeshData, vertList: readonly number[], width: numb
     }
     caps.push(loop);
   }
-  return compact(rebuild(verts, [...faces, ...caps], wireEdges(m)), looseVerts(m)).mesh;
+  const smooth = smoothFrom(m, [...m.faces.keys(), ...vertList.map((v) => t.vertFaces[v]![0] ?? -1)]);
+  return compact(rebuild(verts, [...faces, ...caps], wireEdges(m), smooth), looseVerts(m)).mesh;
 }
 

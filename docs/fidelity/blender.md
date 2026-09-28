@@ -481,3 +481,21 @@ Les malles de referència de Blender es desen a `tests/fixtures/blender/` (vegeu
 - [ ] Comparar amb les malles de referència: `cube_bevel_default`, `cube_bevel_2seg`, `cube_bevel_3seg`
 - Limitació coneguda: el lab només sap fer vèrtexs amb una aresta amb bevel i tres arestes, dues arestes amb bevel (un *loop*) o tres arestes amb bevel en una cantonada. En altres casos el modificador no fa res i el lab ho avisa. Blender els fa tots
 - Pendent per a la Fase 4: l'avís de Bevel del modificador (`lab.bevelModifierUnsupported`) es mostrarà a la capçalera del modificador, a la pestanya Modifiers
+
+## Fase 3 — Solidify i Shade Smooth/Flat/Auto Smooth (sense interfície)
+
+### Suavitzat per cara (atribut de la malla)
+
+Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Encara no es veu al viewport ni hi ha cap operador que el canviï: això arriba als punts següents de la fase. Aquí es comprova com passa d'una operació a l'altra.
+
+- [ ] ❓ Les primitives noves (Cube, UV Sphere, Cylinder...) són planes
+- [ ] ❓ Extrude Region: les cares laterals noves tenen el suavitzat de la cara de la regió que toquen
+- [ ] ❓ Extrude d'arestes: la cara nova té el suavitzat de la cara de l'aresta
+- [ ] ❓ Inset (regió i individual): l'anella de cares noves té el suavitzat de la cara on es fa l'Inset
+- [ ] Loop Cut: les dues parts d'una cara tallada conserven el seu suavitzat
+- [ ] ❓ Fill (F): la cara nova és suau si ho són la majoria de les cares que toquen les seves arestes; si hi ha empat, plana
+- [ ] ❓ Dissolve Faces / Edges / Vertices: la cara que en resulta té el suavitzat de la primera cara del grup (la de menor índex)
+- [ ] ❓ Bevel (Ctrl+B): la tira nova té el suavitzat d'una de les dues cares de l'aresta; si en tenen un de diferent, cal veure quina tria Blender. Amb Ctrl+Maj+B, la tapa té el d'una cara del vèrtex
+- [ ] Mirror i Array: les còpies tenen el mateix suavitzat que l'original
+- [ ] Subdivision Surface: les cares filles tenen el suavitzat de la cara de la qual surten
+- [ ] ❓ Modificador Bevel: les tires i les cantonades tenen el suavitzat d'una cara veïna

@@ -4,9 +4,11 @@
  * - Selected edges forming one closed loop: a face along the loop.
  * - Three or more loose selected vertices: a face through them (ordered around their centre).
  * FIDELITY? Blender's rules for ambiguous selections; here anything else does nothing.
+ * A new face is smooth when most faces sharing an edge with it are (FIDELITY?
+ * Blender decides from the faces next to the selected edges).
  */
 import { type Vec3, add, cross, dot, length, normalize, scale, sub, vec3 } from '../../math/vec3';
-import { type MeshData, faceEdgePairs } from '../mesh-data';
+import { type MeshData, edgeKey, faceEdgePairs, isSmooth } from '../mesh-data';
 import { MeshTopology } from '../topology';
 import { rebuild, wireEdges } from './common';
 
@@ -23,7 +25,7 @@ export function fill(
   if (sel.verts.length === 2 && sel.edges.length === 0) {
     const [a, b] = sel.verts as [number, number];
     if (topo.findEdge(a, b) !== undefined) return null;
-    return { mesh: rebuild(m.verts, m.faces, [...wireEdges(m), [a, b]]), created: 'edge' };
+    return { mesh: rebuild(m.verts, m.faces, [...wireEdges(m), [a, b]], m.smoothFaces), created: 'edge' };
   }
   if (sel.edges.length >= 3) {
     const loop = closedLoop(m, sel.edges);
@@ -33,13 +35,27 @@ export function fill(
     for (const f of m.faces) for (const [a, b] of faceEdgePairs(f)) existing.add(`${a}>${b}`);
     const forwardTaken = loop.some((v, i) => existing.has(`${v}>${loop[(i + 1) % loop.length]}`));
     const face = forwardTaken ? [...loop].reverse() : loop;
-    return { mesh: rebuild(m.verts, [...m.faces, face], wireEdges(m)), created: 'face' };
+    return { mesh: withNewFace(m, face), created: 'face' };
   }
   if (sel.verts.length >= 3 && sel.edges.length === 0) {
-    const ordered = orderAroundCentre(m, sel.verts);
-    return { mesh: rebuild(m.verts, [...m.faces, ordered], wireEdges(m)), created: 'face' };
+    return { mesh: withNewFace(m, orderAroundCentre(m, sel.verts)), created: 'face' };
   }
   return null;
+}
+
+function withNewFace(m: MeshData, face: number[]): MeshData {
+  const smooth = m.smoothFaces ? [...m.smoothFaces, newFaceSmooth(m, face)] : undefined;
+  return rebuild(m.verts, [...m.faces, face], wireEdges(m), smooth);
+}
+
+/** Majority of the faces that share an edge with the new face (a tie gives flat). */
+function newFaceSmooth(m: MeshData, face: readonly number[]): boolean {
+  const keys = new Set(faceEdgePairs(face).map(([a, b]) => edgeKey(a, b)));
+  let votes = 0;
+  m.faces.forEach((f, fi) => {
+    if (faceEdgePairs(f).some(([a, b]) => keys.has(edgeKey(a, b)))) votes += isSmooth(m, fi) ? 1 : -1;
+  });
+  return votes > 0;
 }
 
 /** The selected edges as one ordered closed loop of vertices, or null. */

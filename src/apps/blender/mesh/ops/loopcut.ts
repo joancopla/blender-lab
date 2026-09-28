@@ -8,7 +8,7 @@
  * FIDELITY? With several cuts, sliding moves them together keeping their spacing.
  */
 import { type Vec3, lerp } from '../../math/vec3';
-import { type Face, type MeshData, edgeKey, faceEdgePairs } from '../mesh-data';
+import { type Face, type MeshData, edgeKey, faceEdgePairs, smoothFrom } from '../mesh-data';
 import { MeshTopology } from '../topology';
 import { rebuild, wireEdges } from './common';
 
@@ -102,8 +102,9 @@ export function loopCut(m: MeshData, edge: number, cuts: number, factor = 0): Lo
   };
 
   const faces: Face[] = [];
+  const sources: number[] = []; // the face each new face comes from
   const newLoopPairs: [number, number][] = [];
-  for (const face of m.faces) {
+  m.faces.forEach((face, fi) => {
     const ringSides = faceEdgePairs(face)
       .map(([x, y], i) => ({ x, y, i }))
       .filter(({ x, y }) => byEdge.has(edgeKey(x, y)));
@@ -113,7 +114,10 @@ export function loopCut(m: MeshData, edge: number, cuts: number, factor = 0): Lo
       const [v0, v1, v2, v3] = [0, 1, 2, 3].map((d) => face[(k + d) % 4]!) as [number, number, number, number];
       const A = [v0, ...along(v0, v1), v1];
       const C = [v3, ...along(v3, v2), v2];
-      for (let i = 0; i <= cuts; i++) faces.push([A[i]!, A[i + 1]!, C[i + 1]!, C[i]!]);
+      for (let i = 0; i <= cuts; i++) {
+        faces.push([A[i]!, A[i + 1]!, C[i + 1]!, C[i]!]);
+        sources.push(fi);
+      }
       for (let i = 1; i <= cuts; i++) newLoopPairs.push([A[i]!, C[i]!]);
     } else if (ringSides.length > 0) {
       // Not a ring quad: insert the cut vertices into the outline.
@@ -123,17 +127,19 @@ export function loopCut(m: MeshData, edge: number, cuts: number, factor = 0): Lo
         if (byEdge.has(edgeKey(x, y))) out.push(...along(x, y));
       });
       faces.push(out);
+      sources.push(fi);
     } else {
       faces.push(face);
+      sources.push(fi);
     }
-  }
+  });
   // Wire edges on the ring are split too.
   const wires = wireEdges(m).flatMap(([x, y]) => {
     if (!byEdge.has(edgeKey(x, y))) return [[x, y] as const];
     const chain = [x, ...along(x, y), y];
     return chain.slice(1).map((v, i) => [chain[i]!, v] as const);
   });
-  const mesh = rebuild(verts, faces, wires);
+  const mesh = rebuild(verts, faces, wires, smoothFrom(m, sources));
   const t = new MeshTopology(mesh);
   const newEdges = newLoopPairs.map(([a, b]) => t.findEdge(a, b)!).filter((e) => e !== undefined);
   return { mesh, newEdges };

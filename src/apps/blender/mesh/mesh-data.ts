@@ -9,6 +9,10 @@
  * - `faces`: ordered vertex indices (n-gons allowed). Counter-clockwise seen
  *   from outside, so the right-hand rule gives the outward normal.
  *
+ * - `smoothFaces`: Shade Smooth per face (Blender's `sharp_face` attribute,
+ *   inverted), parallel to `faces`. Missing: every face is flat, as new
+ *   primitives are. Operations carry it over to the faces they create.
+ *
  * Faces are never triangulated here: triangulation is only for drawing.
  */
 import type { Vec3 } from '../math/vec3';
@@ -20,6 +24,26 @@ export interface MeshData {
   readonly verts: readonly Vec3[];
   readonly edges: readonly Edge[];
   readonly faces: readonly Face[];
+  readonly smoothFaces?: readonly boolean[];
+}
+
+/** Whether face `f` is shaded smooth. */
+export const isSmooth = (m: MeshData, f: number): boolean => m.smoothFaces?.[f] ?? false;
+
+/**
+ * Smooth flags for new faces, each copied from a face of `m` (its index in
+ * `sources`; -1 gives a flat face). Undefined when `m` has no smooth faces, so
+ * meshes that never used Shade Smooth stay without the attribute.
+ */
+export function smoothFrom(m: MeshData, sources: readonly number[]): boolean[] | undefined {
+  if (!m.smoothFaces) return undefined;
+  return sources.map((f) => (f >= 0 ? isSmooth(m, f) : false));
+}
+
+/** `mesh` with the given smooth flags (none when undefined). */
+export function withSmooth(mesh: MeshData, smoothFaces: readonly boolean[] | undefined): MeshData {
+  const plain: MeshData = { verts: mesh.verts, edges: mesh.edges, faces: mesh.faces };
+  return smoothFaces ? { ...plain, smoothFaces } : plain;
 }
 
 /** Edge with its indices in canonical order (smaller first). */

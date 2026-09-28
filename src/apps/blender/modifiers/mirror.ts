@@ -55,7 +55,8 @@ function mirrorOnAxis(m: MeshData, mod: MirrorModifier, axis: 0 | 1 | 2, mirrorS
   }
   const faces: Face[] = [...src.faces, ...src.faces.map((f) => flipFace(f.map((v) => v + n)))];
   const wires = wireEdges(src);
-  const joined = rebuild(verts, faces, [...wires, ...wires.map(([a, b]) => [a + n, b + n] as const)]);
+  const copy = src.smoothFaces && [...src.smoothFaces, ...src.smoothFaces];
+  const joined = rebuild(verts, faces, [...wires, ...wires.map(([a, b]) => [a + n, b + n] as const)], copy);
   if (!mod.useMirrorMerge) return joined;
   return remapVerts(joined, target).mesh;
 }

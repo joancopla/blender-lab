@@ -20,7 +20,7 @@
 import { DEG } from '../math/quat';
 import { type Vec3, add, cross, dot, length, normalize, scale, sub, vec3 } from '../math/vec3';
 import { faceNormal } from '../mesh/geometry';
-import { type Face, type MeshData, edgeKey } from '../mesh/mesh-data';
+import { type Face, type MeshData, edgeKey, smoothFrom } from '../mesh/mesh-data';
 import { compact, looseVerts, rebuild, wireEdges } from '../mesh/ops/common';
 import { MeshTopology } from '../mesh/topology';
 import type { BevelModifier } from './types';
@@ -234,6 +234,7 @@ export function applyBevel(m: MeshData, mod: BevelModifier): BevelResult {
   /** Profile at a vertex for a beveled edge, from its right point to its left point. */
   const profiles = new Map<string, number[]>();
   const patches: Face[] = [];
+  const patchFrom: number[] = [];
 
   for (const plan of plans.values()) {
     const pv = m.verts[plan.v]!;
@@ -262,6 +263,7 @@ export function applyBevel(m: MeshData, mod: BevelModifier): BevelResult {
       const map = (c: Vec3) => add(origin, add(add(scale(cols[0]!, c.x), scale(cols[1]!, c.y)), scale(cols[2]!, c.z)));
       const grid = cornerPatch(segments, map, newVert, [ids[c0]!, ids[c1]!, ids[c2]!]);
       patches.push(...grid.faces);
+      patchFrom.push(...grid.faces.map(() => t.vertFaces[plan.v]![0]!));
       // Arc i goes from corner point i to i + 1 (counter-clockwise). An edge's
       // right point is followed counter-clockwise by its left point, so its
       // profile (right -> left) is the arc that starts at its right point.
@@ -282,19 +284,23 @@ export function applyBevel(m: MeshData, mod: BevelModifier): BevelResult {
 
   // Strips: for edge (v0, v1), the face going v0 -> v1 is on the left at v0
   // and on the right at v1, so P0[k] meets P1[segments - k].
+  // New faces are shaded like a face next to them. FIDELITY? Which one when they differ.
   const strips: Face[] = [];
+  const stripFrom: number[] = [];
   for (const e of beveled) {
     const [v0, v1] = m.edges[e]!;
     const p0 = profiles.get(`${v0}:${e}`)!;
     const p1 = profiles.get(`${v1}:${e}`)!;
     for (let k = 0; k < segments; k++) {
       strips.push([p0[k + 1]!, p0[k]!, p1[segments - k]!, p1[segments - k - 1]!]);
+      stripFrom.push(t.edgeFaces[e]![0]!);
     }
   }
 
   const bevelledKeys = new Set([...beveled].map((e) => edgeKey(...m.edges[e]!)));
   const wires = wireEdges(m).filter(([a, b]) => !bevelledKeys.has(edgeKey(a, b)));
-  const mesh = compact(rebuild(verts, [...faces, ...strips, ...patches], wires), looseVerts(m)).mesh;
+  const smooth = smoothFrom(m, [...m.faces.keys(), ...stripFrom, ...patchFrom]);
+  const mesh = compact(rebuild(verts, [...faces, ...strips, ...patches], wires, smooth), looseVerts(m)).mesh;
   return { mesh, unsupported: false };
 }
 

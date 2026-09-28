@@ -43,7 +43,8 @@ export function applyArray(m: MeshData, mod: ArrayModifier): MeshData {
     for (const f of m.faces) faces.push(f.map((v) => v + base));
     for (const [a, b] of srcWires) wires.push([a + base, b + base]);
   }
-  const joined = rebuild(verts, faces, wires);
+  const smooth = m.smoothFaces && Array.from({ length: count }, () => m.smoothFaces!).flat();
+  const joined = rebuild(verts, faces, wires, smooth);
   if (!mod.useMergeVertices) return joined;
 
   // Each copy merges into the previous one (and the last into the first with
