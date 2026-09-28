@@ -24,6 +24,7 @@ import type { Bounds } from './viewport/view-state';
 import { type SelectCommand, SelectInteraction } from '../../core/input/select-interaction';
 import { ViewportInput } from './input/viewport-input';
 import { ClearLocationOp, ClearRotationOp, ClearScaleOp } from './operators/clear';
+import { evaluatedMesh } from './modifiers/stack';
 import { SubdivisionSetOp, levelsLimited } from './operators/modifiers';
 import { ShadeAutoSmoothOp, ShadeFlatOp, ShadeSmoothOp } from './operators/shade';
 import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operators/select';
@@ -133,10 +134,13 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
       const cam = activeCamera(store.state);
       return cam ? cameraData(store.state, cam) : null;
     },
-    // Numpad . frames the selected components in Edit Mode, the selected objects otherwise.
+    // Numpad . frames the selected components in Edit Mode, the selected objects
+    // otherwise (their modifiers' result, as drawn).
     selectedBounds: () =>
-      isEditMode(store.state) ? selectedComponentBounds(store.state) : unionBounds(selectedObjects(store.state)),
-    allBounds: () => unionBounds(store.state.objects),
+      isEditMode(store.state)
+        ? selectedComponentBounds(store.state)
+        : unionBounds(selectedObjects(store.state), (o) => evaluatedMesh(o, store.state)),
+    allBounds: () => unionBounds(store.state.objects, (o) => evaluatedMesh(o, store.state)),
     reducedMotion: () => reducedMotion.matches,
     now: () => performance.now(),
   });

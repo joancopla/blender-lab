@@ -140,13 +140,17 @@ export function objectRotation(o: ObjectBase): Quat {
   return fromEulerXYZ(vec3(o.rotationDeg.x * DEG, o.rotationDeg.y * DEG, o.rotationDeg.z * DEG));
 }
 
+/** The mesh a mesh object is measured with (e.g. the modifiers' result). */
+export type MeshMeasure = (o: MeshObject) => MeshData;
+
 /**
  * World-space axis-aligned bounds. Cameras and lights count as a point at their
  * location. FIDELITY? Blender may use their drawn size for View All.
+ * `measure` gives the mesh to use (by default the base mesh).
  */
-export function objectWorldBounds(o: SceneObject): Bounds {
+export function objectWorldBounds(o: SceneObject, measure: MeshMeasure = meshOf): Bounds {
   if (o.type !== 'mesh') return { min: o.location, max: o.location };
-  const local = meshLocalBounds(meshOf(o));
+  const local = meshLocalBounds(measure(o));
   const q = objectRotation(o);
   let lo = vec3(Infinity, Infinity, Infinity);
   let hi = vec3(-Infinity, -Infinity, -Infinity);
@@ -162,12 +166,12 @@ export function objectWorldBounds(o: SceneObject): Bounds {
   return { min: lo, max: hi };
 }
 
-export function unionBounds(objects: readonly SceneObject[]): Bounds | null {
+export function unionBounds(objects: readonly SceneObject[], measure: MeshMeasure = meshOf): Bounds | null {
   if (objects.length === 0) return null;
   let lo = vec3(Infinity, Infinity, Infinity);
   let hi = vec3(-Infinity, -Infinity, -Infinity);
   for (const o of objects) {
-    const b = objectWorldBounds(o);
+    const b = objectWorldBounds(o, measure);
     lo = min(lo, b.min);
     hi = max(hi, b.max);
   }

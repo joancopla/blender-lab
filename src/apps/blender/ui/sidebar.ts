@@ -145,6 +145,6 @@ export class Sidebar {
     const active = activeObject(scene);
     this.content.hidden = !active;
     if (!active) return;
-    for (const { spec, axis, field } of this.fields) field.setValue(readField(active, spec.field, axis));
+    for (const { spec, axis, field } of this.fields) field.setValue(readField(active, spec.field, axis, scene));
   }
 }

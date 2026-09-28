@@ -426,7 +426,8 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - [ ] ❓ Noms: "Mirror", "Array"; si ja n'hi ha un amb el mateix nom a l'objecte, "Mirror.001", "Mirror.002"...
 - [ ] ❓ Un modificador nou s'afegeix al final de la pila
 - [x] Noms a Edit > Undo History: "Add Modifier", "Remove Modifier", "Move to Index" i, per als paràmetres, l'etiqueta del camp ("Count", "Axis"...)
-- Pendent per a fases posteriors: el Mode Edició encara dibuixa la malla base sense modificadors (la gàbia arriba a la Fase 4); Dimensions al panell N i l'enquadrament (Numpad .) encara fan servir la malla base
+- [ ] ❓ Dimensions al panell N, Frame Selected (Numpad .) i Frame All (Home) mesuren el resultat dels modificadors (un Array de 3 cubs fa 6 m d'amplada). En Edit Mode, Numpad . enquadra els vèrtexs seleccionats de la malla base
+- [ ] ❓ Canviar Dimensions amb modificadors canvia l'escala en proporció a la mida del resultat
 
 ### Mirror
 
