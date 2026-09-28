@@ -30,6 +30,8 @@ export interface BlenderAppOptions {
   readonly analyzer?: boolean;
   /** Properties Editor tabs the lab uses (none by default). */
   readonly propertiesTabs?: readonly PropertiesTabId[];
+  /** Add menu and Shift+A. */
+  readonly addObjects?: boolean;
 }
 
 export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, BlenderDecorations> {
@@ -57,6 +59,7 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
       onNavigateWithoutMiddle: () => options.suggestPreference?.('emulate3ButtonMouse'),
       statistics: this.options.statistics,
       propertiesTabs: this.options.propertiesTabs,
+      addObjects: this.options.addObjects,
     });
     this.inner.store.onChange(() => this.analyzer?.update());
   }

@@ -156,6 +156,8 @@ describe('edit mode keys', () => {
 
   it('Tab and Alt+Z in both modes; L, Ctrl+L, Ctrl+Numpad +/-', () => {
     expect(resolveKey(OBJECT_MODE_KEYMAP, key('Tab'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'toggleEditMode' });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('KeyA', { shift: true }), DEFAULT_INPUT_PREFS)).toEqual({ type: 'addMenu' });
+    expect(resolveKey(EDIT_MODE_KEYMAP, key('KeyA', { shift: true }), DEFAULT_INPUT_PREFS)).toBeNull();
     expect(resolveKey(OBJECT_MODE_KEYMAP, key('Digit2', { ctrl: true }), DEFAULT_INPUT_PREFS)).toEqual({
       type: 'subdivisionSet',
       level: 2,

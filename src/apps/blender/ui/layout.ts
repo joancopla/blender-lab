@@ -11,6 +11,8 @@ export interface LayoutRefs {
   /** Viewport header: menus normally, the operator text during a modal transform. */
   readonly viewportHeaderText: HTMLElement;
   readonly viewMenu: HTMLElement;
+  /** Add menu of the header (Object Mode). */
+  readonly addMenu: HTMLElement;
   readonly selectMenu: HTMLElement;
   readonly objectMenu: HTMLElement;
   /** Object Mode / Edit Mode selector. */
@@ -89,6 +91,7 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
     selectModeGroup.append(b);
   }
 
+  const addMenu = el('span', 'bl-menu', 'Add');
   const objectMenu = el('span', 'bl-menu', 'Object');
   // Edit Mode menus: decoration for now.
   const editMenus = ['Mesh', 'Vertex', 'Edge', 'Face', 'UV'].map((t) => el('span', 'bl-menu', t));
@@ -99,7 +102,7 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
     selectModeGroup,
     viewMenu,
     selectMenu,
-    el('span', 'bl-menu', 'Add'),
+    addMenu,
     objectMenu,
     ...editMenus,
   );
@@ -144,10 +147,12 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
     viewMenu,
     selectMenu,
     objectMenu,
+    addMenu,
     modeMenu,
     selectModeButtons,
     xrayButton,
-    objectModeOnly: [objectMenu],
+    // FIDELITY? In Edit Mode, Blender's Add menu adds primitives into the mesh (not in the lab).
+    objectModeOnly: [objectMenu, addMenu],
     editModeOnly: [selectModeGroup, ...editMenus],
     outlinerBody,
     propertiesArea,

@@ -1,0 +1,20 @@
+{
+  "lab04": {
+    "name": "Llum",
+    "desc": "Il·luminar una escena: tipus de llum, intensitat, mida de la font i ombres, color i esquemes clàssics com el de tres punts.",
+    "intro": {
+      "eyebrow": "Lab 04",
+      "lead": "Aprendràs a il·luminar una escena com es fa a plató: quin tipus de llum triar, com canvia amb la distància, per què una ombra és dura o tova i com es munta un esquema de tres punts.",
+      "controls": {
+        "add": "Afegir una llum: Shift + A > Light (Point, Sun, Spot o Area)",
+        "move": "Moure i girar la llum: G i R, com qualsevol objecte",
+        "undo": "Desfer: Ctrl + Z"
+      }
+    },
+    "real": {
+      "lead": "El que ja funciona en aquest avançament es fa igual a Blender.",
+      "units": "Les llums de Blender fan servir unitats físiques: la potència de Point, Spot i Area és en watts (W) i la del Sun, en W/m². Una Point de 1000 W a 2 m il·lumina quatre vegades més que a 4 m.",
+      "preview": "Aquest lab encara és en construcció: el render amb llums, els paràmetres de cada llum, el World, el mesurador de llum i les etapes hi aniran arribant."
+    }
+  }
+}

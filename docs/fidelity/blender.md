@@ -637,3 +637,35 @@ Etiqueta a l'esquerra i control a la dreta, com a Blender. Només hi ha els par�
 - [ ] Cal mesurar-ho en un ordinador d'aula: arrossegar Levels Viewport i Count d'un Array amb el cub subdividit ha d'anar fluid, i girar la vista també
 - Estat de les caselles del Lab 03 en tancar-lo: 17 validades, 72 preguntes obertes (❓) i 29 comprovacions per fer amb Blender obert al costat
 - Pendent fora del codi: exportar de Blender les malles de referència de `tests/fixtures/blender/README.md` (Subdivision, Bevel i Solidify) perquè els tests les comparin vèrtex a vèrtex
+
+# Lab 04 — Llum
+
+Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot el que se n'ha portat es valida igual que la resta.
+
+## Fase 1 — Dades de les llums, física i Shift+A
+
+### Llums i World
+
+- [ ] ❓ Tipus de llum: Point, Sun, Spot i Area. Paràmetres: Color, Power (W) o Strength al Sun (W/m²), Radius (Point i Spot), Angle (Sun), Spot Size i Blend, Shape (Square, Rectangle, Disk, Ellipse) i Size / Size Y (Area), Cast Shadow
+- [ ] ❓ Valors per defecte d'una llum nova: Power 1000 W (Point, Spot i Area), Strength 1 (Sun), Radius 0,1 m, Angle 0,526°, Spot Size 45°, Blend 0,15, Area Square de 1 m, color blanc, Cast Shadow activat
+- [ ] ❓ La llum de l'escena inicial és una Point de 1000 W
+- [ ] ❓ World: color gris (0,0509 lineal) i Strength 1
+- [ ] ❓ Temperatura de color (Blackbody): el lab la pot calcular, però no sabem si el panell de la llum de Blender 5.2 té l'opció de triar-la en kelvins. De moment no surt a la interfície
+
+### Física (render/light-physics.ts)
+
+- [ ] ❓ Point i Spot: E = P / (4π (d² + R²)) · cos θ ("Soft Falloff", activat per defecte des de la 4.0)
+- [ ] Sun: E = Strength · cos θ, a qualsevol distància
+- [ ] ❓ Area: panell difús d'intensitat (P / π) · cos θ, integrat amb 5 × 5 punts
+- [ ] Al doble de distància, una Point il·lumina una quarta part
+- [ ] ❓ La vora del con de l'Spot: Blend és la fracció del mig angle on la llum s'apaga, amb una corba suau
+- [ ] ❓ El color de la llum multiplica la potència (una llum vermella de 1000 W il·lumina menys que una de blanca)
+
+### Add (Shift+A)
+
+- [ ] ❓ Shift+A al viewport en Object Mode i el menú Add de la capçalera: Mesh ▸, Curve, Surface, Metaball, Text, Volume, Grease Pencil | Armature, Lattice | Empty, Image | Light ▸, Light Probe | Camera, Speaker | Force Field | Collection Instance. Al lab només funcionen Mesh (Plane, Cube, UV Sphere, Cylinder, Cone, Torus) i Light (Point, Sun, Spot, Area)
+- [ ] ❓ L'objecte nou apareix al 3D Cursor (al lab, sempre a l'origen), sense rotació, seleccionat i actiu; els altres es deseleccionen
+- [ ] ❓ Noms: "Point", "Sun", "Spot", "Area", "Plane", "Cube", "Sphere" (la UV Sphere), "Cylinder", "Cone", "Torus", amb .001 si ja existeix
+- [ ] ❓ Noms a Undo History: "Add Light", "Add Cube", "Add UV Sphere"...
+- Decisió del lab: Shift+A i el menú Add només funcionen als labs que ho ensenyen (a partir del 04). En Edit Mode el menú Add no hi és: a Blender hi afegeix primitives dins de la malla
+- Fora d'abast per ara: el panell Adjust Last Operation d'Add

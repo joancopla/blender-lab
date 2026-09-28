@@ -58,12 +58,14 @@ export type ObjectModeAction =
   | { readonly type: 'toggleSidebar' }
   | { readonly type: 'toggleEditMode' }
   | { readonly type: 'toggleXray' }
-  | { readonly type: 'subdivisionSet'; readonly level: number };
+  | { readonly type: 'subdivisionSet'; readonly level: number }
+  | { readonly type: 'addMenu' };
 
 /** Object Mode keymap (3D Viewport). */
 export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
   { code: 'KeyA', action: { type: 'selectAll', action: 'select' } },
   { code: 'KeyA', alt: true, action: { type: 'selectAll', action: 'deselect' } },
+  { code: 'KeyA', shift: true, action: { type: 'addMenu' } },
   { code: 'KeyI', ctrl: true, action: { type: 'selectAll', action: 'invert' } },
   { code: 'KeyB', action: { type: 'boxSelectModal' } },
   { code: 'KeyG', action: { type: 'transform', kind: 'translate' } },

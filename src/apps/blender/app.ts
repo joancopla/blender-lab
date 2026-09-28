@@ -27,6 +27,7 @@ import { ClearLocationOp, ClearRotationOp, ClearScaleOp } from './operators/clea
 import { evaluatedMesh } from './modifiers/stack';
 import { SubdivisionSetOp, levelsLimited } from './operators/modifiers';
 import { ShadeAutoSmoothOp, ShadeFlatOp, ShadeSmoothOp } from './operators/shade';
+import { type AddKind, AddObjectOp } from './operators/add';
 import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operators/select';
 import {
   type SceneState,
@@ -98,6 +99,8 @@ export interface MountOptions {
   readonly statistics?: boolean;
   /** Properties Editor tabs this lab uses; the others are shown inactive. */
   readonly propertiesTabs?: readonly PropertiesTabId[];
+  /** Add menu and Shift+A (off in the labs that do not teach adding objects). */
+  readonly addObjects?: boolean;
 }
 
 /** World-space bounds of the selected vertices of the objects in Edit Mode. */
@@ -516,6 +519,9 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
       else if (a.type === 'subdivisionSet') {
         store.execute(SubdivisionSetOp(a.level));
         if (levelsLimited(a.level)) status.report(t('lab.subsurfLevelLimit'));
+      } else if (a.type === 'addMenu' && options.addObjects) {
+        const p = cursor ?? { x: 100, y: 100 };
+        openMenuAt(layout.viewport, p.x, p.y, addItems(), 'Add');
       }
     },
     editMode: () => isEditMode(store.state),
@@ -606,6 +612,49 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
     { label: 'Shade Flat', action: () => store.execute(ShadeFlatOp) },
   ];
   attachMenu(layout.objectMenu, shadeItems);
+  // Add (Shift+A): only the entries of the lab work. FIDELITY? Entries and order in Blender 5.2.
+  const add = (what: AddKind) => () => store.execute(AddObjectOp(what));
+  const off = (...labels: string[]): MenuItem[] => labels.map((label) => ({ label, disabled: true }));
+  const addItems = (): MenuItem[] => [
+    {
+      label: 'Mesh',
+      submenu: [
+        { label: 'Plane', action: add({ kind: 'mesh', primitive: 'plane' }) },
+        { label: 'Cube', action: add({ kind: 'mesh', primitive: 'cube' }) },
+        ...off('Circle'),
+        { label: 'UV Sphere', action: add({ kind: 'mesh', primitive: 'uvSphere' }) },
+        ...off('Ico Sphere'),
+        { label: 'Cylinder', action: add({ kind: 'mesh', primitive: 'cylinder' }) },
+        { label: 'Cone', action: add({ kind: 'mesh', primitive: 'cone' }) },
+        { label: 'Torus', action: add({ kind: 'mesh', primitive: 'torus' }) },
+        'separator',
+        ...off('Grid', 'Monkey'),
+      ],
+    },
+    ...off('Curve', 'Surface', 'Metaball', 'Text', 'Volume', 'Grease Pencil'),
+    'separator',
+    ...off('Armature', 'Lattice'),
+    'separator',
+    ...off('Empty', 'Image'),
+    'separator',
+    {
+      label: 'Light',
+      submenu: [
+        { label: 'Point', action: add({ kind: 'light', lightType: 'POINT' }) },
+        { label: 'Sun', action: add({ kind: 'light', lightType: 'SUN' }) },
+        { label: 'Spot', action: add({ kind: 'light', lightType: 'SPOT' }) },
+        { label: 'Area', action: add({ kind: 'light', lightType: 'AREA' }) },
+      ],
+    },
+    ...off('Light Probe'),
+    'separator',
+    ...off('Camera', 'Speaker'),
+    'separator',
+    ...off('Force Field'),
+    'separator',
+    ...off('Collection Instance'),
+  ];
+  if (options.addObjects) attachMenu(layout.addMenu, addItems);
   attachMenu(layout.selectMenu, () => {
     const edit = isEditMode(store.state);
     const all = (action: 'select' | 'deselect' | 'invert') => () =>

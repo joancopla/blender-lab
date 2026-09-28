@@ -16,6 +16,7 @@ import { STOOL_BLUEPRINT } from '../labs/blender/blueprint';
 import { lab01 } from '../labs/blender/01-viewport';
 import { lab02 } from '../labs/blender/02-edit-mode';
 import { lab03 } from '../labs/blender/03-modifiers';
+import { lab04 } from '../labs/blender/04-lights';
 import '../core/shell/shell.css';
 import './site.css';
 
@@ -46,6 +47,7 @@ const PROGRAMS: readonly ProgramGroup[] = [
       { lab: lab01, href: 'labs/01-viewport/' },
       { lab: lab02, href: 'labs/02-edit-mode/' },
       { lab: lab03, href: 'labs/03-modifiers/' },
+      { lab: lab04, href: 'labs/04-lights/' },
     ],
     shortcuts: [
       { labelKey: 'shortcuts.grab', keys: ['g'] },

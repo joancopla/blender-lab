@@ -15,6 +15,7 @@ export default defineConfig({
         lab01: 'labs/01-viewport/index.html',
         lab02: 'labs/02-edit-mode/index.html',
         lab03: 'labs/03-modifiers/index.html',
+        lab04: 'labs/04-lights/index.html',
       },
     },
   },
