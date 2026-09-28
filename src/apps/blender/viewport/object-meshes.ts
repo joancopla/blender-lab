@@ -16,7 +16,7 @@ let solidMaterial: THREE.Material | null = null;
  * The normals come from the geometry (mesh/normals.ts: flat or smooth per face),
  * so no flatShading here: it would ignore them and hide Shade Smooth.
  */
-function getSolidMaterial(): THREE.Material {
+export function getSolidMaterial(): THREE.Material {
   if (!solidMaterial) {
     const c = THEME.solidObjectLinear;
     solidMaterial = new THREE.MeshPhongMaterial({
@@ -77,14 +77,49 @@ function buildLight(_light: LightObject): THREE.Object3D {
   return group;
 }
 
+let litMaterial: THREE.MeshStandardMaterial | null = null;
+
+/**
+ * Material Preview and Rendered: objects without a material look like
+ * Blender's default surface, a grey Principled BSDF (Base Color 0.8,
+ * Roughness 0.5). FIDELITY?
+ */
+export function getLitMaterial(): THREE.MeshStandardMaterial {
+  if (!litMaterial) {
+    litMaterial = new THREE.MeshStandardMaterial({
+      color: new THREE.Color().setRGB(0.8, 0.8, 0.8, THREE.LinearSRGBColorSpace),
+      roughness: 0.5,
+      metalness: 0,
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
+      side: THREE.DoubleSide,
+    });
+  }
+  return litMaterial;
+}
+
+let hiddenMaterial: THREE.MeshBasicMaterial | null = null;
+
+/** Wireframe: the faces are not drawn (only the edges), but still pickable. */
+export function getHiddenMaterial(): THREE.MeshBasicMaterial {
+  if (!hiddenMaterial) hiddenMaterial = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
+  return hiddenMaterial;
+}
+
+/** The materials that show surfaces (and go through the view transform). */
+export const isSurfaceMaterial = (m: THREE.Material): boolean =>
+  m === solidMaterial || m === litMaterial || m === hiddenMaterial;
+
 /** X-ray (Alt+Z): solid objects become see-through. FIDELITY? Blender's default X-ray alpha is 0.5. */
 export function setSolidXray(on: boolean): void {
-  const m = getSolidMaterial() as THREE.MeshPhongMaterial;
-  if (m.transparent === on) return;
-  m.transparent = on;
-  m.opacity = on ? 0.5 : 1;
-  m.depthWrite = !on;
-  m.needsUpdate = true;
+  for (const m of [getSolidMaterial() as THREE.MeshPhongMaterial, getLitMaterial()]) {
+    if (m.transparent === on) continue;
+    m.transparent = on;
+    m.opacity = on ? 0.5 : 1;
+    m.depthWrite = !on;
+    m.needsUpdate = true;
+  }
 }
 
 /** Meshes start with an empty geometry: the renderer fills it with the mesh to draw. */
@@ -92,6 +127,9 @@ export function buildObject(o: SceneObject, isSceneCamera: boolean, renderAspect
   let obj: THREE.Object3D;
   if (o.type === 'mesh') {
     obj = new THREE.Mesh(new THREE.BufferGeometry(), getSolidMaterial());
+    // Shadows only matter in Rendered, where the scene's lights cast them.
+    obj.castShadow = true;
+    obj.receiveShadow = true;
   } else if (o.type === 'camera') {
     obj = buildCamera(o, isSceneCamera, renderAspect);
   } else {
@@ -102,7 +140,7 @@ export function buildObject(o: SceneObject, isSceneCamera: boolean, renderAspect
   return obj;
 }
 
-const WIRE_COLORS: Record<SelectionDisplay, string> = {
+export const WIRE_COLORS: Record<SelectionDisplay, string> = {
   none: THEME.wire,
   selected: THEME.objectSelected,
   active: THEME.activeObject,
@@ -116,7 +154,7 @@ export function setWireSelection(obj: THREE.Object3D, state: SelectionDisplay): 
   const color = WIRE_COLORS[state];
   obj.traverse((child) => {
     const m = (child as THREE.Mesh | THREE.Line).material as THREE.Material | undefined;
-    if (m && !(child instanceof THREE.Mesh && child.material === solidMaterial) && 'color' in m) {
+    if (m && !isSurfaceMaterial(m) && 'color' in m) {
       (m as THREE.LineBasicMaterial).color.set(color);
     }
   });

@@ -25,7 +25,19 @@ import { buildAnalyzerOverlay } from './analyzer-overlay';
 import { analyzeMesh } from '../mesh/analyze';
 import { selectionOf } from '../operators/edit-mode';
 import type { DisplayedView, Navigator } from './navigator';
-import { type SelectionDisplay, buildObject, setSolidXray, setWireSelection, updateLightDisplay } from './object-meshes';
+import {
+  type SelectionDisplay,
+  WIRE_COLORS,
+  buildObject,
+  getHiddenMaterial,
+  getLitMaterial,
+  getSolidMaterial,
+  isSurfaceMaterial,
+  setSolidXray,
+  setWireSelection,
+  updateLightDisplay,
+} from './object-meshes';
+import { RenderSetup, type ShadingMode } from '../render/render-setup';
 import { type ViewportSize, CLIP_END, CLIP_START } from './projection';
 import { type ViewProjection, viewProjection } from './screen';
 import { Grid } from './grid';
@@ -62,6 +74,9 @@ interface ObjectEntry {
   /** Topology analyser overlay and the mesh it was built for. */
   analyzer?: THREE.Group;
   analyzerFor?: MeshData;
+  /** Wireframe shading: the edges of the drawn mesh, and the mesh they were built from. */
+  wire?: THREE.LineSegments;
+  wireFor?: MeshData;
 }
 
 export class ViewportRenderer {
@@ -82,6 +97,10 @@ export class ViewportRenderer {
   private size: ViewportSize = { width: 1, height: 1 };
   private scheduled = false;
   private xray = false;
+  private shading: ShadingMode = 'SOLID';
+  private readonly renderSetup: RenderSetup;
+  /** Overlay materials already kept out of the view transform. */
+  private readonly untoned = new WeakSet<THREE.Material>();
   private analyzerObjectId: string | null = null;
   private lastCamera: THREE.Camera = this.perspCamera;
   private lastFrame: FrameInfo | null = null;
@@ -107,6 +126,7 @@ export class ViewportRenderer {
     this.gridRoot.add(this.grid.mesh);
     this.root.add(this.perspCamera, this.orthoCamera, this.lightRig, this.labElements.group);
     this.buildLightRig();
+    this.renderSetup = new RenderSetup(this.renderer, this.scene, this.root);
 
     navigator.onChange(() => this.requestRender());
     new ResizeObserver(() => this.resize()).observe(container);
@@ -151,6 +171,16 @@ export class ViewportRenderer {
 
   get xrayEnabled(): boolean {
     return this.xray;
+  }
+
+  /** Viewport Shading (Z, header buttons): a view setting, not part of the scene or undo. */
+  setShading(mode: ShadingMode): void {
+    this.shading = mode;
+    this.requestRender();
+  }
+
+  get shadingMode(): ShadingMode {
+    return this.shading;
   }
 
   /** Ghost silhouettes and face markers of the current stage. */
@@ -276,6 +306,30 @@ export class ViewportRenderer {
       e.meshData = drawn;
       e.autoSmooth = smooth;
     }
+    // Shading mode: Solid's studio material, the grey default surface when lit, or only edges.
+    const wireframe = this.shading === 'WIREFRAME';
+    mesh.material = wireframe ? getHiddenMaterial() : this.shading === 'SOLID' ? getSolidMaterial() : getLitMaterial();
+    if (wireframe && e.wireFor !== drawn) {
+      if (e.wire) {
+        mesh.remove(e.wire);
+        e.wire.geometry.dispose();
+      }
+      const pts: number[] = [];
+      for (const [a, b] of drawn.edges) {
+        const p = drawn.verts[a]!;
+        const q = drawn.verts[b]!;
+        pts.push(p.x, p.y, p.z, q.x, q.y, q.z);
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+      e.wire = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ toneMapped: false }));
+      e.wireFor = drawn;
+      mesh.add(e.wire);
+    }
+    if (e.wire) {
+      e.wire.visible = wireframe;
+      (e.wire.material as THREE.LineBasicMaterial).color.set(WIRE_COLORS[e.selection ?? 'none']);
+    }
     const analyse = o.id === this.analyzerObjectId;
     if (e.analyzer && (!analyse || e.analyzerFor !== m)) {
       mesh.remove(e.analyzer);
@@ -367,6 +421,11 @@ export class ViewportRenderer {
       view.distance,
     );
 
+    this.renderSetup.sync(scene, this.shading);
+    // Solid's studio rig follows the view; the lit modes use the HDRI or the scene's lights.
+    this.lightRig.visible = this.shading === 'SOLID' || this.shading === 'WIREFRAME';
+    this.keepOverlaysUntoned();
+
     this.root.updateMatrixWorld(true);
     this.gridRoot.updateMatrixWorld(true);
     this.renderer.clear();
@@ -384,7 +443,28 @@ export class ViewportRenderer {
     for (const fn of this.drawListeners) fn(info);
   }
 
+  /**
+   * Grid, outlines, wires, Edit Mode overlays, icons and lab elements are
+   * drawn over the image, not part of it: they skip the view transform (AgX),
+   * so their colours stay the same in every shading mode.
+   */
+  private keepOverlaysUntoned(): void {
+    const visit = (o: THREE.Object3D) => {
+      const m = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+      for (const mat of Array.isArray(m) ? m : m ? [m] : []) {
+        if (this.untoned.has(mat) || isSurfaceMaterial(mat)) continue;
+        mat.toneMapped = false;
+        mat.needsUpdate = true;
+        this.untoned.add(mat);
+      }
+    };
+    this.root.traverse(visit);
+    this.gridRoot.traverse(visit);
+  }
+
   private drawOutlines(camera: THREE.Camera): void {
+    // Wireframe shows the selection with the wire colour instead.
+    if (this.shading === 'WIREFRAME') return;
     const meshRoots = new Map<THREE.Object3D, number>();
     const states = new Map<number, OutlineState>();
     for (const e of this.objects.values()) {

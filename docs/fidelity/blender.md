@@ -669,3 +669,24 @@ Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot 
 - [ ] ❓ Noms a Undo History: "Add Light", "Add Cube", "Add UV Sphere"...
 - Decisió del lab: Shift+A i el menú Add només funcionen als labs que ho ensenyen (a partir del 04). En Edit Mode el menú Add no hi és: a Blender hi afegeix primitives dins de la malla
 - Fora d'abast per ara: el panell Adjust Last Operation d'Add
+
+## Fase 2 — Mòdul de render
+
+### Modes de shading
+
+- [ ] ❓ Botons a la dreta de la capçalera del viewport, després de Toggle X-Ray: Wireframe, Solid, Material Preview, Rendered (icones pròpies). Canviar de mode no és un pas de desfer
+- [ ] ❓ Z obre el pie menu Shading (Object Mode i Edit Mode): Wireframe a l'esquerra, Solid a la dreta, Material Preview a baix, Rendered a dalt, Toggle X-Ray a dalt a l'esquerra i Toggle Overlays a dalt a la dreta (desactivat al lab). Es tria amb un clic, o movent el ratolí cap a una opció i clicant
+- [ ] ❓ Wireframe: només es veuen les arestes (també les de darrere); l'objecte seleccionat té les arestes taronja i no hi ha contorn
+- [ ] Solid: com fins ara (llum d'estudi que segueix la vista)
+- [ ] ❓ Material Preview: un HDRI d'estudi il·lumina l'escena i en fa el fons desenfocat; les llums de l'escena no hi compten (Scene Lights desactivat). Els objectes sense material fan servir el gris per defecte de Blender (Base Color 0,8, Roughness 0,5)
+- [ ] ❓ Rendered: il·luminen les llums de l'escena i el World (llum ambient uniforme i color de fons), amb ombres de les Point, Spot i Sun
+- Decisió del lab: el HDRI de Material Preview és un estudi generat pel lab (del cifog-lab), no l'HDRI per defecte de Blender, que és una fotografia
+- Limitacions d'aquesta fase: les ombres encara són dures (les toves, amb Radius, Angle i Size, arriben a la Fase 3); l'Area encara no fa ombra
+
+### Unitats i color
+
+- [ ] ❓ Conversió a three.js (render/light-units.ts): Point i Spot amb intensitat P / 4π, Sun amb intensitat = Strength, Area amb radiància P / (π · àrea), World com a llum ambient π · Strength. Cal calibrar-ho una vegada amb un render de Blender d'una escena de referència (la constant POWER_CALIBRATION)
+- [ ] ❓ Area Disk i Ellipse: al lab són rectangles de la mateixa àrea
+- [ ] ❓ Spot Size: al lab, com a màxim 179,8°; Blend es converteix en la penombra de three.js
+- [ ] ❓ Color Management (Material Preview i Rendered): AgX per defecte, i Standard; Exposure en passos. El tone mapping AgX de three.js no és idèntic al de Blender. Encara no hi ha interfície per canviar-ho
+- [ ] La graella, els contorns, les icones de les llums i la gàbia d'Edit Mode no canvien de color en Rendered (no passen per AgX)

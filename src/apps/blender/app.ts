@@ -44,6 +44,8 @@ import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
 import { blenderDefaultScene } from './scene/default-scene';
 import { type MenuItem, attachMenu, openMenuAt } from './ui/menu';
+import { openPieMenu } from './ui/pie-menu';
+import type { ShadingMode } from './render/render-setup';
 import { PropertiesEditor } from './ui/properties/properties-editor';
 import type { PropertiesTabId } from './ui/properties/tabs';
 import { viewsFor } from './ui/properties/views';
@@ -294,6 +296,38 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
   }
   layout.xrayButton.addEventListener('click', toggleXray);
 
+  /** Viewport Shading (Z pie, header buttons): a view setting, not an undo step. */
+  function setShading(mode: ShadingMode): void {
+    view.setShading(mode);
+    for (const k of ['WIREFRAME', 'SOLID', 'MATERIAL', 'RENDERED'] as const) {
+      layout.shadingButtons[k].classList.toggle('is-active', k === mode);
+      layout.shadingButtons[k].setAttribute('aria-pressed', String(k === mode));
+    }
+  }
+  for (const k of ['WIREFRAME', 'SOLID', 'MATERIAL', 'RENDERED'] as const) {
+    layout.shadingButtons[k].addEventListener('click', () => setShading(k));
+  }
+  setShading('SOLID');
+  /** Z: Blender's shading pie. FIDELITY? Positions of the items, and Toggle Overlays (not in the lab). */
+  const openShadingPie = () => {
+    const p = cursor ?? { x: 100, y: 100 };
+    const mode = view.shadingMode;
+    openPieMenu(
+      layout.viewport,
+      p.x,
+      p.y,
+      [
+        { label: 'Wireframe', direction: 'W', checked: mode === 'WIREFRAME', action: () => setShading('WIREFRAME') },
+        { label: 'Solid', direction: 'E', checked: mode === 'SOLID', action: () => setShading('SOLID') },
+        { label: 'Material Preview', direction: 'S', checked: mode === 'MATERIAL', action: () => setShading('MATERIAL') },
+        { label: 'Rendered', direction: 'N', checked: mode === 'RENDERED', action: () => setShading('RENDERED') },
+        { label: 'Toggle X-Ray', direction: 'NW', checked: xray, action: toggleXray },
+        { label: 'Toggle Overlays', direction: 'NE', disabled: true },
+      ],
+      'Shading',
+    );
+  };
+
   // --- Adjust Last Operation -------------------------------------------------
   let adjust: {
     op: AdjustableOp;
@@ -519,6 +553,8 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
       else if (a.type === 'subdivisionSet') {
         store.execute(SubdivisionSetOp(a.level));
         if (levelsLimited(a.level)) status.report(t('lab.subsurfLevelLimit'));
+      } else if (a.type === 'shadingPie') {
+        openShadingPie();
       } else if (a.type === 'addMenu' && options.addObjects) {
         const p = cursor ?? { x: 100, y: 100 };
         openMenuAt(layout.viewport, p.x, p.y, addItems(), 'Add');
@@ -567,6 +603,8 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
           return void store.execute(ToggleEditModeOp);
         case 'toggleXray':
           return toggleXray();
+        case 'shadingPie':
+          return openShadingPie();
         case 'boxSelectModal':
           return; // handled by the input layer
       }

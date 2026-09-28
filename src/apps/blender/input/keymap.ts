@@ -59,7 +59,8 @@ export type ObjectModeAction =
   | { readonly type: 'toggleEditMode' }
   | { readonly type: 'toggleXray' }
   | { readonly type: 'subdivisionSet'; readonly level: number }
-  | { readonly type: 'addMenu' };
+  | { readonly type: 'addMenu' }
+  | { readonly type: 'shadingPie' };
 
 /** Object Mode keymap (3D Viewport). */
 export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
@@ -77,6 +78,7 @@ export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
   { code: 'KeyN', action: { type: 'toggleSidebar' } },
   { code: 'Tab', action: { type: 'toggleEditMode' } },
   { code: 'KeyZ', alt: true, action: { type: 'toggleXray' } },
+  { code: 'KeyZ', action: { type: 'shadingPie' } },
   // Ctrl+0..5: Subdivision Set. With Emulate Numpad, Ctrl+1/3/7 are views instead.
   ...[0, 1, 2, 3, 4, 5].map((level) => ({
     code: `Digit${level}`,
@@ -102,7 +104,8 @@ export type EditModeAction =
   | { readonly type: 'bevel'; readonly vertices: boolean }
   | { readonly type: 'toggleSidebar' }
   | { readonly type: 'toggleEditMode' }
-  | { readonly type: 'toggleXray' };
+  | { readonly type: 'toggleXray' }
+  | { readonly type: 'shadingPie' };
 
 /**
  * Edit Mode (Mesh) keymap. With Emulate Numpad on, the number row is taken by
@@ -138,6 +141,7 @@ export const EDIT_MODE_KEYMAP: readonly KeymapItem<EditModeAction>[] = [
   { code: 'KeyN', action: { type: 'toggleSidebar' } },
   { code: 'Tab', action: { type: 'toggleEditMode' } },
   { code: 'KeyZ', alt: true, action: { type: 'toggleXray' } },
+  { code: 'KeyZ', action: { type: 'shadingPie' } },
 ];
 
 export type ScreenAction = { readonly type: 'undo' } | { readonly type: 'redo' };

@@ -144,6 +144,20 @@ export const DEFAULT_WORLD: WorldSettings = { color: vec3(0.0509, 0.0509, 0.0509
 
 export const worldOf = (s: SceneState): WorldSettings => s.world ?? DEFAULT_WORLD;
 
+/**
+ * Render > Color Management: the View Transform and Exposure (stops) used by
+ * Material Preview and Rendered. Missing: AgX, 0.
+ * FIDELITY? Blender 5.2's View Transform list and Looks; the lab has AgX and Standard.
+ */
+export interface ColorManagement {
+  readonly viewTransform: 'AgX' | 'Standard';
+  readonly exposure: number;
+}
+
+export const DEFAULT_COLOR_MANAGEMENT: ColorManagement = { viewTransform: 'AgX', exposure: 0 };
+
+export const colorManagementOf = (s: SceneState): ColorManagement => s.colorManagement ?? DEFAULT_COLOR_MANAGEMENT;
+
 export type SceneObject = MeshObject | CameraObject | LightObject;
 
 /** Vertex / Edge / Face select mode (several can be on). */
@@ -163,6 +177,8 @@ export interface SceneState {
   readonly render: { readonly resolutionX: number; readonly resolutionY: number };
   /** World settings; missing: DEFAULT_WORLD. */
   readonly world?: WorldSettings;
+  /** Render > Color Management; missing: DEFAULT_COLOR_MANAGEMENT. */
+  readonly colorManagement?: ColorManagement;
   /** Objects in Edit Mode; empty or missing: Object Mode. */
   readonly editObjectIds?: readonly string[];
   /** Edit Mode select mode (tool setting, shared by all meshes). */

@@ -21,6 +21,8 @@ export interface LayoutRefs {
   readonly selectModeButtons: Record<'vert' | 'edge' | 'face', HTMLButtonElement>;
   /** Toggle X-Ray, at the right of the viewport header (both modes). */
   readonly xrayButton: HTMLButtonElement;
+  /** Viewport Shading: Wireframe, Solid, Material Preview, Rendered. */
+  readonly shadingButtons: Record<'WIREFRAME' | 'SOLID' | 'MATERIAL' | 'RENDERED', HTMLButtonElement>;
   /** Header parts shown only in one mode. */
   readonly objectModeOnly: readonly HTMLElement[];
   readonly editModeOnly: readonly HTMLElement[];
@@ -119,7 +121,26 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
   xrayButton.addEventListener('mousedown', (e) => e.preventDefault());
   xrayButton.innerHTML =
     '<svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="9" height="9" fill="none" stroke="currentColor" stroke-dasharray="2 1.5"/><rect x="5.5" y="5.5" width="9" height="9" fill="currentColor" fill-opacity="0.45" stroke="currentColor"/></svg>';
-  header.append(viewportHeaderText, el('span', 'bl-spacer'), xrayButton);
+  // Viewport Shading buttons, after X-ray as in Blender. Own icons.
+  const SHADING_ICONS = {
+    WIREFRAME: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.2"/><ellipse cx="8" cy="8" rx="2.6" ry="6" fill="none" stroke="currentColor"/><path d="M2 8h12" stroke="currentColor"/></svg>',
+    SOLID: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>',
+    MATERIAL: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/><path d="M2.5 8H8M8 2v12" stroke="currentColor"/></svg>',
+    RENDERED: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor" fill-opacity="0.35" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="1.8" fill="currentColor"/></svg>',
+  } as const;
+  const SHADING_TITLES = { WIREFRAME: 'Wireframe', SOLID: 'Solid', MATERIAL: 'Material Preview', RENDERED: 'Rendered' } as const;
+  const shadingGroup = el('div', 'bl-selectmode bl-shading');
+  const shadingButtons = {} as Record<'WIREFRAME' | 'SOLID' | 'MATERIAL' | 'RENDERED', HTMLButtonElement>;
+  for (const k of ['WIREFRAME', 'SOLID', 'MATERIAL', 'RENDERED'] as const) {
+    const b = el('button', 'bl-selectmode-button');
+    b.type = 'button';
+    b.title = SHADING_TITLES[k];
+    b.innerHTML = SHADING_ICONS[k];
+    b.addEventListener('mousedown', (e) => e.preventDefault());
+    shadingButtons[k] = b;
+    shadingGroup.append(b);
+  }
+  header.append(viewportHeaderText, el('span', 'bl-spacer'), xrayButton, shadingGroup);
   const viewport = el('div', 'bl-viewport');
   viewArea.append(header, viewport);
 
@@ -151,6 +172,7 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
     modeMenu,
     selectModeButtons,
     xrayButton,
+    shadingButtons,
     // FIDELITY? In Edit Mode, Blender's Add menu adds primitives into the mesh (not in the lab).
     objectModeOnly: [objectMenu, addMenu],
     editModeOnly: [selectModeGroup, ...editMenus],
