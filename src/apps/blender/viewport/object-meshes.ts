@@ -11,7 +11,11 @@ export type SelectionDisplay = 'none' | 'selected' | 'active';
 
 let solidMaterial: THREE.Material | null = null;
 
-/** Solid shading, Material colour: grey, flat, light specular. FIDELITY? */
+/**
+ * Solid shading, Material colour: grey, light specular. FIDELITY?
+ * The normals come from the geometry (mesh/normals.ts: flat or smooth per face),
+ * so no flatShading here: it would ignore them and hide Shade Smooth.
+ */
 function getSolidMaterial(): THREE.Material {
   if (!solidMaterial) {
     const c = THEME.solidObjectLinear;
@@ -19,7 +23,6 @@ function getSolidMaterial(): THREE.Material {
       color: new THREE.Color().setRGB(c, c, c, THREE.LinearSRGBColorSpace),
       specular: new THREE.Color(0x1a1a1a),
       shininess: 20,
-      flatShading: true,
       // Pushed back a little so Edit Mode edges and vertices on the surface stay visible.
       polygonOffset: true,
       polygonOffsetFactor: 1,
