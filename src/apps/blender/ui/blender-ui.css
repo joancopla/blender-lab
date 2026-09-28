@@ -1073,3 +1073,8 @@
 .bl-viewport.has-adjust .lab-keys {
   bottom: 120px;
 }
+
+/* A lab tool (the light meter) waits for a click on a surface. */
+.bl-viewport.is-click-tool {
+  cursor: crosshair;
+}

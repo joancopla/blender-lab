@@ -714,3 +714,19 @@ Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot 
 - [ ] ❓ L'Area fa ombres (al lab és un Spot molt ample que es mou pel panell; la mitjana equival a tot el panell)
 - [ ] La graella, les icones i la gàbia d'Edit Mode queden tapades pels objectes també en Rendered
 - Decisió del lab: com Cycles, la imatge es refina en diverses passades; EEVEE ho fa d'una altra manera
+
+## Fase 4 — World i mesurador de llum
+
+### Pestanya World
+
+- [ ] ❓ A dalt, "Scene › World". Panells: Surface (obert), Volume, Settings, Viewport Display, Custom Properties; només Surface funciona
+- [ ] ❓ Surface: "Background", Color i Strength. Noms a Undo History: "Color" i "Strength". Strength ≥ 0
+- [ ] En Rendered, el World il·lumina tota l'escena de manera uniforme i és el color del fons
+- Fora d'abast: un HDRI al World (Environment Texture)
+
+### Mesurador de llum (element del lab, no de Blender)
+
+- Al panell del lab: "Mesura a A" i "Mesura a B", i després un clic sobre una superfície del viewport. El punt es marca al viewport amb el color de les ajudes del lab
+- Mostra, per a cada punt, la irradiància total en W/m², la de cada llum i la del World; amb els dos punts, la proporció A : B i la diferència en passos
+- Compta les ombres (un raig cap a cada llum, 25 per a l'Area) i les llums amb Cast Shadow desactivat no fan ombra. La llum del World es compta com un cel obert, sense ombres
+- [ ] Al doble de distància d'una Point, el mesurador marca una quarta part (dos passos menys)

@@ -55,6 +55,11 @@ export interface ViewportInputOptions {
    * Mode). Opened on release, as Blender does.
    */
   onContextMenu?(x: number, y: number): void;
+  /**
+   * A lab tool waiting for a click in the viewport (the light meter): a plain
+   * left click goes to it instead of selecting.
+   */
+  clickTool?(): ((x: number, y: number) => void) | null;
 }
 
 const modsOf = (e: MouseEvent | KeyboardEvent) => ({ ctrl: e.ctrlKey, shift: e.shiftKey, alt: e.altKey });
@@ -144,6 +149,12 @@ export class ViewportInput {
         : null;
 
     this.rightPress = e.button === 2 && !select.busy ? { x: e.clientX, y: e.clientY } : null;
+    const tool = e.button === 0 && !e.shiftKey && !e.ctrlKey && !e.altKey && !select.busy ? this.opts.clickTool?.() : null;
+    if (tool) {
+      e.preventDefault();
+      tool(p.x, p.y);
+      return;
+    }
     // A running selection interaction (e.g. B) owns every button.
     if (!select.busy) {
       const mode = resolveNavDrag({ button: e.button, ...mods }, this.opts.prefs());

@@ -5,7 +5,7 @@
  */
 import type { EditModeAction, InputPrefs, ObjectModeAction, ScreenAction } from './input/keymap';
 import { baseKind } from './edit/selection';
-import { add, max, min, mul, scale, vec3 } from './math/vec3';
+import { type Vec3, add, max, min, mul, scale, vec3 } from './math/vec3';
 import { rotate } from './math/quat';
 import {
   EditBoxSelectOp,
@@ -25,6 +25,7 @@ import { type SelectCommand, SelectInteraction } from '../../core/input/select-i
 import { ViewportInput } from './input/viewport-input';
 import { ClearLocationOp, ClearRotationOp, ClearScaleOp } from './operators/clear';
 import { evaluatedMesh } from './modifiers/stack';
+import { sceneTriangles, surfaceAlong } from './render/light-meter';
 import { SubdivisionSetOp, levelsLimited } from './operators/modifiers';
 import { ShadeAutoSmoothOp, ShadeFlatOp, ShadeSmoothOp } from './operators/shade';
 import { type AddKind, AddObjectOp } from './operators/add';
@@ -79,7 +80,7 @@ import { Navigator } from './viewport/navigator';
 import { chooseClickTarget, pickAt } from './viewport/picking';
 import { ViewportRenderer } from './viewport/renderer';
 import type { ViewportSize } from './viewport/projection';
-import { type ViewProjection, viewProjection } from './viewport/screen';
+import { type ViewProjection, screenRay, viewProjection } from './viewport/screen';
 
 export interface MountedBlender {
   readonly navigator: Navigator;
@@ -91,6 +92,10 @@ export interface MountedBlender {
   settledProjection(): { projection: ViewProjection; size: ViewportSize };
   /** Shows a Properties Editor tab (if the lab enables it and the active object has it). */
   showPropertiesTab(id: PropertiesTabId): void;
+  /** A lab tool that takes the next plain click in the viewport (null: none). */
+  setClickTool(tool: ((x: number, y: number) => void) | null): void;
+  /** The surface under a viewport point (CSS px): its point and normal, in Blender space. */
+  surfaceAt(x: number, y: number): { point: Vec3; normal: Vec3; objectId: string } | null;
 }
 
 export interface MountOptions {
@@ -127,6 +132,7 @@ function selectedComponentBounds(s: SceneState): Bounds | null {
 
 export function mountBlender(container: HTMLElement, options: MountOptions): MountedBlender {
   const store = new SceneStore(blenderDefaultScene());
+  let clickTool: ((x: number, y: number) => void) | null = null;
   const layout = buildLayout(container);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -612,6 +618,7 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
     onScreenAction: (a: ScreenAction) => (a.type === 'undo' ? store.undo() : store.redo()),
     onInteractionChange: refreshInteraction,
     onNavigateWithoutMiddle: options.onNavigateWithoutMiddle,
+    clickTool: () => clickTool,
     // Edit Mode's context menus (Vertex / Edge / Face) are not in the lab yet.
     onContextMenu: (x, y) => {
       if (!isEditMode(store.state)) openMenuAt(layout.viewport, x, y, shadeItems(), 'Object');
@@ -739,5 +746,14 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
     viewport: layout.viewport,
     settledProjection,
     showPropertiesTab: (id) => properties.select(id),
+    setClickTool: (tool) => {
+      clickTool = tool;
+      layout.viewport.classList.toggle('is-click-tool', tool !== null);
+    },
+    surfaceAt: (x, y) => {
+      const f = view.frame;
+      const ray = screenRay(f.projection, f.size, x, y);
+      return surfaceAlong(sceneTriangles(store.state), ray.origin, ray.direction);
+    },
   };
 }

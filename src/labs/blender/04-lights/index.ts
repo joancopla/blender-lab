@@ -12,7 +12,7 @@ export const lab04: LabDefinition<BlenderState, BlenderSetup, BlenderDecorations
   stages: toCoreLab(LAB04_STAGES),
   blueprint: STOOL_BLUEPRINT,
   preview: true,
-  createApp: () => new BlenderApp({ statistics: false, addObjects: true, propertiesTabs: ['data', 'world'] }),
+  createApp: () => new BlenderApp({ statistics: false, addObjects: true, meter: true, propertiesTabs: ['data', 'world'] }),
   page: {
     prefix: 'lab04',
     controls: ['add', 'move', 'undo'],

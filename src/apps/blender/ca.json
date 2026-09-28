@@ -55,6 +55,17 @@
     "emulateNumpadHelp": "Si el teu teclat no té teclat numèric, activa aquesta opció i fes servir la fila de números (1, 3, 7...). A Blender és a Edit > Preferences > Input.",
     "suggestEmulate3": "Sembla que intentes orbitar sense el botó del mig del ratolí. Vols activar Emulate 3 Button Mouse? Després podràs orbitar amb Alt + clic esquerre."
   },
+  "meter": {
+    "title": "Mesurador de llum",
+    "help": "Una eina del lab, no de Blender: mesura la llum que arriba a un punt d'una superfície (irradiància, en W/m²), comptant les ombres. Al doble de distància d'una llum n'arriba una quarta part: dos passos menys.",
+    "place": "Mesura a {p}",
+    "clickSurface": "Clica una superfície…",
+    "clear": "Treu els punts",
+    "reading": "{p} · {object}: {e} W/m²",
+    "light": "{name}: {e} W/m²",
+    "world": "World: {e} W/m²",
+    "ratio": "A : B = {ratio} ({stops} passos)"
+  },
   "analyzer": {
     "title": "Analitzador de topologia",
     "toggle": "Mostra els problemes de la malla",

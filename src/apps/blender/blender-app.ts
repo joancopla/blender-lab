@@ -7,6 +7,8 @@ import type { LogEntry } from './scene/store';
 import { type MountedBlender, mountBlender } from './app';
 import type { BlenderDecorations, BlenderSetup, BlenderState } from './stages/types';
 import { AnalyzerPanel } from './ui/analyzer-panel';
+import { LightMeterPanel } from './ui/light-meter-panel';
+import type { Vec3 } from './math/vec3';
 import type { PropertiesTabId } from './ui/properties/tabs';
 import { defaultViewState } from './viewport/view-state';
 import './texts';
@@ -32,6 +34,8 @@ export interface BlenderAppOptions {
   readonly propertiesTabs?: readonly PropertiesTabId[];
   /** Add menu and Shift+A. */
   readonly addObjects?: boolean;
+  /** Offer the light meter in the lab panel. */
+  readonly meter?: boolean;
 }
 
 export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, BlenderDecorations> {
@@ -41,6 +45,9 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
   private setup: BlenderSetup | null = null;
   private hints: BlenderDecorations['hints'];
   private analyzer: AnalyzerPanel | null = null;
+  private meter: LightMeterPanel | null = null;
+  /** The light meter's points, marked in the viewport. */
+  private meterPoints: readonly Vec3[] = [];
 
   constructor(private readonly options: BlenderAppOptions = {}) {}
 
@@ -61,7 +68,10 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
       propertiesTabs: this.options.propertiesTabs,
       addObjects: this.options.addObjects,
     });
-    this.inner.store.onChange(() => this.analyzer?.update());
+    this.inner.store.onChange(() => {
+      this.analyzer?.update();
+      this.meter?.update();
+    });
   }
 
   unmount(): void {
@@ -117,14 +127,39 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
   }
 
   renderLabTools(container: HTMLElement): void {
-    if (!this.options.analyzer) return;
     const m = this.mounted;
-    this.analyzer = new AnalyzerPanel(container, () => m.store.state, (id) => m.renderer.setAnalyzerObject(id));
-    this.analyzer.setEnabled(this.setup?.analyzer === true);
+    if (this.options.analyzer) {
+      const box = document.createElement('div');
+      container.append(box);
+      this.analyzer = new AnalyzerPanel(box, () => m.store.state, (id) => m.renderer.setAnalyzerObject(id));
+      this.analyzer.setEnabled(this.setup?.analyzer === true);
+    }
+    if (this.options.meter) {
+      const box = document.createElement('div');
+      container.append(box);
+      this.meter = new LightMeterPanel(
+        box,
+        () => m.store.state,
+        (done) => {
+          if (!done) return m.setClickTool(null);
+          m.setClickTool((x, y) => {
+            m.setClickTool(null);
+            const hit = m.surfaceAt(x, y);
+            const name = hit ? (m.store.state.objects.find((o) => o.id === hit.objectId)?.name ?? '') : '';
+            done(hit ? { point: hit.point, normal: hit.normal, objectName: name } : null);
+          });
+        },
+        (points) => {
+          this.meterPoints = points;
+          this.drawLabElements();
+        },
+      );
+    }
   }
 
   private drawLabElements(): void {
     const s = this.setup;
-    this.mounted.renderer.setLabElements(s?.ghosts ?? [], s?.markers ?? [], s?.referenceMeshes ?? [], this.hints ?? []);
+    const meter = this.meterPoints.length ? [{ points: this.meterPoints }] : [];
+    this.mounted.renderer.setLabElements(s?.ghosts ?? [], s?.markers ?? [], s?.referenceMeshes ?? [], [...(this.hints ?? []), ...meter]);
   }
 }
