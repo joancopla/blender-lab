@@ -31,7 +31,7 @@ export function blenderDefaultScene(): SceneState {
         id: 'light',
         name: 'Light',
         type: 'light',
-        lightType: 'point',
+        lightType: 'POINT',
         location: vec3(4.0762, 1.0055, 5.9039),
         rotationDeg: vec3(37.261, 3.1637, 106.94),
         scale: vec3(1, 1, 1),

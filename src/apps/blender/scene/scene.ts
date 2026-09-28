@@ -64,10 +64,85 @@ export interface CameraObject extends ObjectBase {
   readonly sensorWidth: number;
 }
 
+/** Blender's light types (bpy: light.type). */
+export type LightType = 'POINT' | 'SUN' | 'SPOT' | 'AREA';
+export type AreaShape = 'SQUARE' | 'RECTANGLE' | 'DISK' | 'ELLIPSE';
+
+/**
+ * A light. Field names follow Blender's Python API (energy, shadow_soft_size...).
+ * Lights shine along their local -Z axis (Sun, Spot and Area); a Point shines
+ * all around. Missing fields take Blender's defaults (LIGHT_DEFAULTS).
+ */
 export interface LightObject extends ObjectBase {
   readonly type: 'light';
-  readonly lightType: 'point';
+  readonly lightType: LightType;
+  /** Linear RGB, 0..1. */
+  readonly color?: Vec3;
+  /** Power in W (Point, Spot, Area); Strength in W/m² (Sun). */
+  readonly energy?: number;
+  /** Radius, metres (Point, Spot): the size of the source, for soft shadows. */
+  readonly shadowSoftSize?: number;
+  /** Angle, degrees (Sun): the apparent size of the sun. */
+  readonly angleDeg?: number;
+  /** Spot Size, degrees: the full angle of the cone. */
+  readonly spotSizeDeg?: number;
+  /** Spot Blend, 0..1: how soft the edge of the cone is. */
+  readonly spotBlend?: number;
+  readonly shape?: AreaShape;
+  /** Size (X), metres (Area). */
+  readonly size?: number;
+  /** Size Y, metres (Area, Rectangle and Ellipse). */
+  readonly sizeY?: number;
+  /** Cast Shadow. */
+  readonly useShadow?: boolean;
 }
+
+/** Everything about a light, with the defaults filled in. */
+export type LightData = Required<Omit<LightObject, keyof ObjectBase | 'type'>>;
+
+/**
+ * Blender's values for a new light of each type (Add > Light).
+ * FIDELITY? Defaults in Blender 5.2 (Power, Radius, Angle, Spot Size and Blend, Area Size).
+ */
+export const LIGHT_DEFAULTS: Record<LightType, Omit<LightData, 'lightType'>> = {
+  POINT: { color: vec3(1, 1, 1), energy: 1000, shadowSoftSize: 0.1, angleDeg: 0.526, spotSizeDeg: 45, spotBlend: 0.15, shape: 'SQUARE', size: 1, sizeY: 1, useShadow: true },
+  SUN: { color: vec3(1, 1, 1), energy: 1, shadowSoftSize: 0.1, angleDeg: 0.526, spotSizeDeg: 45, spotBlend: 0.15, shape: 'SQUARE', size: 1, sizeY: 1, useShadow: true },
+  SPOT: { color: vec3(1, 1, 1), energy: 1000, shadowSoftSize: 0.1, angleDeg: 0.526, spotSizeDeg: 45, spotBlend: 0.15, shape: 'SQUARE', size: 1, sizeY: 1, useShadow: true },
+  AREA: { color: vec3(1, 1, 1), energy: 1000, shadowSoftSize: 0.1, angleDeg: 0.526, spotSizeDeg: 45, spotBlend: 0.15, shape: 'SQUARE', size: 1, sizeY: 1, useShadow: true },
+};
+
+/** The light's settings, with Blender's defaults for what is not set. */
+export function lightData(o: LightObject): LightData {
+  const d = LIGHT_DEFAULTS[o.lightType];
+  return {
+    lightType: o.lightType,
+    color: o.color ?? d.color,
+    energy: o.energy ?? d.energy,
+    shadowSoftSize: o.shadowSoftSize ?? d.shadowSoftSize,
+    angleDeg: o.angleDeg ?? d.angleDeg,
+    spotSizeDeg: o.spotSizeDeg ?? d.spotSizeDeg,
+    spotBlend: o.spotBlend ?? d.spotBlend,
+    shape: o.shape ?? d.shape,
+    size: o.size ?? d.size,
+    sizeY: o.sizeY ?? d.sizeY,
+    useShadow: o.useShadow ?? d.useShadow,
+  };
+}
+
+/**
+ * World > Surface: a uniform background colour and its Strength (the lab has
+ * no HDRI in the World yet). Missing: Blender's default grey.
+ * FIDELITY? Default world colour (0.0509 linear) and Strength 1.
+ */
+export interface WorldSettings {
+  /** Linear RGB. */
+  readonly color: Vec3;
+  readonly strength: number;
+}
+
+export const DEFAULT_WORLD: WorldSettings = { color: vec3(0.0509, 0.0509, 0.0509), strength: 1 };
+
+export const worldOf = (s: SceneState): WorldSettings => s.world ?? DEFAULT_WORLD;
 
 export type SceneObject = MeshObject | CameraObject | LightObject;
 
@@ -86,6 +161,8 @@ export interface SceneState {
   readonly activeId: string | null;
   readonly activeCameraId: string | null;
   readonly render: { readonly resolutionX: number; readonly resolutionY: number };
+  /** World settings; missing: DEFAULT_WORLD. */
+  readonly world?: WorldSettings;
   /** Objects in Edit Mode; empty or missing: Object Mode. */
   readonly editObjectIds?: readonly string[];
   /** Edit Mode select mode (tool setting, shared by all meshes). */
