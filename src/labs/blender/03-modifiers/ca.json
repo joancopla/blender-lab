@@ -6,18 +6,18 @@
       "eyebrow": "Lab 03",
       "lead": "Aprendràs a treballar sense destruir la malla: la malla base es manté senzilla i els modificadors en generen el resultat final.",
       "controls": {
-        "subdivisionSet": "Afegir un Subdivision Surface: Ctrl + 1, 2 o 3 (en Object Mode)",
+        "properties": "Afegir un modificador: Properties Editor, pestanya Modifiers (la clau anglesa) > Add Modifier",
+        "panel": "Amb el ratolí sobre un modificador: X l'esborra i Shift + D el duplica",
         "shade": "Suau o facetat: botó dret > Shade Smooth, Shade Auto Smooth o Shade Flat",
-        "properties": "Modificadors: Properties Editor, pestanya Modifiers (la clau anglesa)",
         "undo": "Desfer: Ctrl + Z"
       }
     },
     "real": {
       "lead": "El que ja funciona en aquest avançament es fa igual a Blender.",
-      "subdivisionSet": "Subdivision Set: Ctrl + 0…5 en Object Mode. Amb Emulate Numpad activat, Ctrl + 1, 3 i 7 canvien la vista i no afegeixen cap Subdivision.",
+      "subdivisionSet": "A Blender, Ctrl + 0…5 en Object Mode afegeix un Subdivision Surface amb aquell nivell (o el canvia). Al navegador no ho pots provar: Ctrl + 1…8 canvien de pestanya del navegador i la pàgina no rep la tecla. Aquí fes servir Add Modifier.",
       "shade": "Shade Smooth, Shade Auto Smooth i Shade Flat: menú contextual del botó dret o menú Object. Auto Smooth és la casella de la pestanya Object Data > Normals, a 30°.",
       "levels": "Al lab, Levels Viewport arriba com a màxim a 3 perquè els ordinadors de l'aula vagin fluids. Al Blender real pots pujar més, però cada nivell multiplica per quatre les cares.",
-      "preview": "Aquest lab encara és en construcció: la pestanya Modifiers, el menú Add Modifier i les etapes hi aniran arribant."
+      "preview": "Aquest lab encara és en construcció: els paràmetres de cada modificador, Apply i les etapes hi aniran arribant."
     }
   }
 }

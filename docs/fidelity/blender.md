@@ -549,3 +549,18 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] ❓ Text d'ajuda de cada pestanya (el nom de la taula de dalt)
 - Decisió del lab: les icones són pròpies (no les de Blender), amb els colors de Blender per grups. Cada lab activa només les pestanyes que fa servir; les altres es veuen apagades i no es poden clicar
 - Decisió del lab: als labs 01 i 02 no hi ha cap pestanya activa i el cos mostra una nota en català
+
+### Pestanya Modifiers
+
+- [ ] ❓ Botó Add Modifier a dalt de la pestanya; obre un menú amb les categories Edit, Generate, Deform, Normals i Physics, cadascuna amb un submenú. Els modificadors que no són del lab surten desactivats
+- [ ] ❓ Llista de cada categoria (vegeu `ui/properties/add-modifier.ts`), en ordre alfabètic
+- [ ] ❓ Amb el menú obert, escriure filtra: surten resultats com "Generate ▸ Mirror"
+- [ ] ❓ Capçalera de cada modificador: fletxa per plegar, icona, nom editable, botons Edit Mode, Realtime i Render, menú ▾, × per esborrar i agafador per arrossegar
+- [ ] ❓ Menú ▾: Apply (Ctrl A), Duplicate (Shift D), Copy to Selected, Move to First, Move to Last. Apply i Copy to Selected encara desactivats (Apply arriba al punt 4)
+- [ ] ❓ Amb el ratolí sobre un modificador: X o Supr l'esborra, Shift+D el duplica (la còpia queda just a sota, amb el nom "Subdivision.001")
+- [ ] ❓ Noms a Undo History: "Add Modifier", "Remove Modifier", "Duplicate Modifier", "Move to Index" (també per arrossegar i per Move to First/Last), "Name", "Edit Mode", "Realtime", "Render"
+- [ ] Arrossegar un modificador per l'agafador el canvia de lloc a la pila
+- [ ] Si un submenú no hi cap a la dreta, s'obre a l'esquerra; en passar en diagonal per sobre d'altres entrades, el submenú obert espera una mica abans de canviar
+- Decisió del lab: plegar o desplegar un panell no és un pas de desfer i no es desa a l'escena
+- Icones pròpies, no les de Blender
+- Limitació del navegador: Ctrl+1…8 canvien de pestanya del navegador i Ctrl+0 restableix el zoom; la pàgina no pot evitar-ho. Subdivision Set (Ctrl+0…5) està implementat, però amb un teclat real no arriba al lab. El Lab 03 ensenya Add Modifier

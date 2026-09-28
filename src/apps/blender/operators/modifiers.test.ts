@@ -5,11 +5,13 @@ import type { MeshObject, SceneState } from '../scene/scene';
 import { SceneStore } from '../scene/store';
 import {
   AddModifierOp,
+  DuplicateModifierOp,
   MoveModifierOp,
   RemoveModifierOp,
   SetModifierOp,
   SubdivisionSetOp,
   addModifier,
+  duplicateModifier,
   moveModifier,
   removeModifier,
   setModifier,
@@ -81,6 +83,30 @@ describe('modifier operators', () => {
     const s = addModifier(blenderDefaultScene(), 'cube', 'SUBSURF');
     const mod = cubeOf(setModifier(s, 'cube', 'Subdivision', { levels: 6 })).modifiers![0]!;
     expect(mod.type === 'SUBSURF' && mod.levels).toBe(3);
+  });
+});
+
+describe('Duplicate Modifier', () => {
+  it('inserts a copy right after the original, with a unique name', () => {
+    let s = addModifier(addModifier(blenderDefaultScene(), 'cube', 'SUBSURF'), 'cube', 'MIRROR');
+    s = setModifier(s, 'cube', 'Subdivision', { levels: 3 });
+    s = duplicateModifier(s, 'cube', 'Subdivision');
+    expect(names(s)).toEqual(['Subdivision', 'Subdivision.001', 'Mirror']);
+    const copy = cubeOf(s).modifiers![1]!;
+    expect(copy.type === 'SUBSURF' && copy.levels).toBe(3);
+    expect(names(duplicateModifier(s, 'cube', 'Subdivision'))).toEqual([
+      'Subdivision',
+      'Subdivision.002',
+      'Subdivision.001',
+      'Mirror',
+    ]);
+  });
+
+  it('is one undo step; a missing modifier changes nothing', () => {
+    const store = new SceneStore(addModifier(blenderDefaultScene(), 'cube', 'BEVEL'));
+    expect(store.execute(DuplicateModifierOp('cube', 'Bevel'))).toBe(true);
+    expect(store.log.at(-1)).toEqual({ kind: 'execute', name: 'Duplicate Modifier' });
+    expect(store.execute(DuplicateModifierOp('cube', 'Nope'))).toBe(false);
   });
 });
 

@@ -15,7 +15,7 @@ export const lab03: LabDefinition<BlenderState, BlenderSetup, BlenderDecorations
   createApp: () => new BlenderApp({ statistics: true, propertiesTabs: ['modifiers', 'data'] }),
   page: {
     prefix: 'lab03',
-    controls: ['subdivisionSet', 'shade', 'properties', 'undo'],
+    controls: ['properties', 'panel', 'shade', 'undo'],
     real: ['subdivisionSet', 'shade', 'levels', 'preview'],
   },
 };

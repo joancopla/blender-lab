@@ -4,6 +4,7 @@
  */
 import type { SceneState } from '../../scene/scene';
 import { type TabView, type TabViewFactory, contextPath } from './properties-editor';
+import { modifiersTab } from './modifiers-tab';
 import type { PropertiesTabId } from './tabs';
 
 /** A tab that only shows its context path for now (its panels come in later steps). */
@@ -25,7 +26,7 @@ const activeName = (s: SceneState) => s.objects.find((o) => o.id === s.activeId)
 
 /** FIDELITY? Context paths: the object for Modifiers; object and mesh data for Data. */
 export const TAB_VIEWS: Partial<Record<PropertiesTabId, TabViewFactory>> = {
-  modifiers: contextOnly((s) => [activeName(s)]),
+  modifiers: modifiersTab,
   data: contextOnly((s) => [activeName(s), activeName(s)]),
 };
 

@@ -79,6 +79,7 @@
     }
   },
   "lab": {
+    "noResults": "Cap resultat",
     "propertiesUnused": "En aquest lab no fem servir el Properties Editor. Hi és perquè el vegis al mateix lloc que a Blender.",
     "bevelUnsupported": "Aquest lab només fa bevel d'arestes els vèrtexs de les quals no tenen cap altra aresta amb bevel (per exemple, les arestes verticals d'una caixa).",
     "subsurfLevelLimit": "En aquest lab, Levels Viewport arriba com a màxim a 3 perquè els ordinadors de l'aula vagin fluids. Al Blender real pots pujar més, però cada nivell multiplica per quatre les cares.",

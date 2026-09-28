@@ -196,6 +196,114 @@
 .bl-props-context-sep {
   opacity: 0.6;
 }
+/* Modifiers tab: Add Modifier and one panel per modifier. */
+.bl-props-add {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 3px 8px;
+  border: 1px solid #3d3d3d;
+  border-radius: 4px;
+  background: #545454;
+  color: var(--bl-text);
+  font: inherit;
+  cursor: pointer;
+}
+.bl-props-add.is-open {
+  background: var(--bl-widget-active);
+}
+.bl-mod-panel {
+  margin-bottom: 4px;
+  border-radius: 4px;
+  background: #3d3d3d;
+}
+.bl-mod-panel.is-dragging {
+  opacity: 0.5;
+}
+.bl-mod-panel.is-drop-before {
+  box-shadow: 0 -2px 0 var(--bl-widget-active);
+}
+.bl-mod-panel.is-drop-after {
+  box-shadow: 0 2px 0 var(--bl-widget-active);
+}
+.bl-mod-header {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 24px;
+  padding: 0 4px;
+}
+.bl-mod-arrow,
+.bl-mod-more,
+.bl-mod-remove,
+.bl-mod-toggle {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--bl-text);
+  font: inherit;
+  line-height: 16px;
+  cursor: pointer;
+}
+.bl-mod-toggle {
+  opacity: 0.45;
+}
+.bl-mod-toggle.is-on {
+  opacity: 1;
+  background: #545454;
+}
+.bl-mod-toggle svg,
+.bl-mod-icon svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+.bl-mod-icon {
+  flex: none;
+  color: var(--bl-text);
+}
+.bl-mod-name {
+  flex: 1;
+  min-width: 0;
+  height: 20px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 3px;
+  background: #282828;
+  color: var(--bl-text);
+  font: inherit;
+}
+.bl-mod-name:focus {
+  outline: 1px solid var(--bl-widget-active);
+}
+.bl-mod-grip {
+  flex: none;
+  width: 14px;
+  text-align: center;
+  opacity: 0.6;
+  cursor: grab;
+  touch-action: none;
+}
+.bl-mod-warning {
+  margin: 0;
+  padding: 4px 8px 6px;
+  color: #e8c96a;
+  line-height: 1.4;
+}
+.bl-mod-body:empty {
+  display: none;
+}
+.bl-menu-search {
+  padding: 3px 8px;
+  margin-bottom: 2px;
+  border-radius: 3px;
+  background: #1d1d1d;
+}
+
 .bl-props-note {
   margin: 4px 0;
   opacity: 0.7;
@@ -571,7 +679,8 @@
   padding: 3px 10px 3px 6px;
   white-space: nowrap;
 }
-.bl-menu-item:hover {
+.bl-menu-item:hover,
+.bl-menu-item.is-open {
   background: var(--bl-widget-active);
 }
 .bl-menu-check {
@@ -596,8 +705,12 @@
   left: 100%;
   top: -5px;
 }
-.bl-menu-item.has-submenu:hover > .bl-menu-list {
+.bl-menu-item.has-submenu.is-open > .bl-menu-list {
   display: block;
+}
+.bl-menu-item.has-submenu > .bl-menu-list.opens-left {
+  left: auto;
+  right: 100%;
 }
 
 /* Edit Mode header: select mode buttons. */

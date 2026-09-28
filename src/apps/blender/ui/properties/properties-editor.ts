@@ -7,6 +7,7 @@
  */
 import { t } from '../../../../core/i18n';
 import type { SceneState } from '../../scene/scene';
+import type { SceneStore } from '../../scene/store';
 import { TAB_ICONS } from './icons';
 import { type PropertiesTab, type PropertiesTabId, resolveActiveTab, tabsFor } from './tabs';
 
@@ -15,8 +16,13 @@ export interface TabView {
   dispose?(): void;
 }
 
+/** What a tab can use: the history (every change goes through an operator). */
+export interface TabContext {
+  readonly store: SceneStore;
+}
+
 /** Builds a tab's content inside `body`. */
-export type TabViewFactory = (body: HTMLElement) => TabView;
+export type TabViewFactory = (body: HTMLElement, ctx: TabContext) => TabView;
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
   const e = document.createElement(tag);
@@ -37,6 +43,7 @@ export class PropertiesEditor {
   constructor(
     area: HTMLElement,
     private readonly views: Partial<Record<PropertiesTabId, TabViewFactory>>,
+    private readonly ctx: TabContext,
   ) {
     const header = el('div', 'bl-header');
     header.append(el('span', 'bl-editor-type', '⚙'), el('span', 'bl-search'));
@@ -123,7 +130,7 @@ export class PropertiesEditor {
       this.body.append(el('p', 'bl-props-note', t('lab.propertiesUnused')));
       return;
     }
-    this.view = { id: this.active, view: this.views[this.active]!(this.body) };
+    this.view = { id: this.active, view: this.views[this.active]!(this.body, this.ctx) };
   }
 }
 

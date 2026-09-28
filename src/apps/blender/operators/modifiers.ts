@@ -46,6 +46,19 @@ export function removeModifier(s: SceneState, objectId: string, name: string): S
   });
 }
 
+/**
+ * Duplicate (Shift+D over the panel): a copy right after the original, with a
+ * unique name ("Subdivision.001").
+ */
+export function duplicateModifier(s: SceneState, objectId: string, name: string): SceneState {
+  return withStack(s, objectId, (mods) => {
+    const i = mods.findIndex((m) => m.name === name);
+    if (i < 0) return mods;
+    const copy = { ...mods[i]!, name: uniqueModifierName(name, mods) } as Modifier;
+    return [...mods.slice(0, i + 1), copy, ...mods.slice(i + 1)];
+  });
+}
+
 /** Moves a modifier to a position in the stack (clamped), like Move to Index. */
 export function moveModifier(s: SceneState, objectId: string, name: string, index: number): SceneState {
   return withStack(s, objectId, (mods) => {
@@ -142,6 +155,11 @@ export const AddModifierOp = (objectId: string, type: ModifierType): OperatorCal
 export const RemoveModifierOp = (objectId: string, name: string): OperatorCall => ({
   name: 'Remove Modifier',
   apply: (s) => removeModifier(s, objectId, name),
+});
+
+export const DuplicateModifierOp = (objectId: string, name: string): OperatorCall => ({
+  name: 'Duplicate Modifier',
+  apply: (s) => duplicateModifier(s, objectId, name),
 });
 
 export const MoveModifierOp = (objectId: string, name: string, index: number): OperatorCall => ({

@@ -3,6 +3,7 @@
  * with Blender's colour hints per group: scene tabs grey, object orange,
  * modifiers blue, data green, material red.
  */
+import type { ModifierType } from '../../modifiers/types';
 import type { PropertiesTabId } from './tabs';
 
 const svg = (body: string) => `<svg viewBox="0 0 16 16" aria-hidden="true">${body}</svg>`;
@@ -29,3 +30,19 @@ export const TAB_ICONS: Record<PropertiesTabId, string> = {
   material: svg(`<circle cx="8" cy="8" r="5.5" fill="${RED}"/><path d="M8 2.5a5.5 5.5 0 0 1 0 11z" fill="#8a3b3b"/>`),
   texture: svg(`<rect x="2.5" y="2.5" width="11" height="11" fill="none" stroke="${GREY}" stroke-width="1.3"/><path d="M2.5 8h5.5V2.5M8 8h5.5v5.5H8z" fill="${GREY}"/>`),
 };
+
+/** Modifier icons in the panel headers (current colour). */
+export const MODIFIER_ICONS: Record<ModifierType, string> = {
+  SUBSURF: svg('<rect x="2.5" y="2.5" width="11" height="11" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/>'),
+  MIRROR: svg('<path d="M7 3L2.5 13H7zM9 3l4.5 10H9z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>'),
+  ARRAY: svg('<rect x="1.5" y="5.5" width="4" height="5" fill="currentColor"/><rect x="6" y="5.5" width="4" height="5" fill="none" stroke="currentColor"/><rect x="10.5" y="5.5" width="4" height="5" fill="none" stroke="currentColor"/>'),
+  BEVEL: svg('<path d="M2.5 13.5V7.5l5-5h6v11z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>'),
+  SOLIDIFY: svg('<path d="M2 6l6-3 6 3M2 10l6-3 6 3M2 6v4M14 6v4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>'),
+};
+
+/** Header toggles of a modifier panel. */
+export const TOGGLE_ICONS = {
+  editMode: svg('<rect x="3" y="3" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="3" cy="3" r="1.6" fill="currentColor"/><circle cx="13" cy="3" r="1.6" fill="currentColor"/><circle cx="3" cy="13" r="1.6" fill="currentColor"/><circle cx="13" cy="13" r="1.6" fill="currentColor"/>'),
+  realtime: svg('<rect x="2" y="3" width="12" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M6 13.5h4M8 11v2.5" stroke="currentColor" stroke-width="1.3"/>'),
+  render: svg('<rect x="2" y="5" width="9" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M11 7.5l3-2v6l-3-2" fill="currentColor"/>'),
+} as const;
