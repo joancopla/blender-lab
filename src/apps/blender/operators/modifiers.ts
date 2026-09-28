@@ -3,7 +3,13 @@
  * history, so Ctrl+Z always works. Modifiers are addressed by name, which is
  * unique within an object (as in Blender).
  */
-import { type Modifier, type ModifierType, newModifier, uniqueModifierName } from '../modifiers/types';
+import {
+  MAX_VIEWPORT_LEVELS,
+  type Modifier,
+  type ModifierType,
+  newModifier,
+  uniqueModifierName,
+} from '../modifiers/types';
 import type { MeshObject, SceneState } from '../scene/scene';
 import type { OperatorCall } from '../scene/store';
 
@@ -67,6 +73,9 @@ export function setModifier(s: SceneState, objectId: string, name: string, patch
     if (i < 0) return mods;
     const mod = mods[i]!;
     const fixed: Record<string, unknown> = { ...patch };
+    if (mod.type === 'SUBSURF' && typeof fixed.levels === 'number') {
+      fixed.levels = Math.min(fixed.levels, MAX_VIEWPORT_LEVELS);
+    }
     if (patch.name !== undefined) fixed.name = uniqueModifierName(patch.name, mods, mod);
     const current = mod as unknown as Record<string, unknown>;
     const same = Object.keys(fixed).every((k) => sameValue(current[k], fixed[k]));
@@ -89,6 +98,40 @@ function sameValue(a: unknown, b: unknown): boolean {
   );
 }
 
+/**
+ * Ctrl+0..5 in Object Mode (object.subdivision_set): on every selected mesh, the
+ * first Subdivision Surface gets Levels Viewport = level; meshes without one get
+ * a new one. Levels Render is left as it is. The level is limited to the lab's
+ * maximum; `limited` tells the caller to warn.
+ * FIDELITY? Blender 5.2 also binds it in Edit Mode; Ctrl+0 on a mesh without Subdivision.
+ */
+export function subdivisionSet(s: SceneState, level: number): { state: SceneState; limited: boolean } {
+  const limited = level > MAX_VIEWPORT_LEVELS;
+  const levels = Math.min(level, MAX_VIEWPORT_LEVELS);
+  let state = s;
+  for (const id of s.selectedIds) {
+    state = withStack(state, id, (mods) => {
+      const i = mods.findIndex((m) => m.type === 'SUBSURF');
+      if (i < 0) {
+        const mod = { ...newModifier('SUBSURF'), levels } as Modifier;
+        return [...mods, { ...mod, name: uniqueModifierName(mod.name, mods) }];
+      }
+      const mod = mods[i]!;
+      if (mod.type !== 'SUBSURF' || mod.levels === levels) return mods;
+      const next = [...mods];
+      next[i] = { ...mod, levels };
+      return next;
+    });
+  }
+  return { state, limited };
+}
+
+/**
+ * Levels Viewport edits are limited to the lab's maximum too.
+ * Returns whether the wanted value had to be lowered.
+ */
+export const levelsLimited = (wanted: number): boolean => wanted > MAX_VIEWPORT_LEVELS;
+
 /* Undo History names. FIDELITY? Blender names property edits after the property's label. */
 
 export const AddModifierOp = (objectId: string, type: ModifierType): OperatorCall => ({
@@ -104,6 +147,11 @@ export const RemoveModifierOp = (objectId: string, name: string): OperatorCall =
 export const MoveModifierOp = (objectId: string, name: string, index: number): OperatorCall => ({
   name: 'Move to Index',
   apply: (s) => moveModifier(s, objectId, name, index),
+});
+
+export const SubdivisionSetOp = (level: number): OperatorCall => ({
+  name: 'Subdivision Set',
+  apply: (s) => subdivisionSet(s, level).state,
 });
 
 /** `label`: the property's label in the panel (Count, Axis...), used as the undo name. */

@@ -24,6 +24,7 @@ import type { Bounds } from './viewport/view-state';
 import { type SelectCommand, SelectInteraction } from '../../core/input/select-interaction';
 import { ViewportInput } from './input/viewport-input';
 import { ClearLocationOp, ClearRotationOp, ClearScaleOp } from './operators/clear';
+import { SubdivisionSetOp, levelsLimited } from './operators/modifiers';
 import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operators/select';
 import {
   type SceneState,
@@ -492,6 +493,10 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
       else if (a.type === 'toggleSidebar') sidebar.toggle();
       else if (a.type === 'toggleEditMode') store.execute(ToggleEditModeOp);
       else if (a.type === 'toggleXray') toggleXray();
+      else if (a.type === 'subdivisionSet') {
+        store.execute(SubdivisionSetOp(a.level));
+        if (levelsLimited(a.level)) status.report(t('lab.subsurfLevelLimit'));
+      }
     },
     editMode: () => isEditMode(store.state),
     onEditModeAction: (a: EditModeAction) => {

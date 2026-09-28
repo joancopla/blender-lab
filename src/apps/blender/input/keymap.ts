@@ -57,7 +57,8 @@ export type ObjectModeAction =
   | { readonly type: 'clear'; readonly field: 'location' | 'rotation' | 'scale' }
   | { readonly type: 'toggleSidebar' }
   | { readonly type: 'toggleEditMode' }
-  | { readonly type: 'toggleXray' };
+  | { readonly type: 'toggleXray' }
+  | { readonly type: 'subdivisionSet'; readonly level: number };
 
 /** Object Mode keymap (3D Viewport). */
 export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
@@ -74,6 +75,12 @@ export const OBJECT_MODE_KEYMAP: readonly KeymapItem<ObjectModeAction>[] = [
   { code: 'KeyN', action: { type: 'toggleSidebar' } },
   { code: 'Tab', action: { type: 'toggleEditMode' } },
   { code: 'KeyZ', alt: true, action: { type: 'toggleXray' } },
+  // Ctrl+0..5: Subdivision Set. With Emulate Numpad, Ctrl+1/3/7 are views instead.
+  ...[0, 1, 2, 3, 4, 5].map((level) => ({
+    code: `Digit${level}`,
+    ctrl: true,
+    action: { type: 'subdivisionSet', level } as const,
+  })),
 ];
 
 export type EditModeAction =

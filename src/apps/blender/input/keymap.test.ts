@@ -156,6 +156,12 @@ describe('edit mode keys', () => {
 
   it('Tab and Alt+Z in both modes; L, Ctrl+L, Ctrl+Numpad +/-', () => {
     expect(resolveKey(OBJECT_MODE_KEYMAP, key('Tab'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'toggleEditMode' });
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('Digit2', { ctrl: true }), DEFAULT_INPUT_PREFS)).toEqual({
+      type: 'subdivisionSet',
+      level: 2,
+    });
+    // Emulate Numpad: Ctrl+1 is Ctrl+Numpad 1 (Back view), not Subdivision Set.
+    expect(resolveKey(OBJECT_MODE_KEYMAP, key('Digit1', { ctrl: true }), { ...DEFAULT_INPUT_PREFS, emulateNumpad: true })).toBeNull();
     expect(resolveKey(EDIT_MODE_KEYMAP, key('Tab'), DEFAULT_INPUT_PREFS)).toEqual({ type: 'toggleEditMode' });
     expect(resolveKey(EDIT_MODE_KEYMAP, key('KeyZ', { alt: true }), DEFAULT_INPUT_PREFS)).toEqual({ type: 'toggleXray' });
     expect(resolveKey(EDIT_MODE_KEYMAP, key('KeyL', { ctrl: true }), DEFAULT_INPUT_PREFS)).toEqual({ type: 'selectLinked' });

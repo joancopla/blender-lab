@@ -8,10 +8,12 @@ import {
   MoveModifierOp,
   RemoveModifierOp,
   SetModifierOp,
+  SubdivisionSetOp,
   addModifier,
   moveModifier,
   removeModifier,
   setModifier,
+  subdivisionSet,
 } from './modifiers';
 
 const cubeOf = (s: SceneState) => s.objects.find((o) => o.id === 'cube') as MeshObject;
@@ -73,5 +75,46 @@ describe('modifier operators', () => {
       'Move to Index',
       'Remove Modifier',
     ]);
+  });
+
+  it('Levels Viewport is limited to 3', () => {
+    const s = addModifier(blenderDefaultScene(), 'cube', 'SUBSURF');
+    const mod = cubeOf(setModifier(s, 'cube', 'Subdivision', { levels: 6 })).modifiers![0]!;
+    expect(mod.type === 'SUBSURF' && mod.levels).toBe(3);
+  });
+});
+
+describe('Subdivision Set (Ctrl+0..5)', () => {
+  const selected = (ids: string[]): SceneState => ({ ...blenderDefaultScene(), selectedIds: ids, activeId: ids[0] ?? null });
+
+  it('adds a Subdivision Surface with that level to selected meshes without one', () => {
+    const { state, limited } = subdivisionSet(selected(['cube', 'light']), 2);
+    expect(limited).toBe(false);
+    const mod = cubeOf(state).modifiers![0]!;
+    expect(mod.name).toBe('Subdivision');
+    expect(mod.type === 'SUBSURF' && [mod.levels, mod.renderLevels]).toEqual([2, 2]);
+  });
+
+  it('changes the levels of the first Subdivision Surface, not Levels Render', () => {
+    let s = addModifier(addModifier(selected(['cube']), 'cube', 'MIRROR'), 'cube', 'SUBSURF');
+    s = subdivisionSet(s, 0).state;
+    expect(names(s)).toEqual(['Mirror', 'Subdivision']);
+    const mod = cubeOf(s).modifiers![1]!;
+    expect(mod.type === 'SUBSURF' && [mod.levels, mod.renderLevels]).toEqual([0, 2]);
+  });
+
+  it('Ctrl+4 and Ctrl+5 stop at 3 and ask for the lab warning', () => {
+    const { state, limited } = subdivisionSet(selected(['cube']), 5);
+    expect(limited).toBe(true);
+    const mod = cubeOf(state).modifiers![0]!;
+    expect(mod.type === 'SUBSURF' && mod.levels).toBe(3);
+  });
+
+  it('is one undo step named Subdivision Set; nothing selected changes nothing', () => {
+    const store = new SceneStore(selected(['cube']));
+    expect(store.execute(SubdivisionSetOp(1))).toBe(true);
+    expect(store.execute(SubdivisionSetOp(1))).toBe(false);
+    expect(store.log.at(-1)).toEqual({ kind: 'execute', name: 'Subdivision Set' });
+    expect(new SceneStore(selected([])).execute(SubdivisionSetOp(2))).toBe(false);
   });
 });

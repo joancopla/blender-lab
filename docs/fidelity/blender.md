@@ -445,3 +445,39 @@ obert al costat. Els elements marcats amb ❓ són dubtes oberts: al codi porten
 - [ ] ❓ Relative i Constant Offset se sumen
 - [x] Merge: els vèrtexs de cada còpia es fusionen amb els de la còpia anterior i conserven la posició de l'anterior; amb First Last, també l'última amb la primera
 - [x] Amb Merge, les cares on es toquen dues còpies (per exemple, dos cubs) es conserven una vegada: 3 cubs → 16 vèrtexs i 16 cares
+
+## Fase 2 — Subdivision Surface i Bevel (sense interfície)
+
+Les malles de referència de Blender es desen a `tests/fixtures/blender/` (vegeu-ne el README). Mentre no hi siguin, els tests que les comparen se salten.
+
+### Subdivision Surface
+
+- [ ] ❓ Valors per defecte: Catmull-Clark, Levels Viewport 1, Render 2, Use Limit Surface activat
+- [ ] ❓ Nom: "Subdivision" (no "Subdivision Surface")
+- [ ] Catmull-Clark: cada nivell divideix cada n-gon en n quadrilàters; les vores obertes es mantenen com a corbes (Boundary Smooth: All)
+- [ ] Simple: divideix igual però no mou res
+- [ ] Use Limit Surface: al final, els vèrtexs es col·loquen damunt de la superfície límit
+- [ ] ❓ Un vèrtex amb una sola aresta oberta (*dart*) només es dona en malles no *manifold*; el lab el tracta com un vèrtex normal
+- [ ] Comparar amb les malles de referència: `cube_subsurf_cc_1/2/3`, `cube_subsurf_simple_2`, `plane_subsurf_cc_2`, `cylinder6_subsurf_cc_1`
+- Decisió del lab (no és de Blender): Levels Viewport arriba com a màxim a 3. Si l'alumne hi posa més, es queda a 3 i surt un avís a la barra d'estat. Levels Render no té límit
+
+### Subdivision Set (Ctrl+0…5, Object Mode)
+
+- [ ] ❓ A cada malla seleccionada, el primer Subdivision Surface de la pila passa a tenir Levels Viewport = la xifra; Levels Render no canvia
+- [ ] ❓ Si una malla no en té cap, se n'hi afegeix un al final de la pila amb aquest nivell (també amb Ctrl+0)
+- [ ] ❓ Nom a Edit > Undo History: "Subdivision Set"; és un sol pas de desfer encara que hi hagi diversos objectes seleccionats
+- [ ] ❓ Amb Emulate Numpad, Ctrl+1, Ctrl+3 i Ctrl+7 canvien la vista (Back, Left, Bottom) i no fan Subdivision Set
+- [ ] ❓ A Blender 5.2 Ctrl+0…5 també funciona en Edit Mode. El lab només ho fa en Object Mode
+- Decisió del lab: Ctrl+4 i Ctrl+5 posen el nivell 3 i mostren l'avís del límit
+
+### Bevel (modificador)
+
+- [ ] ❓ Valors per defecte: Amount 0,1 m, Segments 1, Limit Method Angle (30°), Clamp Overlap activat
+- [ ] Width Type Offset, Profile 0,5, Loop Slide activat (fixos al lab)
+- [ ] Només es fa bevel de les arestes que toquen dues cares i que passen el Limit Method
+- [ ] ❓ Clamp Overlap: l'amplada es limita perquè els vèrtexs nous no es creuin al llarg d'una aresta. Blender calcula el límit segons cada cas; el lab fa servir una regla única
+- [ ] ❓ Cantonada d'un cub (tres arestes amb bevel): un tros d'esfera. Coincideix amb Blender amb 1 i 2 segments; amb 3 o més cal comparar-ho
+- [ ] ❓ Loop Slide: quan un vèrtex nou llisca per una aresta sense bevel i les dues arestes amb bevel del costat demanen distàncies diferents, el lab fa servir la mitjana de totes dues
+- [ ] Comparar amb les malles de referència: `cube_bevel_default`, `cube_bevel_2seg`, `cube_bevel_3seg`
+- Limitació coneguda: el lab només sap fer vèrtexs amb una aresta amb bevel i tres arestes, dues arestes amb bevel (un *loop*) o tres arestes amb bevel en una cantonada. En altres casos el modificador no fa res i el lab ho avisa. Blender els fa tots
+- Pendent per a la Fase 4: l'avís de Bevel del modificador (`lab.bevelModifierUnsupported`) es mostrarà a la capçalera del modificador, a la pestanya Modifiers
