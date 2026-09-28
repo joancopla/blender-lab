@@ -226,6 +226,16 @@ describe('geometry', () => {
     // The top cap's triangles point straight up.
     expect(length(sub(vec3(n.getX(i * 3), n.getY(i * 3), n.getZ(i * 3)), vec3(0, 0, 1)))).toBeCloseTo(0, 6);
   });
+
+  it('three.js geometry: smooth faces get corner normals', () => {
+    const m = cylinderMesh();
+    const g = meshToGeometry({ ...m, smoothFaces: m.faces.map(() => true) });
+    const i = g.triangleFace.indexOf(32);
+    const n = g.geometry.getAttribute('normal');
+    // Fully smooth: the cap's rim normals lean outwards, towards the sides.
+    expect(n.getZ(i * 3)).toBeGreaterThan(0.1);
+    expect(n.getZ(i * 3)).toBeLessThan(0.9);
+  });
 });
 
 /** An n x n grid of quads in the XY plane, vertices row by row. */

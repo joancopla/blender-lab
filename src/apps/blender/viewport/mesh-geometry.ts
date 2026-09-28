@@ -1,11 +1,12 @@
 /**
  * MeshData -> three.js geometry, for drawing only. Faces are triangulated here
- * and nowhere else. Flat shading: every triangle gets its face's normal.
+ * and nowhere else. Normals come from mesh/normals.ts (flat or smooth per face).
  * The geometry stays in Blender local coordinates (see coords.ts).
  */
 import * as THREE from 'three';
-import { faceNormal, triangulateFace } from '../mesh/geometry';
+import { triangulateFace } from '../mesh/geometry';
 import type { MeshData } from '../mesh/mesh-data';
+import { cornerNormals } from '../mesh/normals';
 
 export interface MeshGeometry {
   readonly geometry: THREE.BufferGeometry;
@@ -14,16 +15,19 @@ export interface MeshGeometry {
 }
 
 export function meshToGeometry(m: MeshData): MeshGeometry {
-  const tris = m.faces.map((_, f) => ({ f, tris: triangulateFace(m, f), n: faceNormal(m, f) }));
+  const corner = cornerNormals(m);
+  const tris = m.faces.map((_, f) => ({ f, tris: triangulateFace(m, f) }));
   const count = tris.reduce((n, t) => n + t.tris.length, 0);
   const positions = new Float32Array(count * 9);
   const normals = new Float32Array(count * 9);
   const triangleFace = new Int32Array(count);
   let t = 0;
-  for (const { f, tris: list, n } of tris) {
+  for (const { f, tris: list } of tris) {
+    const face = m.faces[f]!;
     for (const tri of list) {
       for (let k = 0; k < 3; k++) {
         const p = m.verts[tri[k]!]!;
+        const n = corner[f]![face.indexOf(tri[k]!)]!;
         const o = t * 9 + k * 3;
         positions[o] = p.x;
         positions[o + 1] = p.y;

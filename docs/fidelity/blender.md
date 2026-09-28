@@ -499,3 +499,12 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] Mirror i Array: les còpies tenen el mateix suavitzat que l'original
 - [ ] Subdivision Surface: les cares filles tenen el suavitzat de la cara de la qual surten
 - [ ] ❓ Modificador Bevel: les tires i les cantonades tenen el suavitzat d'una cara veïna
+
+### Normals de dibuix (Shade Smooth)
+
+- [ ] Una cara plana es dibuixa amb la seva normal
+- [ ] ❓ Una cara suau fa, a cada vèrtex, la mitjana de les normals de les cares suaus del voltant, ponderada per l'angle de cada cantonada
+- [ ] ❓ La mitjana es talla en les arestes que toquen una cara plana, en les arestes *sharp*, en les que no tenen exactament dues cares i en les que tenen les dues cares amb sentit contrari (normals girades)
+- [ ] ❓ Una sola aresta *sharp* no talla res si el ventall de cares del vèrtex continua unit per l'altre costat
+- [ ] En Edit Mode, les cares suaus també es dibuixen suaus
+- Decisió de Joan (28/09/2026): Shade Auto Smooth afegeix un modificador Smooth by Angle (punt 4 d'aquesta fase), no marca arestes a la malla
