@@ -25,7 +25,7 @@ import { type SelectCommand, SelectInteraction } from '../../core/input/select-i
 import { ViewportInput } from './input/viewport-input';
 import { ClearLocationOp, ClearRotationOp, ClearScaleOp } from './operators/clear';
 import { SubdivisionSetOp, levelsLimited } from './operators/modifiers';
-import { ShadeFlatOp, ShadeSmoothOp } from './operators/shade';
+import { ShadeAutoSmoothOp, ShadeFlatOp, ShadeSmoothOp } from './operators/shade';
 import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operators/select';
 import {
   type SceneState,
@@ -41,7 +41,7 @@ import {
 import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
 import { blenderDefaultScene } from './scene/default-scene';
-import { attachMenu, openMenuAt } from './ui/menu';
+import { type MenuItem, attachMenu, openMenuAt } from './ui/menu';
 import { type AdjustValues, type AdjustableOp, AdjustPanel } from './ui/adjust-panel';
 import {
   DeleteOp,
@@ -549,6 +549,10 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
     onScreenAction: (a: ScreenAction) => (a.type === 'undo' ? store.undo() : store.redo()),
     onInteractionChange: refreshInteraction,
     onNavigateWithoutMiddle: options.onNavigateWithoutMiddle,
+    // Edit Mode's context menus (Vertex / Edge / Face) are not in the lab yet.
+    onContextMenu: (x, y) => {
+      if (!isEditMode(store.state)) openMenuAt(layout.viewport, x, y, shadeItems(), 'Object');
+    },
   });
 
   const nav = (action: Parameters<Navigator['apply']>[0]) => () => navigator.apply(action);
@@ -576,12 +580,13 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
       ],
     },
   ]);
-  // FIDELITY? Blender's Object menu has many more entries; order of the Shade entries.
-  attachMenu(layout.objectMenu, () => [
+  // FIDELITY? Blender's Object menu and Object Context Menu have many more entries.
+  const shadeItems = (): MenuItem[] => [
     { label: 'Shade Smooth', action: () => store.execute(ShadeSmoothOp) },
-    { label: 'Shade Auto Smooth', disabled: true },
+    { label: 'Shade Auto Smooth', action: () => store.execute(ShadeAutoSmoothOp) },
     { label: 'Shade Flat', action: () => store.execute(ShadeFlatOp) },
-  ]);
+  ];
+  attachMenu(layout.objectMenu, shadeItems);
   attachMenu(layout.selectMenu, () => {
     const edit = isEditMode(store.state);
     const all = (action: 'select' | 'deselect' | 'invert') => () =>

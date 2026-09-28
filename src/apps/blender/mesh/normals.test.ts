@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { type Vec3, nearlyEqual, normalize, vec3 } from '../math/vec3';
 import { faceNormal } from './geometry';
 import { type MeshData, meshFromFaces, withSmooth } from './mesh-data';
-import { cornerNormals } from './normals';
-import { cubeMesh } from './primitives';
+import { angleSharpEdges, cornerNormals } from './normals';
+import { cubeMesh, cylinderMesh } from './primitives';
 import { MeshTopology } from './topology';
 
 const smooth = (m: MeshData, faces: number[] = m.faces.map((_, f) => f)) =>
@@ -79,5 +79,25 @@ describe('cornerNormals', () => {
     const n = cornerNormals(m);
     expectVec(at(n, m, 0, 0), vec3(0, 0, 1));
     expectVec(at(n, m, 1, 0), vec3(0, 0, -1));
+  });
+
+  it('Auto Smooth: edges sharper than the angle split the shading', () => {
+    const cube = smooth(cubeMesh());
+    const sharp = angleSharpEdges(cube, 30);
+    expect(cube.edges.every((_, e) => sharp(e))).toBe(true);
+    const n = cornerNormals(cube, sharp);
+    cube.faces.forEach((face, f) => face.forEach((_, i) => expectVec(n[f]![i]!, faceNormal(cube, f))));
+    // 90° edges are not sharp above 90°.
+    expect(cube.edges.some((_, e) => angleSharpEdges(cube, 91)(e))).toBe(false);
+  });
+
+  it('Auto Smooth at 30°: a 32-sided cylinder has smooth sides and sharp caps', () => {
+    const cyl = smooth(cylinderMesh());
+    const sharp = angleSharpEdges(cyl, 30);
+    const count = cyl.edges.filter((_, e) => sharp(e)).length;
+    expect(count).toBe(64); // the two rims; the 32 side edges (11.25°) stay smooth
+    const cap = 32;
+    const n = cornerNormals(cyl, sharp);
+    cyl.faces[cap]!.forEach((_, i) => expectVec(n[cap]![i]!, vec3(0, 0, 1)));
   });
 });

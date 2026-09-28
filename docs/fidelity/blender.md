@@ -507,14 +507,19 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] ❓ La mitjana es talla en les arestes que toquen una cara plana, en les arestes *sharp*, en les que no tenen exactament dues cares i en les que tenen les dues cares amb sentit contrari (normals girades)
 - [ ] ❓ Una sola aresta *sharp* no talla res si el ventall de cares del vèrtex continua unit per l'altre costat
 - [ ] En Edit Mode, les cares suaus també es dibuixen suaus
-- Decisió de Joan (28/09/2026): Shade Auto Smooth afegeix un modificador Smooth by Angle (punt 4 d'aquesta fase), no marca arestes a la malla
+- [x] Auto Smooth no és un modificador ni va a la pila: és la casella Auto Smooth de la pestanya Object Data > Normals, amb un angle de 30° per defecte (confirmat per Joan, 28/09/2026)
+- [ ] Amb Auto Smooth, les arestes on l'angle entre les dues cares és més gran que l'angle es veuen marcades (*sharp*); s'aplica a la malla després dels modificadors
+- [ ] Un cilindre de 32 costats amb Auto Smooth a 30°: els costats es veuen llisos i les tapes, planes, amb la vora marcada
 
-### Shade Smooth i Shade Flat (Object Mode)
+### Shade Smooth, Shade Auto Smooth i Shade Flat (Object Mode)
 
-- [ ] ❓ Object > Shade Smooth: totes les cares dels objectes de malla seleccionats passen a ser suaus. Object > Shade Flat: totes planes
-- [ ] ❓ Noms a Edit > Undo History: "Shade Smooth", "Shade Flat"
-- [ ] ❓ Ordre al menú Object: Shade Smooth, Shade Auto Smooth, Shade Flat. El lab només mostra aquestes tres entrades; Shade Auto Smooth està desactivada fins al punt 4
+- [x] Clic amb el botó dret al viewport: Object Context Menu amb Shade Smooth, Shade Auto Smooth i Shade Flat (confirmat per Joan). El lab només mostra aquestes tres entrades
+- [ ] ❓ El menú s'obre en deixar anar el botó (Blender l'obre en prémer), perquè el lab pugui detectar si l'alumne arrossega amb el botó dret per intentar orbitar
+- [ ] ❓ Les mateixes tres entrades també són al menú Object de la capçalera
+- [ ] Shade Smooth: totes les cares dels objectes de malla seleccionats passen a ser suaus. Shade Flat: totes planes. Shade Auto Smooth: totes suaus i activa Auto Smooth
+- [ ] ❓ Shade Smooth i Shade Flat desactiven la casella Auto Smooth
+- [ ] ❓ Noms a Edit > Undo History: "Shade Smooth", "Shade Auto Smooth", "Shade Flat"
 - [ ] Si no hi ha cap malla seleccionada, o ja estan totes així, no fa res i no afegeix cap pas de desfer
 - [ ] Un cub amb Subdivision i Shade Smooth es veu arrodonit i llis; amb Shade Flat, amb facetes
 - [ ] ❓ "Keep Sharp Edges" (activat per defecte a Shade Smooth) no fa res al lab perquè no hi ha arestes marcades com a *sharp*
-- Pendent: el menú contextual del botó dret (Object Context Menu) també té aquestes entrades a Blender; encara no hi són
+- Pendent per a la Fase 4: el panell Normals de la pestanya Object Data (casella Auto Smooth i angle)

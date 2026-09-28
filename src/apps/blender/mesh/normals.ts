@@ -29,6 +29,20 @@ function cornerAngle(m: MeshData, face: readonly number[], i: number): number {
 }
 
 /**
+ * Auto Smooth: an edge between two faces is sharp when the angle between their
+ * normals is greater than `angleDeg`.
+ */
+export function angleSharpEdges(m: MeshData, angleDeg: number): (e: number) => boolean {
+  const t = new MeshTopology(m);
+  const minDot = Math.cos((angleDeg * Math.PI) / 180);
+  const sharp = t.edgeFaces.map((faces) => {
+    if (faces.length !== 2) return false;
+    return dot(faceNormal(m, faces[0]!), faceNormal(m, faces[1]!)) < minDot - 1e-9;
+  });
+  return (e) => sharp[e] ?? false;
+}
+
+/**
  * Normal of every face corner: result[f][i] is the normal at face f's i-th
  * vertex. `sharpEdge` marks extra edges that split the shading (by edge index).
  */

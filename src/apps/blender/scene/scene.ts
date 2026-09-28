@@ -42,7 +42,21 @@ export interface MeshObject extends ObjectBase {
   readonly meshSelection?: ComponentSelection;
   /** Modifier stack, evaluated in order (see modifiers/stack.ts). Missing: none. */
   readonly modifiers?: readonly Modifier[];
+  /**
+   * Object Data > Normals > Auto Smooth and its angle (degrees). In Blender they
+   * belong to the mesh data; kept on the object here, since each object has its
+   * own mesh, so mesh operations need not carry them. Missing: off, 30°.
+   */
+  readonly autoSmooth?: boolean;
+  readonly autoSmoothAngleDeg?: number;
 }
+
+/** Default Auto Smooth angle, in degrees. */
+export const DEFAULT_AUTO_SMOOTH_ANGLE_DEG = 30;
+
+/** The Auto Smooth angle when Auto Smooth is on, else null. */
+export const autoSmoothAngle = (o: MeshObject): number | null =>
+  o.autoSmooth ? (o.autoSmoothAngleDeg ?? DEFAULT_AUTO_SMOOTH_ANGLE_DEG) : null;
 
 export interface CameraObject extends ObjectBase {
   readonly type: 'camera';

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { blenderDefaultScene } from '../scene/default-scene';
 import { type MeshObject, type SceneState, meshOf } from '../scene/scene';
 import { SceneStore } from '../scene/store';
-import { ShadeFlatOp, ShadeSmoothOp } from './shade';
+import { ShadeAutoSmoothOp, ShadeFlatOp, ShadeSmoothOp } from './shade';
 
 const cubeOf = (s: SceneState) => s.objects.find((o) => o.id === 'cube') as MeshObject;
 const selected = (ids: string[]): SceneState => ({ ...blenderDefaultScene(), selectedIds: ids, activeId: ids[0] ?? null });
@@ -35,5 +35,17 @@ describe('Shade Smooth / Shade Flat', () => {
     store.execute(ShadeSmoothOp);
     store.undo();
     expect(meshOf(cubeOf(store.state)).smoothFaces).toBeUndefined();
+  });
+
+  it('Shade Auto Smooth: smooth faces and Auto Smooth on; Smooth and Flat turn it off', () => {
+    const auto = ShadeAutoSmoothOp.apply(selected(['cube']));
+    expect(cubeOf(auto).autoSmooth).toBe(true);
+    expect(meshOf(cubeOf(auto)).smoothFaces).toEqual([true, true, true, true, true, true]);
+    // Already smooth: Shade Smooth only turns Auto Smooth off.
+    const smooth = ShadeSmoothOp.apply(auto);
+    expect(cubeOf(smooth).autoSmooth).toBe(false);
+    expect(cubeOf(smooth).mesh).toBe(cubeOf(auto).mesh);
+    expect(cubeOf(ShadeFlatOp.apply(auto)).autoSmooth).toBe(false);
+    expect(ShadeAutoSmoothOp.apply(auto)).toBe(auto);
   });
 });

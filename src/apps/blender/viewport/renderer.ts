@@ -12,6 +12,7 @@ import {
   type SelectMode,
   activeCamera,
   cameraData,
+  autoSmoothAngle,
   meshOf,
   objectRotation,
   selectModeOf,
@@ -53,6 +54,8 @@ interface ObjectEntry {
   selection: SelectionDisplay | null;
   /** Mesh data the geometry was built from. */
   meshData?: MeshData;
+  /** Auto Smooth angle the geometry was built with (null: off). */
+  autoSmooth?: number | null;
   /** Edit Mode overlay and what it was built from. */
   overlay?: THREE.Group;
   overlayFrom?: { mesh: MeshData; sel: ComponentSelection; mode: SelectMode; xray: boolean; active: boolean };
@@ -263,10 +266,12 @@ export class ViewportRenderer {
     // Object Mode draws the modifiers' result. FIDELITY? Edit Mode with modifiers (cage) is Phase 4 of Lab 03.
     const drawn = editing ? m : evaluatedMesh(o, scene);
     const mesh = e.root as THREE.Mesh;
-    if (e.meshData !== drawn) {
+    const smooth = autoSmoothAngle(o);
+    if (e.meshData !== drawn || e.autoSmooth !== smooth) {
       mesh.geometry.dispose();
-      mesh.geometry = meshToGeometry(drawn).geometry;
+      mesh.geometry = meshToGeometry(drawn, smooth).geometry;
       e.meshData = drawn;
+      e.autoSmooth = smooth;
     }
     const analyse = o.id === this.analyzerObjectId;
     if (e.analyzer && (!analyse || e.analyzerFor !== m)) {

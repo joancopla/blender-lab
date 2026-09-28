@@ -50,6 +50,12 @@ export interface ViewportInputOptions {
    * probably trying to orbit without a middle button.
    */
   onNavigateWithoutMiddle?(): void;
+  /**
+   * Right click in the viewport: the context menu (Object Context Menu in Object
+   * Mode). Opened on release, so a right-button drag can still be told apart as
+   * an attempt to navigate. FIDELITY? Blender opens it on press.
+   */
+  onContextMenu?(x: number, y: number): void;
 }
 
 const modsOf = (e: MouseEvent | KeyboardEvent) => ({ ctrl: e.ctrlKey, shift: e.shiftKey, alt: e.altKey });
@@ -74,6 +80,8 @@ export class ViewportInput {
   } | null = null;
   private readonly wheel = new WheelAccumulator();
   private suspect: { x: number; y: number } | null = null;
+  /** Right button pressed on the idle viewport (a context menu click, until it moves). */
+  private rightPress: { x: number; y: number } | null = null;
 
   constructor(private readonly opts: ViewportInputOptions) {
     const el = opts.element;
@@ -136,6 +144,7 @@ export class ViewportInput {
         ? { x: e.clientX, y: e.clientY }
         : null;
 
+    this.rightPress = e.button === 2 && !select.busy ? { x: e.clientX, y: e.clientY } : null;
     // A running selection interaction (e.g. B) owns every button.
     if (!select.busy) {
       const mode = resolveNavDrag({ button: e.button, ...mods }, this.opts.prefs());
@@ -194,6 +203,12 @@ export class ViewportInput {
 
   private onPointerUp = (e: PointerEvent): void => {
     this.suspect = null;
+    const right = this.rightPress;
+    this.rightPress = null;
+    if (e.button === 2 && right && !this.navDrag && Math.hypot(e.clientX - right.x, e.clientY - right.y) < DRAG_THRESHOLD_PX) {
+      const p = this.local(e);
+      this.opts.onContextMenu?.(p.x, p.y);
+    }
     if (this.navDrag) {
       if (e.pointerId !== this.navDrag.pointerId) return;
       const click = this.navDrag.altClick;
