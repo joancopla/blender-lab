@@ -642,6 +642,17 @@ Etiqueta a l'esquerra i control a la dreta, com a Blender. Només hi ha els par�
 
 Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot el que se n'ha portat es valida igual que la resta.
 
+## Pendent de revisar (resum)
+
+- [ ] Fer les 10 etapes al navegador (producció)
+- [ ] Etapa 6: si la forquilla de Spot Size de 20° a 45° és bona per il·luminar només la caixa del mig
+- [ ] Etapa 7: si 4° de tolerància en la direcció del Sun és raonable
+- [ ] Etapa 10: si és fàcil d'aconseguir (calibrada perquè passi amb una Area key de 2000 W alta a davant a l'esquerra, un fill de 100 W i una Spot de contra de 500 W)
+- [ ] Etapa 4: els llindars de dura i tova (vegeu la fase 5)
+- [ ] Render de calibració a Blender: pla gris 0,8, Point 1000 W a 2 m, Cycles, view transform Standard; valor RGB al centre (esperat ≈5,07). Ajusta `POWER_CALIBRATION` a `render/light-units.ts`
+- [ ] Si Blender 5.2 té l'opció de temperatura (Kelvin) al color de les llums
+- [ ] Tots els ❓ de les fases 1 a 5 d'aquesta secció
+
 ## Fase 1 — Dades de les llums, física i Shift+A
 
 ### Llums i World
