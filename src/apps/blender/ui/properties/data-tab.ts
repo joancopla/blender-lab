@@ -1,13 +1,16 @@
 /**
- * Properties Editor > Object Data (mesh): Blender's panels, with only Normals
- * working (Auto Smooth and its angle). The other panels are shown folded and
- * inactive, as parts of Blender outside the lab.
+ * Properties Editor > Object Data.
+ * - Mesh: Blender's panels, with only Normals working (Auto Smooth and its
+ *   angle). The other panels are shown folded and inactive, as parts of
+ *   Blender outside the lab.
+ * - Light: the Light panel (light-panel.ts).
  * FIDELITY? Panel list and order; whether Normals starts open.
  */
 import { DEFAULT_AUTO_SMOOTH_ANGLE_DEG, type MeshObject } from '../../scene/scene';
 import { SetAutoSmoothOp, setAutoSmooth } from '../../operators/shade';
 import { formatAngle } from '../format';
 import { type TabContext, type TabView, contextPath } from './properties-editor';
+import { activeLight, lightWidgets } from './light-panel';
 import { type Widget, checkNumberWidget } from './widgets';
 
 const PANELS = [
@@ -64,9 +67,32 @@ export function dataTab(body: HTMLElement, ctx: TabContext): TabView {
     ];
   }
 
+  const subOpen = new Map<string, boolean>();
+
+  /** A light: the Light panel (always open), as in Blender. */
+  function buildLight(id: string, name: string): void {
+    body.replaceChildren(contextPath([name, name]));
+    const panel = el('div', 'bl-data-panel');
+    const header = el('div', 'bl-data-header');
+    header.append(el('span', 'bl-data-arrow', '▾'), el('span', undefined, 'Light'));
+    const content = el('div', 'bl-mod-body');
+    const sub = (k: string, def: boolean) => ({
+      get: () => subOpen.get(k) ?? def,
+      set: (v: boolean) => subOpen.set(k, v),
+    });
+    for (const w of lightWidgets(store, id, sub)) {
+      content.append(w.element);
+      widgets.push(w);
+    }
+    panel.append(header, content);
+    body.append(panel);
+  }
+
   function build(): void {
     for (const w of widgets) w.dispose?.();
     widgets = [];
+    const light = activeLight(store.state);
+    if (light) return buildLight(light.id, light.name);
     const o = active();
     body.replaceChildren(contextPath(o ? [o.name, o.name] : []));
     if (!o) return;

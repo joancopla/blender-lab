@@ -33,6 +33,7 @@ import {
   getLitMaterial,
   getSolidMaterial,
   isSurfaceMaterial,
+  lightDisplayKey,
   setSolidXray,
   setWireSelection,
   updateLightDisplay,
@@ -258,7 +259,10 @@ export class ViewportRenderer {
 
   private syncObjects(scene: SceneState, view: DisplayedView): void {
     const cam = activeCamera(scene);
-    const key = scene.objects.map((o) => `${o.id}:${o.type}:${o.id === cam?.id}`).join('|');
+    // Lights are rebuilt when their shape changes (type, Spot Size, Area size).
+    const key = scene.objects
+      .map((o) => `${o.id}:${o.type}:${o.id === cam?.id}:${o.type === 'light' ? lightDisplayKey(o) : ''}`)
+      .join('|');
     if (key !== this.objectsKey) {
       for (const e of this.objects.values()) this.root.remove(e.root);
       this.objects.clear();

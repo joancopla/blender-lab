@@ -3,7 +3,7 @@
  * (they live under the Blender-space root, see coords.ts).
  */
 import * as THREE from 'three';
-import type { CameraObject, LightObject, SceneObject } from '../scene/scene';
+import { type CameraObject, type LightObject, type SceneObject, lightData } from '../scene/scene';
 import { LIGHT_ICON_RADII_PX, cameraDisplay } from '../scene/object-display';
 import { THEME } from './theme';
 
@@ -48,11 +48,67 @@ function buildCamera(cam: CameraObject, isSceneCamera: boolean, aspect: number):
   return group;
 }
 
+/** Lengths of the direction line and the spot cone, metres. FIDELITY? Blender's lengths. */
+const DIRECTION_LENGTH = 1.5;
+const SPOT_CONE_LENGTH = 1.5;
+
 /**
- * Point light display. Its circles keep a constant size on screen, so the renderer
- * calls `updateLightDisplay` every frame. FIDELITY? Exact look of the light icon.
+ * The shape of each light type, in the light's own space (it shines along -Z):
+ * the Sun's direction, the Spot's cone (Spot Size), the Area's outline at its
+ * real size with its direction.
  */
-function buildLight(_light: LightObject): THREE.Object3D {
+function lightShape(light: LightObject, wire: THREE.LineBasicMaterial): THREE.Object3D | null {
+  const d = lightData(light);
+  const segments: THREE.Vector3[] = [];
+  const line = (a: THREE.Vector3, b: THREE.Vector3) => segments.push(a, b);
+  const ring = (rx: number, ry: number, z: number, n = 32) => {
+    for (let i = 0; i < n; i++) {
+      const a0 = (i / n) * Math.PI * 2;
+      const a1 = ((i + 1) / n) * Math.PI * 2;
+      line(new THREE.Vector3(Math.cos(a0) * rx, Math.sin(a0) * ry, z), new THREE.Vector3(Math.cos(a1) * rx, Math.sin(a1) * ry, z));
+    }
+  };
+  const origin = new THREE.Vector3(0, 0, 0);
+  if (d.lightType === 'SUN') {
+    line(origin, new THREE.Vector3(0, 0, -DIRECTION_LENGTH));
+  } else if (d.lightType === 'SPOT') {
+    const half = ((Math.min(d.spotSizeDeg, 179) / 2) * Math.PI) / 180;
+    const r = Math.tan(half) * SPOT_CONE_LENGTH;
+    ring(r, r, -SPOT_CONE_LENGTH);
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      line(origin, new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r, -SPOT_CONE_LENGTH));
+    }
+  } else if (d.lightType === 'AREA') {
+    const w = d.size / 2;
+    const h = (d.shape === 'RECTANGLE' || d.shape === 'ELLIPSE' ? d.sizeY : d.size) / 2;
+    if (d.shape === 'DISK' || d.shape === 'ELLIPSE') {
+      ring(w, h, 0);
+    } else {
+      const c = [new THREE.Vector3(-w, -h, 0), new THREE.Vector3(w, -h, 0), new THREE.Vector3(w, h, 0), new THREE.Vector3(-w, h, 0)];
+      for (let i = 0; i < 4; i++) line(c[i]!, c[(i + 1) % 4]!);
+    }
+    line(origin, new THREE.Vector3(0, 0, -DIRECTION_LENGTH));
+  } else {
+    return null;
+  }
+  const shape = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(segments), wire);
+  shape.name = 'lightShape';
+  return shape;
+}
+
+/** What the light's drawing depends on (the renderer rebuilds it when this changes). */
+export function lightDisplayKey(light: LightObject): string {
+  const d = lightData(light);
+  return `${d.lightType}|${d.spotSizeDeg}|${d.shape}|${d.size}|${d.sizeY}`;
+}
+
+/**
+ * Light display: the circles of the icon keep a constant size on screen (the
+ * renderer calls `updateLightDisplay` every frame), plus the shape of its type.
+ * FIDELITY? Exact look of each light type's icon and gizmo.
+ */
+function buildLight(light: LightObject): THREE.Object3D {
   const group = new THREE.Group();
   const billboard = new THREE.Group();
   billboard.name = 'billboard';
@@ -74,6 +130,8 @@ function buildLight(_light: LightObject): THREE.Object3D {
   );
   ground.name = 'groundLine';
   group.add(ground);
+  const shape = lightShape(light, wire);
+  if (shape) group.add(shape);
   return group;
 }
 

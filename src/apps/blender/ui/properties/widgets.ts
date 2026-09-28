@@ -126,6 +126,49 @@ export function checkNumberWidget(
   };
 }
 
+const toSrgb = (c: number) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055);
+const toLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+
+/** Linear RGB (0..1) -> "#rrggbb" as shown on screen (sRGB). */
+export function linearToHex(c: { x: number; y: number; z: number }): string {
+  const h = (v: number) =>
+    Math.round(Math.max(0, Math.min(1, toSrgb(v))) * 255)
+      .toString(16)
+      .padStart(2, '0');
+  return `#${h(c.x)}${h(c.y)}${h(c.z)}`;
+}
+
+/** "#rrggbb" (sRGB) -> linear RGB. */
+export function hexToLinear(hex: string): { x: number; y: number; z: number } {
+  const n = (i: number) => toLinear(parseInt(hex.slice(i, i + 2), 16) / 255);
+  return { x: n(1), y: n(3), z: n(5) };
+}
+
+/**
+ * A colour swatch. Values are linear RGB, as Blender stores them; the swatch
+ * shows them as on screen. Clicking opens the browser's colour picker.
+ * FIDELITY? Blender has its own colour wheel picker.
+ */
+export function colorWidget(
+  label: string,
+  get: () => { x: number; y: number; z: number },
+  preview: (v: { x: number; y: number; z: number } | null) => void,
+  commit: (v: { x: number; y: number; z: number }) => void,
+): Widget {
+  const input = el('input', 'bl-mp-color');
+  input.type = 'color';
+  input.setAttribute('aria-label', label);
+  input.addEventListener('input', () => preview(hexToLinear(input.value)));
+  input.addEventListener('change', () => commit(hexToLinear(input.value)));
+  input.addEventListener('keydown', (e) => e.stopPropagation());
+  return {
+    element: splitRow(label, input),
+    update: () => {
+      if (document.activeElement !== input) input.value = linearToHex(get());
+    },
+  };
+}
+
 export interface Choice<T> {
   readonly value: T;
   readonly label: string;
