@@ -42,6 +42,9 @@ import { SceneStore } from './scene/store';
 import { buildLayout } from './ui/layout';
 import { blenderDefaultScene } from './scene/default-scene';
 import { type MenuItem, attachMenu, openMenuAt } from './ui/menu';
+import { PropertiesEditor } from './ui/properties/properties-editor';
+import type { PropertiesTabId } from './ui/properties/tabs';
+import { viewsFor } from './ui/properties/views';
 import { type AdjustValues, type AdjustableOp, AdjustPanel } from './ui/adjust-panel';
 import {
   DeleteOp,
@@ -90,6 +93,8 @@ export interface MountOptions {
   onNavigateWithoutMiddle?(): void;
   /** Overlays > Statistics (off by default, as in Blender). */
   readonly statistics?: boolean;
+  /** Properties Editor tabs this lab uses; the others are shown inactive. */
+  readonly propertiesTabs?: readonly PropertiesTabId[];
 }
 
 /** World-space bounds of the selected vertices of the objects in Edit Mode. */
@@ -171,9 +176,11 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
     gizmo.update(info.view);
   });
   const sidebar = new Sidebar(layout.viewport, store);
+  const properties = new PropertiesEditor(layout.propertiesArea, viewsFor(options.propertiesTabs ?? []));
   const onSceneChange = () => {
     outliner.update(store.displayState);
     sidebar.update(store.displayState);
+    properties.update(store.displayState);
     updateHeader();
     view.requestRender();
   };

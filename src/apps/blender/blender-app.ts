@@ -7,6 +7,7 @@ import type { LogEntry } from './scene/store';
 import { type MountedBlender, mountBlender } from './app';
 import type { BlenderDecorations, BlenderSetup, BlenderState } from './stages/types';
 import { AnalyzerPanel } from './ui/analyzer-panel';
+import type { PropertiesTabId } from './ui/properties/tabs';
 import { defaultViewState } from './viewport/view-state';
 import './texts';
 
@@ -27,6 +28,8 @@ export interface BlenderAppOptions {
   readonly statistics?: boolean;
   /** Offer the topology analyser in the lab panel. */
   readonly analyzer?: boolean;
+  /** Properties Editor tabs the lab uses (none by default). */
+  readonly propertiesTabs?: readonly PropertiesTabId[];
 }
 
 export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, BlenderDecorations> {
@@ -53,6 +56,7 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
       },
       onNavigateWithoutMiddle: () => options.suggestPreference?.('emulate3ButtonMouse'),
       statistics: this.options.statistics,
+      propertiesTabs: this.options.propertiesTabs,
     });
     this.inner.store.onChange(() => this.analyzer?.update());
   }

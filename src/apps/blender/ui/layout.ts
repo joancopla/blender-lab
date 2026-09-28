@@ -23,6 +23,8 @@ export interface LayoutRefs {
   readonly objectModeOnly: readonly HTMLElement[];
   readonly editModeOnly: readonly HTMLElement[];
   readonly outlinerBody: HTMLElement;
+  /** Properties Editor area, under the Outliner (filled by PropertiesEditor). */
+  readonly propertiesArea: HTMLElement;
   readonly statusLeft: HTMLElement;
 }
 
@@ -123,8 +125,12 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
   outlinerHeader.append(el('span', 'bl-editor-type', '☰'), el('span', 'bl-search'));
   const outlinerBody = el('div', 'bl-outliner-body');
   outliner.append(outlinerHeader, outlinerBody);
+  const propertiesArea = el('section', 'bl-area bl-area-properties');
+  // Layout workspace: Outliner on top, Properties Editor below.
+  const right = el('div', 'bl-right');
+  right.append(outliner, propertiesArea);
 
-  main.append(viewArea, outliner);
+  main.append(viewArea, right);
 
   const status = el('div', 'bl-statusbar');
   const statusLeft = el('div', 'bl-status-left');
@@ -144,6 +150,7 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
     objectModeOnly: [objectMenu],
     editModeOnly: [selectModeGroup, ...editMenus],
     outlinerBody,
+    propertiesArea,
     statusLeft,
   };
 }

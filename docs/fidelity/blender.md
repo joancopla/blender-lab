@@ -538,3 +538,14 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] Comparar amb les malles de referència: `plane_solidify_default`, `cube_solidify_02`, `cube_solidify_02_even`
 - Fora d'abast: Mode Complex, Only Rim, Flip, High Quality Normals, Clamp, Vertex Group, materials de la vora
 - Pendent per a la Fase 4: el panell a la pestanya Modifiers i l'opció al menú Add Modifier. Fins llavors no es pot provar al navegador
+
+## Fase 4 — Interfície
+
+### Properties Editor (component compartit, `ui/properties/`)
+
+- [ ] ❓ Al workspace Layout, la columna de la dreta té l'Outliner a dalt (un terç de l'alçada, aprox.) i el Properties Editor a sota
+- [ ] ❓ Ordre de les pestanyes: Tool | Render, Output, View Layer, Scene, World, Collection | Object, Modifiers, Particles, Physics, Object Constraints, Data, Material | Texture
+- [ ] ❓ Pestanyes segons l'objecte actiu: una malla les mostra totes; una llum o una càmera no tenen Modifiers, Particles ni Material; sense objecte actiu, només les de l'escena i Texture
+- [ ] ❓ Text d'ajuda de cada pestanya (el nom de la taula de dalt)
+- Decisió del lab: les icones són pròpies (no les de Blender), amb els colors de Blender per grups. Cada lab activa només les pestanyes que fa servir; les altres es veuen apagades i no es poden clicar
+- Decisió del lab: als labs 01 i 02 no hi ha cap pestanya activa i el cos mostra una nota en català
