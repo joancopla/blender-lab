@@ -49,17 +49,20 @@ export class NumberField {
     this.element.addEventListener('pointerup', this.onUp);
     this.element.addEventListener('pointercancel', () => this.cancelDrag());
     // Esc cancels a drag; the field has no focus, so listen on the window (capture, before the viewport).
-    window.addEventListener(
-      'keydown',
-      (e) => {
-        if (this.drag && e.key === 'Escape') {
-          e.stopPropagation();
-          e.preventDefault();
-          this.cancelDrag();
-        }
-      },
-      { capture: true },
-    );
+    window.addEventListener('keydown', this.onEscape, { capture: true });
+  }
+
+  private onEscape = (e: KeyboardEvent): void => {
+    if (this.drag && e.key === 'Escape') {
+      e.stopPropagation();
+      e.preventDefault();
+      this.cancelDrag();
+    }
+  };
+
+  /** Call when the field is thrown away. */
+  dispose(): void {
+    window.removeEventListener('keydown', this.onEscape, { capture: true });
   }
 
   get editing(): boolean {

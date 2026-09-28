@@ -19,12 +19,15 @@ import {
   MoveModifierOp,
   RemoveModifierOp,
   SetModifierOp,
+  setModifier,
 } from '../../operators/modifiers';
-import type { MeshObject, SceneState } from '../../scene/scene';
+import type { MeshObject } from '../../scene/scene';
 import { type MenuItem, attachMenu } from '../menu';
 import { ADD_MODIFIER_MENU, searchModifiers } from './add-modifier';
 import { MODIFIER_ICONS, TOGGLE_ICONS } from './icons';
+import { type PanelContext, modifierWidgets } from './modifier-panels';
 import { type TabContext, type TabView, contextPath } from './properties-editor';
+import type { Widget } from './widgets';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
   const e = document.createElement(tag);
@@ -58,12 +61,37 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
   const { store } = ctx;
   /** Collapsed panels, by "object/modifier". */
   const collapsed = new Set<string>();
+  /** Open subpanels, by "object/modifier/subpanel" (missing: the subpanel's default). */
+  const subOpen = new Map<string, boolean>();
   let key = '';
   let object: MeshObject | null = null;
   /** Panel under the pointer, for the shortcuts over panels. */
   let hovered: string | null = null;
+  /** What the drawn panels refresh on every change (values, toggles), without rebuilding. */
+  let widgets: Widget[] = [];
 
   const run = (op: Parameters<typeof store.execute>[0]) => store.execute(op);
+
+  /** The modifier as shown now (the preview while a field is dragged). */
+  const currentMod = (objectId: string, name: string): Modifier | undefined => {
+    const o = store.displayState.objects.find((x) => x.id === objectId);
+    return o?.type === 'mesh' ? o.modifiers?.find((m) => m.name === name) : undefined;
+  };
+
+  function panelContext(o: MeshObject, mod: Modifier): PanelContext {
+    const name = mod.name;
+    return {
+      mod: () => currentMod(o.id, name) ?? mod,
+      set: (patch, label) => run(SetModifierOp(o.id, name, patch, label)),
+      preview: (patch) => store.setPreview(patch ? setModifier(store.state, o.id, name, patch) : null),
+      objects: () => store.state.objects.filter((x) => x.id !== o.id).map((x) => ({ id: x.id, name: x.name })),
+      subpanel: (sub, openByDefault) => {
+        const k = `${o.id}/${name}/${sub}`;
+        return { get: () => subOpen.get(k) ?? openByDefault, set: (v) => subOpen.set(k, v) };
+      },
+      report: ctx.report,
+    };
+  }
 
   function addMenuItems(o: MeshObject): MenuItem[] {
     return ADD_MODIFIER_MENU.map((c) => ({
@@ -120,19 +148,25 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
       if (open) collapsed.add(id);
       else collapsed.delete(id);
       key = '';
-      update(store.displayState);
+      update();
     });
     const icon = el('span', 'bl-mod-icon');
     icon.innerHTML = MODIFIER_ICONS[mod.type];
     header.append(arrow, icon, nameField(o, mod));
 
+    const pc = panelContext(o, mod);
     for (const tg of TOGGLES) {
-      const on = mod[tg.field];
       const b = iconButton('bl-mod-toggle', tg.icon, tg.label);
-      b.classList.toggle('is-on', on);
-      b.setAttribute('aria-pressed', String(on));
-      b.addEventListener('click', () => run(SetModifierOp(o.id, mod.name, { [tg.field]: !on }, tg.label)));
+      b.addEventListener('click', () => pc.set({ [tg.field]: !pc.mod()[tg.field] }, tg.label));
       header.append(b);
+      widgets.push({
+        element: b,
+        update: () => {
+          const on = pc.mod()[tg.field];
+          b.classList.toggle('is-on', on);
+          b.setAttribute('aria-pressed', String(on));
+        },
+      });
     }
 
     const more = iconButton('bl-mod-more', '▾', 'Modifier options');
@@ -153,7 +187,14 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
 
     box.append(header);
     if (warning) box.append(el('p', 'bl-mod-warning', warning));
-    if (open) box.append(el('div', 'bl-mod-body'));
+    if (open) {
+      const content = el('div', 'bl-mod-body');
+      for (const w of modifierWidgets(mod.type, pc)) {
+        content.append(w.element);
+        widgets.push(w);
+      }
+      box.append(content);
+    }
     return box;
   }
 
@@ -203,15 +244,23 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
   };
   window.addEventListener('keydown', onKey);
 
-  function update(state: SceneState): void {
+  function update(): void {
+    // The structure follows the committed state, so dragging a field (a
+    // preview) never rebuilds the panel under the pointer.
+    const state = store.state;
     const active = state.objects.find((o) => o.id === state.activeId);
     object = active?.type === 'mesh' ? active : null;
     const warnings: ReadonlyMap<string, ModifierWarning> = object ? modifierWarnings(object, state) : new Map();
     const warnKey = [...warnings].map(([n, w]) => `${n}:${w}`).join(',');
-    // Redrawn only when the object, its stack or its warnings change.
-    const next = `${active?.id}|${active?.name}|${object ? stackId(object) : ''}|${warnKey}`;
-    if (next === key) return;
+    const stack = (object?.modifiers ?? []).map((m) => `${m.type}:${m.name}`).join(',');
+    const next = `${active?.id}|${active?.name}|${stack}|${warnKey}`;
+    if (next === key) {
+      for (const w of widgets) w.update();
+      return;
+    }
     key = next;
+    for (const w of widgets) w.dispose?.();
+    widgets = [];
     body.replaceChildren(contextPath([active?.name ?? '']));
     if (!object) return;
     const o = object;
@@ -225,11 +274,15 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
       const w = warnings.get(mod.name);
       body.append(panel(o, mod, i, mods.length, w ? t(WARNING_KEYS[w]) : null));
     });
+    for (const w of widgets) w.update();
   }
 
   return {
     update,
-    dispose: () => window.removeEventListener('keydown', onKey),
+    dispose: () => {
+      window.removeEventListener('keydown', onKey);
+      for (const w of widgets) w.dispose?.();
+    },
   };
 }
 
@@ -237,17 +290,3 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
 const WARNING_KEYS: Record<ModifierWarning, string> = {
   bevelUnsupported: 'lab.bevelModifierUnsupported',
 };
-
-/** A number that changes whenever the stack array changes (it is immutable). */
-const stackIds = new WeakMap<object, number>();
-let nextStackId = 1;
-function stackId(o: MeshObject): number {
-  const mods = o.modifiers ?? EMPTY;
-  let id = stackIds.get(mods);
-  if (id === undefined) {
-    id = nextStackId++;
-    stackIds.set(mods, id);
-  }
-  return id;
-}
-const EMPTY: readonly Modifier[] = [];

@@ -19,6 +19,8 @@ export interface TabView {
 /** What a tab can use: the history (every change goes through an operator). */
 export interface TabContext {
   readonly store: SceneStore;
+  /** Shows a lab message in the status bar. */
+  report(message: string): void;
 }
 
 /** Builds a tab's content inside `body`. */

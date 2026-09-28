@@ -564,3 +564,18 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - Decisió del lab: plegar o desplegar un panell no és un pas de desfer i no es desa a l'escena
 - Icones pròpies, no les de Blender
 - Limitació del navegador: Ctrl+1…8 canvien de pestanya del navegador i Ctrl+0 restableix el zoom; la pàgina no pot evitar-ho. Subdivision Set (Ctrl+0…5) està implementat, però amb un teclat real no arriba al lab. El Lab 03 ensenya Add Modifier
+
+### Paràmetres dels modificadors (panells)
+
+Etiqueta a l'esquerra i control a la dreta, com a Blender. Només hi ha els paràmetres del lab; els subpanells que el lab no fa servir no hi són. Cada canvi és un pas de desfer amb el nom de l'etiqueta.
+
+- [ ] ❓ Subdivision Surface: Catmull-Clark | Simple, Levels Viewport, Render; subpanell Advanced (tancat) amb Use Limit Surface. Falta Optimal Display
+- [ ] ❓ Mirror: Axis, Bisect i Flip (X Y Z), Mirror Object (qualsevol altre objecte, amb × per treure'l), Clipping, Merge, Merge Distance, Bisect Distance
+- [ ] ❓ Array: Fit Type (només Fixed Count), Count; subpanells Relative Offset (obert) amb Factor X Y Z, Constant Offset amb Distance X Y Z i Merge amb Distance i First Last, cadascun amb la casella a la capçalera. Falten Object Offset, UVs i Caps
+- [ ] ❓ Bevel: Vertices | Edges (només Edges), Width Type (només Offset), Amount, Segments, Limit Method (None, Angle; Weight i Vertex Group desactivats), Angle (només amb Angle); subpanell Geometry amb Clamp Overlap. Falten Profile i Shading
+- [ ] ❓ Solidify: Mode (només Simple), Thickness, Offset, Even Thickness; subpanell Rim amb Fill Rim. Falten High Quality Normals i els altres subpanells
+- [ ] ❓ Formats: distàncies "0.1 m", angles "30°", enters sense decimals, factors amb tres decimals ("1.000", "-1.000")
+- [ ] ❓ Límits: Levels 0–6 (el lab talla a 3 i avisa), Count 1–1000, Segments 1–100, Angle 0–180°, Offset −1…1
+- [ ] Arrossegar un camp mostra el resultat en directe; Esc o el botó dret ho cancel·len; clicar-hi permet escriure el valor
+- Decisió del lab: amb Limit Method, l'etiqueta va a sobre dels botons perquè hi càpiguen
+- Decisió del lab: obrir o tancar un subpanell no és un pas de desfer

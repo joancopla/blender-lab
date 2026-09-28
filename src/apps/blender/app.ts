@@ -176,7 +176,10 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
     gizmo.update(info.view);
   });
   const sidebar = new Sidebar(layout.viewport, store);
-  const properties = new PropertiesEditor(layout.propertiesArea, viewsFor(options.propertiesTabs ?? []), { store });
+  const properties = new PropertiesEditor(layout.propertiesArea, viewsFor(options.propertiesTabs ?? []), {
+    store,
+    report: (message) => status.report(message),
+  });
   const onSceneChange = () => {
     outliner.update(store.displayState);
     sidebar.update(store.displayState);
