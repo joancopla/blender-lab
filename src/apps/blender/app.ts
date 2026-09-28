@@ -25,6 +25,7 @@ import { type SelectCommand, SelectInteraction } from '../../core/input/select-i
 import { ViewportInput } from './input/viewport-input';
 import { ClearLocationOp, ClearRotationOp, ClearScaleOp } from './operators/clear';
 import { SubdivisionSetOp, levelsLimited } from './operators/modifiers';
+import { ShadeFlatOp, ShadeSmoothOp } from './operators/shade';
 import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operators/select';
 import {
   type SceneState,
@@ -574,6 +575,12 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
         { label: 'Left', shortcut: 'Ctrl Numpad 3', action: nav({ type: 'axisView', axis: 'left' }) },
       ],
     },
+  ]);
+  // FIDELITY? Blender's Object menu has many more entries; order of the Shade entries.
+  attachMenu(layout.objectMenu, () => [
+    { label: 'Shade Smooth', action: () => store.execute(ShadeSmoothOp) },
+    { label: 'Shade Auto Smooth', disabled: true },
+    { label: 'Shade Flat', action: () => store.execute(ShadeFlatOp) },
   ]);
   attachMenu(layout.selectMenu, () => {
     const edit = isEditMode(store.state);

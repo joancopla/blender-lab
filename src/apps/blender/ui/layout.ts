@@ -12,6 +12,7 @@ export interface LayoutRefs {
   readonly viewportHeaderText: HTMLElement;
   readonly viewMenu: HTMLElement;
   readonly selectMenu: HTMLElement;
+  readonly objectMenu: HTMLElement;
   /** Object Mode / Edit Mode selector. */
   readonly modeMenu: HTMLElement;
   /** Vertex / Edge / Face select mode buttons (Edit Mode only). */
@@ -123,6 +124,7 @@ export function buildLayout(container: HTMLElement): LayoutRefs {
     viewportHeaderText,
     viewMenu,
     selectMenu,
+    objectMenu,
     modeMenu,
     selectModeButtons,
     objectModeOnly: [objectMenu],

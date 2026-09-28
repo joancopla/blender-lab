@@ -508,3 +508,13 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] ❓ Una sola aresta *sharp* no talla res si el ventall de cares del vèrtex continua unit per l'altre costat
 - [ ] En Edit Mode, les cares suaus també es dibuixen suaus
 - Decisió de Joan (28/09/2026): Shade Auto Smooth afegeix un modificador Smooth by Angle (punt 4 d'aquesta fase), no marca arestes a la malla
+
+### Shade Smooth i Shade Flat (Object Mode)
+
+- [ ] ❓ Object > Shade Smooth: totes les cares dels objectes de malla seleccionats passen a ser suaus. Object > Shade Flat: totes planes
+- [ ] ❓ Noms a Edit > Undo History: "Shade Smooth", "Shade Flat"
+- [ ] ❓ Ordre al menú Object: Shade Smooth, Shade Auto Smooth, Shade Flat. El lab només mostra aquestes tres entrades; Shade Auto Smooth està desactivada fins al punt 4
+- [ ] Si no hi ha cap malla seleccionada, o ja estan totes així, no fa res i no afegeix cap pas de desfer
+- [ ] Un cub amb Subdivision i Shade Smooth es veu arrodonit i llis; amb Shade Flat, amb facetes
+- [ ] ❓ "Keep Sharp Edges" (activat per defecte a Shade Smooth) no fa res al lab perquè no hi ha arestes marcades com a *sharp*
+- Pendent: el menú contextual del botó dret (Object Context Menu) també té aquestes entrades a Blender; encara no hi són
