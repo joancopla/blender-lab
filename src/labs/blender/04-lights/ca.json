@@ -7,14 +7,119 @@
       "lead": "Aprendràs a il·luminar una escena com es fa a plató: quin tipus de llum triar, com canvia amb la distància, per què una ombra és dura o tova i com es munta un esquema de tres punts.",
       "controls": {
         "add": "Afegir una llum: Shift + A > Light (Point, Sun, Spot o Area)",
+        "shading": "Veure la llum: Z > Rendered, o els botons de dalt a la dreta del viewport",
         "move": "Moure i girar la llum: G i R, com qualsevol objecte",
+        "properties": "Potència, color i mida: Properties Editor, pestanya de la llum (el triangle verd)",
+        "meter": "Mesurador de llum (del lab): «Mesura a A» i un clic sobre una superfície",
         "undo": "Desfer: Ctrl + Z"
       }
     },
     "real": {
-      "lead": "El que ja funciona en aquest avançament es fa igual a Blender.",
+      "lead": "Tot el que fas en aquest lab es fa igual a Blender. Aquí tens on trobar cada cosa i què ha quedat fora.",
       "units": "Les llums de Blender fan servir unitats físiques: la potència de Point, Spot i Area és en watts (W) i la del Sun, en W/m². Una Point de 1000 W a 2 m il·lumina quatre vegades més que a 4 m.",
-      "preview": "Aquest lab encara és en construcció: el render amb llums, els paràmetres de cada llum, el World, el mesurador de llum i les etapes hi aniran arribant."
+      "engines": "Blender té dos motors: EEVEE, ràpid, i Cycles, que calcula la llum rebotant d'una superfície a l'altra. Aquest lab s'assembla més a un Cycles sense rebots: les ombres toves s'afinen en diverses passades, però la llum no rebota.",
+      "world": "Al Blender real, el World pot fer servir una imatge HDRI (Environment Texture) que il·lumina l'escena com un entorn fotografiat. Aquí el World és un color uniforme.",
+      "meter": "El mesurador de llum és una ajuda del lab: Blender no en té. A plató és el fotòmetre.",
+      "outOfScope": "Fora del lab: rebots de llum, llums emissives (materials amb Emission), IES, Light Linking, volums (boira) i les opcions pròpies d'EEVEE i Cycles de cada llum."
+    },
+    "s1": {
+      "title": "Encendre",
+      "instruction": "Aquesta escena no té cap llum. Afegeix-ne una (Shift + A > Light > Point) i passa a Rendered. En Solid, Blender il·lumina els objectes amb una llum d'estudi que segueix la vista; en Material Preview, amb una imatge d'entorn. Només Rendered fa servir les llums de l'escena.",
+      "hint1": "Amb el ratolí sobre el viewport, Shift + A obre el menú Add. La llum apareix al centre: mou-la amunt amb G Z.",
+      "hint2": "Z obre el menú de shading; tria Rendered. També hi ha quatre botons de dalt a la dreta del viewport.",
+      "add": "Afegeix una llum amb Shift + A > Light.",
+      "rendered": "Ara passa a Rendered (Z > Rendered) per veure-la.",
+      "success": "Molt bé. Recorda: per mirar com il·luminen les teves llums, sempre Rendered."
+    },
+    "s2": {
+      "title": "Quatre tipus",
+      "instruction": "Prova els quatre tipus de llum amb la mateixa llum, en Rendered: Point, Sun, Spot i Area. Fixa't en l'ombra de cada un: la Point i l'Spot surten d'un punt, el Sun ve de molt lluny i totes les ombres són paral·leles, i l'Area és un panell que fa l'ombra tova.",
+      "hint1": "Selecciona la llum i ves a la pestanya de la llum del Properties Editor (el triangle verd). A dalt hi ha els quatre botons: Point, Sun, Spot i Area.",
+      "hint2": "El Sun no depèn de la seva posició, només de cap on apunta: la seva potència és Strength i es mesura en W/m².",
+      "rendered": "Passa a Rendered per veure la llum de cada tipus.",
+      "missing": "Encara has de provar: {list}.",
+      "success": "Perfecte. Cada tipus de llum té el seu ús: Point per a bombetes, Sun per a exteriors, Spot per dirigir la llum i Area per a finestres i softboxes."
+    },
+    "s3": {
+      "title": "Distància i potència",
+      "instruction": "La llum està a 2 m del punt marcat a terra. Mesura-hi la llum amb el mesurador («Mesura a A» i un clic al punt). Després puja la llum fins a 4 m (el doble) i torna-la a mesurar: n'arriba una quarta part, dos passos menys. Finalment, compensa-ho amb Power fins que arribi la mateixa llum que al principi.",
+      "hint1": "Per pujar-la exactament: amb la llum seleccionada, G Z 2 i Enter (la mou 2 m amunt). O posa Location Z a 4 al panell N.",
+      "hint2": "Al doble de distància arriba una quarta part de la llum: per compensar-ho, la potència ha de ser quatre vegades més gran.",
+      "double": "La llum és a {d} m del punt. Porta-la a 4 m, just a sobre.",
+      "keepDistance": "La llum ha de quedar a 4 m del punt (ara és a {d} m).",
+      "compensate": "Ara hi arriba el {pct} % de la llum del principi. Canvia Power fins al 100 %.",
+      "success": "Exacte: la llei de l'invers del quadrat. Doble distància, un quart de llum. Per això, a plató, un petit moviment d'una llum a prop del subjecte canvia molt la il·luminació."
+    },
+    "s4": {
+      "title": "Dura o tova",
+      "instruction": "Una ombra és dura quan la font de llum és petita, i tova quan és gran. En Rendered, fes primer una ombra dura (Radius a 0) i després una de tova (Radius d'1 m o més).",
+      "hint1": "El Radius és a la pestanya de la llum. Rendered es va afinant uns moments quan deixes la vista quieta: espera que acabi per veure l'ombra.",
+      "hint2": "Si canvies el tipus, a l'Area la mida és Size i al Sun és Angle.",
+      "rendered": "Passa a Rendered per veure l'ombra.",
+      "hard": "Primer, una ombra dura: Radius 0.",
+      "soft": "Ara, una ombra tova: Radius d'1 m o més.",
+      "success": "Molt bé. La mida aparent de la font decideix l'ombra: per això una finestra gran o un softbox fan una llum tan amable."
+    },
+    "s5": {
+      "title": "Color",
+      "instruction": "Crea un contrast de color: fes que una llum sigui càlida (taronja, com una bombeta) i l'altra freda (blava, com la llum del cel).",
+      "hint1": "Selecciona una llum i, a la pestanya de la llum, clica el color per canviar-lo.",
+      "hint2": "Càlida: més vermell que blau. Freda: més blau que vermell. No cal que siguin colors molt saturats.",
+      "both": "Fes una llum càlida i una de freda.",
+      "needCool": "Ja tens una llum càlida. Ara fes-ne una de freda (blava).",
+      "needWarm": "Ja tens una llum freda. Ara fes-ne una de càlida (taronja).",
+      "success": "Molt bé. El contrast entre càlid i fred dona volum i ambient: és un recurs clàssic de cinema."
+    },
+    "s6": {
+      "title": "Spot",
+      "instruction": "L'Spot il·lumina les tres caixes. Ajusta'l perquè només il·lumini la del mig, amb una vora suau: fes-lo més estret amb Size i dona-li Blend.",
+      "hint1": "Size i Blend són al subpanell Spot Shape de la pestanya de la llum. El con que es veu al viewport et fa de guia.",
+      "hint2": "Prova Size entre 20° i 45°, i Blend de 0.2 o més.",
+      "keepSpot": "Aquesta etapa és amb un Spot: torna a posar el tipus Spot.",
+      "middleDark": "La caixa del mig ha quedat fora del con: el Size és massa petit.",
+      "othersLit": "L'Spot encara il·lumina les caixes dels costats: fes-lo més estret.",
+      "blend": "Ara dona-li una vora suau amb Blend (0.1 o més).",
+      "success": "Perfecte. L'Spot és la llum per dirigir l'atenció: il·lumina només el que vols que es miri."
+    },
+    "s7": {
+      "title": "Hora del dia",
+      "instruction": "Orienta el Sun perquè l'ombra de la punta del pal acabi a la marca de terra. Com més baix és el sol, més llarga és l'ombra.",
+      "hint1": "Del Sun només compta cap on apunta: gira'l amb R. Mira'l en Rendered i des de dalt (Numpad 7) per veure bé l'ombra.",
+      "hint2": "L'ombra va en sentit contrari del sol: si l'ombra ha d'anar cap a la dreta i endavant, el sol ha de venir de l'esquerra i de darrere.",
+      "keepSun": "Aquesta etapa és amb un Sun: torna a posar el tipus Sun.",
+      "off": "El sol encara està a {deg}° de la direcció bona.",
+      "success": "Molt bé. Amb el Sun controles l'hora del dia: alt a migdia, ombres curtes; baix a la tarda, ombres llargues."
+    },
+    "s8": {
+      "title": "Tres punts",
+      "instruction": "Il·lumina el cap amb l'esquema de tres punts: una llum principal (key) a un costat i per davant, una de farciment (fill) a l'altre costat i més suau, i una de contra (rim) per darrere que en retalli la silueta. La cara del costat de la key ha de rebre entre 2 i 8 vegades més llum que la del fill (d'1 a 3 passos).",
+      "hint1": "Pensa-ho des de la càmera: la key a 45° d'un costat i una mica amunt, el fill a l'altre costat, i la rim darrere del cap, apuntant cap a la càmera.",
+      "hint2": "Amb el mesurador pots comparar les dues galtes: A en una i B en l'altra. La proporció surt en passos.",
+      "count": "Calen tres llums: key, fill i rim. Ara n'hi ha {n}.",
+      "flat": "Les dues cares estan massa igualades ({stops} passos). Fes el fill més fluix o la key més forta.",
+      "harsh": "El contrast és massa fort ({stops} passos). Puja el fill.",
+      "rim": "Falta la llum de contra: posa'n una darrere del cap, més amunt, que n'il·lumini la vora.",
+      "success": "Molt bé. Aquest és l'esquema base de fotografia i vídeo: a partir d'aquí es fan totes les variacions."
+    },
+    "s9": {
+      "title": "Món",
+      "instruction": "El World és la llum que ve de tot arreu i el color del fons. Fes un cel ennuvolat de dia: un blau clar, ni fosc ni blanc, amb Strength d'entre 0.5 i 2.",
+      "hint1": "Pestanya World del Properties Editor (la bola vermella): Color i Strength, al panell Surface.",
+      "hint2": "Un blau clar té més blau que vermell, i és d'una lluminositat mitjana. Mira el resultat en Rendered.",
+      "blue": "El color del World ha de ser blau: més blau que vermell i que verd.",
+      "brightness": "El blau és massa fosc o massa clar (lluminositat {y}). Busca un blau mitjà.",
+      "strength": "Strength és {s}. Deixa-la entre 0.5 i 2.",
+      "success": "Perfecte. El World aporta la llum de l'ambient: sense ell, les ombres serien completament negres."
+    },
+    "s10": {
+      "title": "Repte final",
+      "instruction": "Il·lumina el tamboret com en un catàleg: una llum principal i una de farciment perquè les dues cares que veu la càmera (la de davant i la del costat) tinguin entre 2 i 8 vegades de diferència, una ombra clara sota el seient i una mica de llum a la cara del darrere. Acaba en Rendered.",
+      "lights": "Calen almenys dues llums.",
+      "ratio": "Les dues cares que veu la càmera tenen {stops} passos de diferència. Busca entre 1 i 3.",
+      "shadow": "Sota el seient hi ha d'haver una ombra clara: la llum principal ha de venir de més amunt.",
+      "back": "La cara del darrere està completament a les fosques: posa-hi una mica de llum.",
+      "rendered": "Molt a prop! Passa a Rendered per veure-ho.",
+      "success": "Repte superat! El tamboret ja està a punt per a la foto."
     }
   }
 }

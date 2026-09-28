@@ -81,15 +81,17 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
 
   getState(): BlenderState {
     const m = this.mounted;
-    return { scene: m.store.state, view: m.navigator.state, ...m.settledProjection() };
+    return { scene: m.store.state, view: m.navigator.state, shading: m.renderer.shadingMode, ...m.settledProjection() };
   }
 
   onChange(fn: () => void): () => void {
     const a = this.mounted.store.onChange(fn);
     const b = this.mounted.navigator.onChange(fn);
+    const c = this.mounted.onShadingChange(fn);
     return () => {
       a();
       b();
+      c();
     };
   }
 

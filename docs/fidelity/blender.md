@@ -730,3 +730,25 @@ Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot 
 - Mostra, per a cada punt, la irradiància total en W/m², la de cada llum i la del World; amb els dos punts, la proporció A : B i la diferència en passos
 - Compta les ombres (un raig cap a cada llum, 25 per a l'Area) i les llums amb Cast Shadow desactivat no fan ombra. La llum del World es compta com un cel obert, sense ombres
 - [ ] Al doble de distància d'una Point, el mesurador marca una quarta part (dos passos menys)
+
+## Fase 5 — Les 10 etapes i la pàgina del lab
+
+### Què es comprova i com
+
+- Les comprovacions llegeixen les llums a través del contracte i les mesuren amb la mateixa física que el mesurador: el que llegeix l'alumne és el que es comprova
+- [ ] En Solid i en Material Preview, les llums de l'escena no il·luminen (etapa 1: cal passar a Rendered)
+- [ ] ❓ Etapa 3: una Point de 1000 W a 2 m, pujada a 4 m, n'arriba el 25 %; amb 4000 W torna a arribar el 100 %. Pendent de la calibració amb el render de Blender (Point 1000 W a 2 m sobre un pla gris 0,8, Cycles, Standard)
+- [ ] ❓ Etapa 4: dura = Radius ≤ 0,01 m (Sun: Angle ≤ 0,5°; Area: Size ≤ 0,05 m); tova = Radius ≥ 0,5 m (Sun: Angle ≥ 10°; Area: Size ≥ 1 m). El text de l'etapa demana Radius d'1 m per anar sobrat
+- [ ] ❓ Etapa 6: amb l'Spot a 4 m de les caixes, Size entre 20° i 45° només il·lumina la del mig. Blend ≥ 0,1
+- [ ] Etapa 7: del Sun només compta la direcció (tolerància 4°); la posició no hi fa res
+- Etapa 5: càlida = vermell ≥ 1,4 × blau; freda = blau ≥ 1,4 × vermell (color lineal). Una llum amb Power 0 no compta
+- Etapa 8: proporció entre les dues galtes que veu la càmera d'1 a 3 passos, i la vora de darrere amb almenys un 25 % de la llum de la cara més il·luminada
+- Etapa 9: blau (B ≥ 1,3 × R i B ≥ G), lluminositat entre 0,2 i 0,8, Strength entre 0,5 i 2
+- Etapa 10: proporció davant : costat d'1 a 3 passos, el terra de sota el seient com a mínim 2 passos per sota del terra obert, la cara del darrere amb més del 5 % i acabar en Rendered
+
+### Decisions del lab
+
+- Etapa 8: el cap és una UV Sphere i no el bust del cifog-lab (el lab no carrega models)
+- Etapa 10: la comprovació fa servir mesures (proporcions i ombra) i no una comparació amb un render de referència, perquè hi ha moltes il·luminacions bones
+- Etapes 3, 6, 8 i 10 comencen amb el World fosc o apagat perquè la llum de l'ambient no amagui el que es comprova
+- Fora d'abast (a la pàgina del lab): rebots de llum, Emission, IES, Light Linking, volums i les opcions d'EEVEE i Cycles de cada llum

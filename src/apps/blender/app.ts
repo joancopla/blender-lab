@@ -92,6 +92,8 @@ export interface MountedBlender {
   settledProjection(): { projection: ViewProjection; size: ViewportSize };
   /** Shows a Properties Editor tab (if the lab enables it and the active object has it). */
   showPropertiesTab(id: PropertiesTabId): void;
+  /** Viewport Shading changed (Z pie, header buttons). */
+  onShadingChange(fn: () => void): () => void;
   /** A lab tool that takes the next plain click in the viewport (null: none). */
   setClickTool(tool: ((x: number, y: number) => void) | null): void;
   /** The surface under a viewport point (CSS px): its point and normal, in Blender space. */
@@ -303,8 +305,11 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
   layout.xrayButton.addEventListener('click', toggleXray);
 
   /** Viewport Shading (Z pie, header buttons): a view setting, not an undo step. */
+  const shadingListeners = new Set<() => void>();
   function setShading(mode: ShadingMode): void {
+    const changed = view.shadingMode !== mode;
     view.setShading(mode);
+    if (changed) for (const fn of shadingListeners) fn();
     for (const k of ['WIREFRAME', 'SOLID', 'MATERIAL', 'RENDERED'] as const) {
       layout.shadingButtons[k].classList.toggle('is-active', k === mode);
       layout.shadingButtons[k].setAttribute('aria-pressed', String(k === mode));
@@ -746,6 +751,10 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
     viewport: layout.viewport,
     settledProjection,
     showPropertiesTab: (id) => properties.select(id),
+    onShadingChange: (fn) => {
+      shadingListeners.add(fn);
+      return () => shadingListeners.delete(fn);
+    },
     setClickTool: (tool) => {
       clickTool = tool;
       layout.viewport.classList.toggle('is-click-tool', tool !== null);

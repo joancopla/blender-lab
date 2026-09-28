@@ -23,6 +23,7 @@ function ctx(st: StageDefinition, scene: SceneState, memory = new Map<string, un
     view,
     projection: viewProjection({ ...view, camera: null }, SIZE, null),
     size: SIZE,
+    shading: 'SOLID',
     log: [],
     memory,
   };

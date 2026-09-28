@@ -14,6 +14,7 @@ import type { Vec3 } from '../math/vec3';
 import type { MeshData } from '../mesh/mesh-data';
 import type { SceneState } from '../scene/scene';
 import type { PropertiesTabId } from '../ui/properties/tabs';
+import type { ShadingMode } from '../render/render-setup';
 import type { ComponentHint } from '../viewport/lab-elements';
 import type { ViewportSize } from '../viewport/projection';
 import type { ViewProjection } from '../viewport/screen';
@@ -41,6 +42,8 @@ export interface BlenderState {
   /** Projection of that view, for on-screen checks. */
   readonly projection: ViewProjection;
   readonly size: ViewportSize;
+  /** Viewport Shading (Wireframe, Solid, Material Preview, Rendered). */
+  readonly shading: ShadingMode;
 }
 
 /** What a Blender stage loads (the app contract's Setup). */
@@ -72,6 +75,8 @@ export interface BlenderStageContext {
   readonly view: ViewState;
   readonly projection: ViewProjection;
   readonly size: ViewportSize;
+  /** Viewport Shading (Wireframe, Solid, Material Preview, Rendered). */
+  readonly shading: ShadingMode;
   readonly log: readonly LogEntry[];
   readonly memory: Map<string, unknown>;
 }
@@ -131,6 +136,7 @@ export function toCoreStage(def: BlenderStageDefinition): CoreBlenderStage {
         view: ctx.state.view,
         projection: ctx.state.projection,
         size: ctx.state.size,
+        shading: ctx.state.shading,
         log: ctx.log,
         memory: ctx.memory,
       });

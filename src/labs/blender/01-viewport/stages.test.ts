@@ -33,6 +33,7 @@ function ctx(
     view,
     projection: viewProjection({ ...view, camera: null }, SIZE, null),
     size: SIZE,
+    shading: 'SOLID',
     log,
     memory,
   };
