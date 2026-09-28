@@ -14,6 +14,7 @@ import { type MeshObject, type SceneObject, type SceneState, findObject, meshOf,
 import { applyArray } from './array';
 import { applyBevel } from './bevel';
 import { applyMirror } from './mirror';
+import { applySolidify } from './solidify';
 import { applySubsurf } from './subsurf';
 import { MAX_VIEWPORT_LEVELS, type Modifier } from './types';
 
@@ -73,6 +74,8 @@ function runModifier(input: MeshData, mod: Modifier, space: Mat4 | null, purpose
       const r = applyBevel(input, mod);
       return { output: r.mesh, warning: r.unsupported ? 'bevelUnsupported' : null };
     }
+    case 'SOLIDIFY':
+      return { output: applySolidify(input, mod), warning: null };
   }
 }
 

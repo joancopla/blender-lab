@@ -70,7 +70,19 @@ export interface BevelModifier extends ModifierBase {
   readonly useClampOverlap: boolean;
 }
 
-export type Modifier = MirrorModifier | ArrayModifier | SubsurfModifier | BevelModifier;
+export interface SolidifyModifier extends ModifierBase {
+  readonly type: 'SOLIDIFY';
+  /** Thickness, metres (Mode: Simple; the lab has no Complex mode). */
+  readonly thickness: number;
+  /** Offset, -1..1: where the shell goes relative to the surface (-1: behind the normals). */
+  readonly offset: number;
+  /** Even Thickness. */
+  readonly useEvenOffset: boolean;
+  /** Fill Rim: close the open borders between the two surfaces. */
+  readonly useRim: boolean;
+}
+
+export type Modifier = MirrorModifier | ArrayModifier | SubsurfModifier | BevelModifier | SolidifyModifier;
 export type ModifierType = Modifier['type'];
 
 /** Default names, as Blender gives them. */
@@ -79,6 +91,7 @@ export const MODIFIER_NAMES: Record<ModifierType, string> = {
   ARRAY: 'Array',
   SUBSURF: 'Subdivision',
   BEVEL: 'Bevel',
+  SOLIDIFY: 'Solidify',
 };
 
 /**
@@ -102,6 +115,7 @@ const base = (type: ModifierType): ModifierBase => ({
  * Merge off at 0.01 m.
  * FIDELITY? Subdivision: Catmull-Clark, Levels Viewport 1, Render 2, Use Limit Surface on.
  * FIDELITY? Bevel: Amount 0.1 m, Segments 1, Limit Method Angle (30°), Clamp Overlap on.
+ * FIDELITY? Solidify: Simple, Thickness 0.01 m, Offset -1, Even Thickness off, Fill Rim on.
  */
 export function newModifier(type: ModifierType): Modifier {
   if (type === 'SUBSURF') {
@@ -113,6 +127,9 @@ export function newModifier(type: ModifierType): Modifier {
       renderLevels: 2,
       useLimitSurface: true,
     };
+  }
+  if (type === 'SOLIDIFY') {
+    return { ...base(type), type, thickness: 0.01, offset: -1, useEvenOffset: false, useRim: true };
   }
   if (type === 'BEVEL') {
     return {

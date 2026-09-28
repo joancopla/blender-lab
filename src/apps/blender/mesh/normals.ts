@@ -17,7 +17,7 @@ import { type MeshData, isSmooth } from './mesh-data';
 import { MeshTopology } from './topology';
 
 /** Angle at corner i of face f (0 for a degenerate corner). */
-function cornerAngle(m: MeshData, face: readonly number[], i: number): number {
+export function cornerAngle(m: MeshData, face: readonly number[], i: number): number {
   const n = face.length;
   const p = m.verts[face[i]!]!;
   const a = sub(m.verts[face[(i + n - 1) % n]!]!, p);
@@ -26,6 +26,21 @@ function cornerAngle(m: MeshData, face: readonly number[], i: number): number {
   const lb = length(b);
   if (la < 1e-12 || lb < 1e-12) return 0;
   return Math.atan2(length(cross(a, b)), dot(a, b));
+}
+
+/**
+ * Vertex normals: the face normals around each vertex, weighted by the corner
+ * angles (Blender's vertex normals). Zero for vertices without faces.
+ */
+export function vertexNormals(m: MeshData): Vec3[] {
+  const sums = m.verts.map(() => vec3(0, 0, 0));
+  m.faces.forEach((face, f) => {
+    const n = faceNormal(m, f);
+    face.forEach((v, i) => {
+      sums[v] = add(sums[v]!, scale(n, cornerAngle(m, face, i)));
+    });
+  });
+  return sums.map((s) => (length(s) > 1e-12 ? normalize(s) : vec3(0, 0, 0)));
 }
 
 /**

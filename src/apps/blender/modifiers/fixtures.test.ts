@@ -11,8 +11,9 @@ import { type Vec3, length, sub, vec3 } from '../math/vec3';
 import type { MeshData } from '../mesh/mesh-data';
 import { cylinderMesh, primitiveMesh } from '../mesh/primitives';
 import { applyBevel } from './bevel';
+import { applySolidify } from './solidify';
 import { applySubsurf } from './subsurf';
-import { type BevelModifier, type SubsurfModifier, newModifier } from './types';
+import { type BevelModifier, type SolidifyModifier, type SubsurfModifier, newModifier } from './types';
 
 const files = Object.fromEntries(
   Object.entries(
@@ -53,6 +54,10 @@ const subsurf = (patch: Partial<SubsurfModifier>): SubsurfModifier => ({
   ...patch,
 });
 const bevel = (patch: Partial<BevelModifier>): BevelModifier => ({ ...(newModifier('BEVEL') as BevelModifier), ...patch });
+const solidify = (patch: Partial<SolidifyModifier>): SolidifyModifier => ({
+  ...(newModifier('SOLIDIFY') as SolidifyModifier),
+  ...patch,
+});
 
 const CASES: Record<string, () => MeshData> = {
   'cube_subsurf_cc_1.obj': () => applySubsurf(primitiveMesh('cube'), subsurf({}), 1),
@@ -64,6 +69,9 @@ const CASES: Record<string, () => MeshData> = {
   'cube_bevel_default.obj': () => applyBevel(primitiveMesh('cube'), bevel({})).mesh,
   'cube_bevel_2seg.obj': () => applyBevel(primitiveMesh('cube'), bevel({ segments: 2 })).mesh,
   'cube_bevel_3seg.obj': () => applyBevel(primitiveMesh('cube'), bevel({ segments: 3 })).mesh,
+  'plane_solidify_default.obj': () => applySolidify(primitiveMesh('plane'), solidify({})),
+  'cube_solidify_02.obj': () => applySolidify(primitiveMesh('cube'), solidify({ thickness: 0.2 })),
+  'cube_solidify_02_even.obj': () => applySolidify(primitiveMesh('cube'), solidify({ thickness: 0.2, useEvenOffset: true })),
 };
 
 describe('modifiers against Blender 5.2 exports', () => {

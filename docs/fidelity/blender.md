@@ -524,3 +524,17 @@ Cada cara guarda si és suau o plana, com l'atribut `sharp_face` de Blender. Enc
 - [ ] Un cub amb Subdivision i Shade Smooth es veu arrodonit i llis; amb Shade Flat, amb facetes
 - [ ] ❓ "Keep Sharp Edges" (activat per defecte a Shade Smooth) no fa res al lab perquè no hi ha arestes marcades com a *sharp*
 - Pendent per a la Fase 4: el panell Normals de la pestanya Object Data (casella Auto Smooth i angle)
+
+### Solidify
+
+- [ ] ❓ Valors per defecte: Mode Simple, Thickness 0,01 m, Offset −1, Even Thickness desactivat, Fill Rim activat. Nom: "Solidify"
+- [ ] ❓ Offset −1: el gruix creix darrere de les normals (la superfície original queda a fora); 1: davant; 0: centrat
+- [ ] Un pla amb Solidify fa una làmina tancada: 8 vèrtexs, 12 arestes, 6 cares, amb les normals cap enfora
+- [ ] Sense Fill Rim, les dues superfícies queden obertes, sense les cares de la vora
+- [ ] Un objecte tancat (el cub) fa un segon cub a dins, amb les normals cap endins, sense cares de vora
+- [ ] ❓ Even Thickness: a les cantonades, les parets conserven el gruix complet (sense l'opció, un cub fa parets de gruix/√3 a les cantonades)
+- [ ] Thickness negatiu: el gruix va cap a l'altre costat i les normals continuen cap enfora
+- [ ] ❓ Les cares de la vora tenen el suavitzat de la cara de la seva aresta
+- [ ] Comparar amb les malles de referència: `plane_solidify_default`, `cube_solidify_02`, `cube_solidify_02_even`
+- Fora d'abast: Mode Complex, Only Rim, Flip, High Quality Normals, Clamp, Vertex Group, materials de la vora
+- Pendent per a la Fase 4: el panell a la pestanya Modifiers i l'opció al menú Add Modifier. Fins llavors no es pot provar al navegador

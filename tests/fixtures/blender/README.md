@@ -28,3 +28,6 @@ amb aquestes malles. Si un fitxer no hi és, el seu test se salta.
 | `cube_bevel_default.obj` | Cube | Bevel |
 | `cube_bevel_2seg.obj` | Cube | Bevel, Segments 2 |
 | `cube_bevel_3seg.obj` | Cube | Bevel, Segments 3 |
+| `plane_solidify_default.obj` | Plane | Solidify |
+| `cube_solidify_02.obj` | Cube | Solidify, Thickness 0.2 m |
+| `cube_solidify_02_even.obj` | Cube | Solidify, Thickness 0.2 m, Even Thickness |
