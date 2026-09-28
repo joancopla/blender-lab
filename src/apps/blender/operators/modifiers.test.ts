@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { vec3 } from '../math/vec3';
 import { blenderDefaultScene } from '../scene/default-scene';
-import type { MeshObject, SceneState } from '../scene/scene';
+import { type MeshObject, type SceneState, meshOf } from '../scene/scene';
 import { SceneStore } from '../scene/store';
+import { ShadeSmoothOp } from './shade';
 import {
   AddModifierOp,
+  ApplyModifierOp,
+  applyModifier,
   DuplicateModifierOp,
   MoveModifierOp,
   RemoveModifierOp,
@@ -83,6 +86,55 @@ describe('modifier operators', () => {
     const s = addModifier(blenderDefaultScene(), 'cube', 'SUBSURF');
     const mod = cubeOf(setModifier(s, 'cube', 'Subdivision', { levels: 6 })).modifiers![0]!;
     expect(mod.type === 'SUBSURF' && mod.levels).toBe(3);
+  });
+});
+
+describe('Apply Modifier', () => {
+  const faces = (s: SceneState) => meshOf(cubeOf(s)).faces.length;
+
+  it('turns the result into the base mesh and removes the modifier, with Levels Viewport', () => {
+    let s = addModifier(blenderDefaultScene(), 'cube', 'SUBSURF');
+    s = setModifier(s, 'cube', 'Subdivision', { levels: 2, renderLevels: 3 });
+    const r = applyModifier(s, 'cube', 'Subdivision');
+    expect(r.report).toBeNull();
+    expect(faces(r.state)).toBe(96);
+    expect(names(r.state)).toEqual([]);
+  });
+
+  it('keeps the other modifiers; not the first: applied alone, with a warning', () => {
+    const s = addModifier(addModifier(blenderDefaultScene(), 'cube', 'MIRROR'), 'cube', 'SUBSURF');
+    const second = applyModifier(s, 'cube', 'Subdivision');
+    expect(second.report).toBe('notFirst');
+    expect(faces(second.state)).toBe(24); // the cube subdivided once, without the Mirror
+    expect(names(second.state)).toEqual(['Mirror']);
+    const first = applyModifier(s, 'cube', 'Mirror');
+    expect(first.report).toBeNull();
+    expect(names(first.state)).toEqual(['Subdivision']);
+  });
+
+  it('does nothing with Realtime off or in Edit Mode', () => {
+    let s = addModifier(blenderDefaultScene(), 'cube', 'SUBSURF');
+    const off = setModifier(s, 'cube', 'Subdivision', { showViewport: false });
+    expect(applyModifier(off, 'cube', 'Subdivision')).toEqual({ state: off, report: 'disabled' });
+    s = { ...s, editObjectIds: ['cube'] };
+    expect(applyModifier(s, 'cube', 'Subdivision')).toEqual({ state: s, report: 'editMode' });
+  });
+
+  it('keeps the face shading and resets the Edit Mode selection', () => {
+    let s = ShadeSmoothOp.apply({ ...blenderDefaultScene(), selectedIds: ['cube'], activeId: 'cube' });
+    s = addModifier(s, 'cube', 'SUBSURF');
+    const m = meshOf(cubeOf(applyModifier(s, 'cube', 'Subdivision').state));
+    expect(m.smoothFaces?.every(Boolean)).toBe(true);
+    expect(cubeOf(applyModifier(s, 'cube', 'Subdivision').state).meshSelection).toBeUndefined();
+  });
+
+  it('is one undo step named Apply Modifier', () => {
+    const store = new SceneStore(addModifier(blenderDefaultScene(), 'cube', 'SUBSURF'));
+    expect(store.execute(ApplyModifierOp('cube', 'Subdivision'))).toBe(true);
+    expect(store.log.at(-1)).toEqual({ kind: 'execute', name: 'Apply Modifier' });
+    store.undo();
+    expect(names(store.state)).toEqual(['Subdivision']);
+    expect(faces(store.state)).toBe(6);
   });
 });
 

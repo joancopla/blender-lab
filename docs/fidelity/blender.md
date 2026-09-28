@@ -579,3 +579,14 @@ Etiqueta a l'esquerra i control a la dreta, com a Blender. Només hi ha els par�
 - [ ] Arrossegar un camp mostra el resultat en directe; Esc o el botó dret ho cancel·len; clicar-hi permet escriure el valor
 - Decisió del lab: amb Limit Method, l'etiqueta va a sobre dels botons perquè hi càpiguen
 - Decisió del lab: obrir o tancar un subpanell no és un pas de desfer
+
+### Apply
+
+- [ ] ❓ Apply (menú ▾ del modificador, o Ctrl+A amb el ratolí sobre el panell): el resultat passa a ser la malla base i el modificador desapareix; els altres es queden. Nom a Undo History: "Apply Modifier"
+- [ ] ❓ Si no és el primer de la pila, s'aplica igualment tot sol sobre la malla base (sense els modificadors d'abans) i la barra d'estat diu "Applied modifier was not first, result may not be as expected"
+- [ ] ❓ Amb Realtime desactivat, no s'aplica: "Modifier is disabled, skipping apply"
+- [ ] ❓ En Edit Mode, no s'aplica: "Modifiers cannot be applied in edit mode"
+- [ ] ❓ Subdivision s'aplica amb Levels Viewport (no amb Render)
+- [ ] ❓ Després d'aplicar, en entrar a Edit Mode tota la malla està seleccionada
+- [ ] La malla aplicada conserva el suavitzat de les cares (Shade Smooth)
+- Decisió del lab: si el Bevel del lab no sap fer aquella malla, no s'aplica i surt l'avís del lab

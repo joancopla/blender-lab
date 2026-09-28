@@ -54,7 +54,7 @@ function mirrorSpace(o: MeshObject, mod: Modifier, scene: SceneState): Mat4 | nu
   return target ? multiply(invert(objectMatrix(o)), objectMatrix(target)) : null;
 }
 
-interface StageResult {
+export interface StageResult {
   readonly output: MeshData;
   readonly warning: ModifierWarning | null;
 }
@@ -77,6 +77,14 @@ function runModifier(input: MeshData, mod: Modifier, space: Mat4 | null, purpose
     case 'SOLIDIFY':
       return { output: applySolidify(input, mod), warning: null };
   }
+}
+
+/**
+ * One modifier of the object run on its own over `input` (for Apply), with the
+ * viewport settings (Levels Viewport). Not cached.
+ */
+export function runSingleModifier(o: MeshObject, mod: Modifier, scene: SceneState, input: MeshData): StageResult {
+  return runModifier(input, mod, mirrorSpace(o, mod, scene), 'viewport');
 }
 
 /**

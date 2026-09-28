@@ -8,17 +8,20 @@
  * Every change goes through an operator (Ctrl+Z works). Whether a panel is
  * expanded is only kept here, as UI state.
  * FIDELITY? Header layout and tooltips; the shortcuts over a panel (X / Delete,
- * Shift+D).
+ * Shift+D, Ctrl+A).
  */
 import { t } from '../../../../core/i18n';
 import { type ModifierWarning, modifierWarnings } from '../../modifiers/stack';
 import type { Modifier } from '../../modifiers/types';
 import {
   AddModifierOp,
+  ApplyModifierOp,
+  type ApplyReport,
   DuplicateModifierOp,
   MoveModifierOp,
   RemoveModifierOp,
   SetModifierOp,
+  applyModifier,
   setModifier,
 } from '../../operators/modifiers';
 import type { MeshObject } from '../../scene/scene';
@@ -71,6 +74,17 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
   let widgets: Widget[] = [];
 
   const run = (op: Parameters<typeof store.execute>[0]) => store.execute(op);
+
+  /** Apply, with Blender's report (or the lab's) in the status bar. */
+  function apply(objectId: string, name: string): void {
+    const { report } = applyModifier(store.state, objectId, name);
+    if (report !== 'notFirst' && report !== null) {
+      ctx.report(applyReportText(report));
+      return;
+    }
+    run(ApplyModifierOp(objectId, name));
+    if (report) ctx.report(applyReportText(report));
+  }
 
   /** The modifier as shown now (the preview while a field is dragged). */
   const currentMod = (objectId: string, name: string): Modifier | undefined => {
@@ -171,7 +185,7 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
 
     const more = iconButton('bl-mod-more', '▾', 'Modifier options');
     attachMenu(more, () => [
-      { label: 'Apply', shortcut: 'Ctrl A', disabled: true },
+      { label: 'Apply', shortcut: 'Ctrl A', action: () => apply(o.id, mod.name) },
       { label: 'Duplicate', shortcut: 'Shift D', action: () => run(DuplicateModifierOp(o.id, mod.name)) },
       { label: 'Copy to Selected', disabled: true },
       'separator',
@@ -233,7 +247,11 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
   const onKey = (e: KeyboardEvent) => {
     if (!hovered || !object || isTextField(e.target)) return;
     const name = hovered;
-    if (e.shiftKey && !e.ctrlKey && !e.altKey && e.code === 'KeyD') {
+    if (e.ctrlKey && !e.shiftKey && !e.altKey && e.code === 'KeyA') {
+      e.preventDefault();
+      hovered = null;
+      apply(object.id, name);
+    } else if (e.shiftKey && !e.ctrlKey && !e.altKey && e.code === 'KeyD') {
       e.preventDefault();
       run(DuplicateModifierOp(object.id, name));
     } else if (!e.shiftKey && !e.ctrlKey && !e.altKey && (e.code === 'KeyX' || e.code === 'Delete')) {
@@ -284,6 +302,20 @@ export function modifiersTab(body: HTMLElement, ctx: TabContext): TabView {
       for (const w of widgets) w.dispose?.();
     },
   };
+}
+
+/** Blender's reports for Apply (in English, as the program shows them), or the lab's text. FIDELITY? */
+function applyReportText(report: ApplyReport): string {
+  switch (report) {
+    case 'notFirst':
+      return 'Applied modifier was not first, result may not be as expected';
+    case 'disabled':
+      return 'Modifier is disabled, skipping apply';
+    case 'editMode':
+      return 'Modifiers cannot be applied in edit mode';
+    case 'bevelUnsupported':
+      return t('lab.bevelModifierUnsupported');
+  }
 }
 
 /** Lab texts for the stack's warnings. */

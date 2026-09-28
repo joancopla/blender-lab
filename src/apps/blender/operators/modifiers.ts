@@ -10,7 +10,8 @@ import {
   newModifier,
   uniqueModifierName,
 } from '../modifiers/types';
-import type { MeshObject, SceneState } from '../scene/scene';
+import { runSingleModifier } from '../modifiers/stack';
+import { type MeshObject, type SceneState, meshOf } from '../scene/scene';
 import type { OperatorCall } from '../scene/store';
 
 /** Applies `fn` to one mesh object's stack; the same state if nothing changes. */
@@ -139,6 +140,44 @@ export function subdivisionSet(s: SceneState, level: number): { state: SceneStat
   return { state, limited };
 }
 
+/** Why Apply did not work as asked, or a warning it gave (Blender's report, or a lab one). */
+export type ApplyReport = 'notFirst' | 'disabled' | 'editMode' | 'bevelUnsupported';
+
+/**
+ * Apply (Ctrl+A over the panel): the modifier runs on its own over the base
+ * mesh, the result becomes the new base mesh and the modifier is removed. The
+ * other modifiers stay.
+ * - Not the first of the stack: it is applied anyway, with Blender's warning
+ *   (the modifiers before it are not taken into account).
+ * - Realtime off: nothing is applied.
+ * - In Edit Mode: nothing is applied.
+ * - The lab's Bevel cannot do this mesh: nothing is applied (lab warning).
+ * The Edit Mode selection starts again with everything selected.
+ * FIDELITY? All of the above in Blender 5.2, and the report texts.
+ */
+export function applyModifier(s: SceneState, objectId: string, name: string): { state: SceneState; report: ApplyReport | null } {
+  const o = s.objects.find((x) => x.id === objectId);
+  if (o?.type !== 'mesh') return { state: s, report: null };
+  const mods = o.modifiers ?? [];
+  const index = mods.findIndex((m) => m.name === name);
+  if (index < 0) return { state: s, report: null };
+  if (s.editObjectIds?.includes(objectId)) return { state: s, report: 'editMode' };
+  const mod = mods[index]!;
+  if (!mod.showViewport) return { state: s, report: 'disabled' };
+  const result = runSingleModifier(o, mod, s, meshOf(o));
+  if (result.warning === 'bevelUnsupported') return { state: s, report: 'bevelUnsupported' };
+  const applied: MeshObject = {
+    ...o,
+    mesh: result.output,
+    meshSelection: undefined,
+    modifiers: mods.filter((_, i) => i !== index),
+  };
+  return {
+    state: { ...s, objects: s.objects.map((x) => (x.id === objectId ? applied : x)) },
+    report: index > 0 ? 'notFirst' : null,
+  };
+}
+
 /**
  * Levels Viewport edits are limited to the lab's maximum too.
  * Returns whether the wanted value had to be lowered.
@@ -155,6 +194,11 @@ export const AddModifierOp = (objectId: string, type: ModifierType): OperatorCal
 export const RemoveModifierOp = (objectId: string, name: string): OperatorCall => ({
   name: 'Remove Modifier',
   apply: (s) => removeModifier(s, objectId, name),
+});
+
+export const ApplyModifierOp = (objectId: string, name: string): OperatorCall => ({
+  name: 'Apply Modifier',
+  apply: (s) => applyModifier(s, objectId, name).state,
 });
 
 export const DuplicateModifierOp = (objectId: string, name: string): OperatorCall => ({
