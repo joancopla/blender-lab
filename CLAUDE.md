@@ -135,6 +135,8 @@ no sap què és un vèrtex ni una capa; només sap que hi ha un estat i unes com
 - Treballa **per fases**. Al final de cada fase, atura't i fes-me un resum de què has
   fet, què he de provar i les preguntes de fidelitat obertes. No passis a la següent fase
   fins que jo ho digui.
+- `specs/blender/README.md` recull l'ordre dels labs, les dependències, els components
+  compartits i com es valida la fidelitat. Llegeix-lo abans de començar qualsevol lab.
 - Treballa només en el lab que t'indiqui. Les especificacions d'altres labs a `specs/`
   són context per a decisions d'arquitectura, no feina per avançar.
 - Abans d'escriure codi d'una fase, proposa'm el pla breument.
