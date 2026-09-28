@@ -13,6 +13,7 @@ import { DEG, type Quat, conjugate, fromAxisAngle, rotate } from '../math/quat';
 import { type Vec3, AXIS_Z, add, cross, dot, length, mul, normalize, sub, vec3 } from '../math/vec3';
 import type { MeshData } from '../mesh/mesh-data';
 import { selectionOf } from '../operators/edit-mode';
+import { clipToMirror } from './mirror-clip';
 import {
   type ModalResult,
   type TransformKind,
@@ -142,11 +143,15 @@ export class ComponentTransform implements ModalOperator {
         const q = objectRotation(o);
         const m: MeshData = meshOf(o);
         const verts = [...m.verts];
+        const start = new Map<number, Vec3>();
         for (const p of mine) {
           const w = moved.get(`${o.id}#${p.vert}`);
-          if (w) verts[p.vert] = toLocal(o, q, w);
+          if (!w) continue;
+          verts[p.vert] = toLocal(o, q, w);
+          start.set(p.vert, m.verts[p.vert]!);
         }
-        return { ...o, mesh: { ...m, verts } };
+        // Mirror > Clipping keeps vertices on, or behind, the mirror plane.
+        return { ...o, mesh: { ...m, verts: clipToMirror(o, start, verts) } };
       }),
     };
   }

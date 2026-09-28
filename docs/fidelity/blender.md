@@ -600,3 +600,13 @@ Etiqueta a l'esquerra i control a la dreta, com a Blender. Només hi ha els par�
 - [ ] ❓ Amb la casella desactivada, l'angle es veu apagat però es pot canviar
 - [ ] ❓ Noms a Undo History: "Auto Smooth" i "Angle"; l'angle va de 0° a 180°
 - [ ] Canviar la casella o l'angle es veu al moment al viewport (amb les cares suaus)
+
+### Edit Mode amb modificadors
+
+- [ ] ❓ En Edit Mode es veu el resultat dels modificadors que tenen el botó Edit Mode activat; els que el tenen desactivat no s'apliquen
+- [ ] ❓ A sobre del resultat es veu la gàbia de la malla base (arestes, vèrtexs i cares seleccionades), que és el que s'edita. Equival a "On Cage" desactivat
+- [ ] ❓ La gàbia queda tapada on el resultat hi passa per davant (per exemple, les arestes de darrere); amb X-ray es veu tota
+- [ ] ❓ Seleccionar vèrtexs, arestes i cares es fa sobre la gàbia (la malla base), no sobre el resultat
+- [ ] ❓ Mirror > Clipping: en moure vèrtexs (G, R, S, i també Extrude), els que són sobre el pla del mirall (a menys de la distància de Merge) s'hi queden, i cap vèrtex no el pot travessar: s'atura al pla
+- [ ] ❓ Clipping només funciona amb Realtime activat i sense Mirror Object
+- Fora d'abast: el botó "On Cage" de la capçalera dels modificadors

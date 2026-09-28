@@ -263,8 +263,11 @@ export class ViewportRenderer {
   private syncMesh(e: ObjectEntry, o: Extract<SceneState['objects'][number], { type: 'mesh' }>, scene: SceneState): void {
     const m = meshOf(o);
     const editing = scene.editObjectIds?.includes(o.id) ?? false;
-    // Object Mode draws the modifiers' result. FIDELITY? Edit Mode with modifiers (cage) is Phase 4 of Lab 03.
-    const drawn = editing ? m : evaluatedMesh(o, scene);
+    // The modifiers' result is drawn in both modes (in Edit Mode, only the
+    // modifiers with Edit Mode on); in Edit Mode the base mesh is drawn over it
+    // as the cage (the overlay below), which is what gets edited.
+    // FIDELITY? "On Cage" off; the cage hidden where the result covers it.
+    const drawn = evaluatedMesh(o, scene);
     const mesh = e.root as THREE.Mesh;
     const smooth = autoSmoothAngle(o);
     if (e.meshData !== drawn || e.autoSmooth !== smooth) {
