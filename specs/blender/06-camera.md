@@ -6,7 +6,7 @@ fotografia i vídeo.
 
 Llegeix `CLAUDE.md` i `specs/blender/README.md` abans de res.
 
-**Depèn de:** Lab 01, Properties Editor i mòdul de render (Lab 05).
+**Depèn de:** Lab 01, Properties Editor i mòdul de render (Lab 04).
 
 ---
 

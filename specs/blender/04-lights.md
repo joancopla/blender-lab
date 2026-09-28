@@ -1,4 +1,4 @@
-# Lab 05 — Llum
+# Lab 04 — Llum
 
 L'alumne aprèn a il·luminar una escena: tipus de llum, intensitat, mida de la font i
 ombres, color i esquemes clàssics d'il·luminació. És el lab que connecta més directament
@@ -6,16 +6,16 @@ amb el que fan a plató i fotografia.
 
 Llegeix `CLAUDE.md` i `specs/blender/README.md` abans de res.
 
-**Depèn de:** Lab 01. Segons l'ordre de construcció, aquest lab construeix el
-**Properties Editor** i el **mòdul de render**.
+**Depèn de:** Lab 01 i el Properties Editor (fet al Lab 03). Aquest lab construeix el
+**mòdul de render**. Parteix del Lighting Lab de cifog-lab (vegeu "Feina aprofitada" al
+README).
 
 ---
 
-## 1. Properties Editor (component compartit)
+## 1. Properties Editor (component compartit, ja existent)
 
-Component nou a `src/apps/blender/ui/properties/`, amb totes les pestanyes de Blender en
-l'ordre correcte. Cada lab n'activa només les que necessita. En aquest lab: Object, Object
-Data de la llum i World. `// FIDELITY?` amb l'ordre de les pestanyes a Blender 5.2.
+Construït al Lab 03 (`src/apps/blender/ui/properties/`). En aquest lab s'hi activen i
+s'omplen Object Data de la llum i World.
 
 ## 2. Mòdul de render (component compartit)
 

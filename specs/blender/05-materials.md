@@ -1,4 +1,4 @@
-# Lab 04 — Materials i nodes
+# Lab 05 — Materials i nodes
 
 L'alumne aprèn com respon la superfície d'un objecte a la llum i com es construeix un
 material amb nodes. En acabar, ha de saber fer materials bàsics amb el Principled BSDF i
@@ -6,7 +6,7 @@ els primers materials procedurals.
 
 Llegeix `CLAUDE.md` i `specs/blender/README.md` abans de res.
 
-**Depèn de:** Lab 01, Properties Editor, mòdul de render (Lab 05, segons l'ordre de
+**Depèn de:** Lab 01, Properties Editor, mòdul de render (Lab 04, segons l'ordre de
 construcció). Aquest lab construeix l'**editor de nodes**.
 
 ---

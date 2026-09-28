@@ -6,7 +6,7 @@ color.
 
 Llegeix `CLAUDE.md` i `specs/blender/README.md` abans de res.
 
-**Depèn de:** Labs 01, 04, 05 i 06 (materials, llum i càmera ja construïts).
+**Depèn de:** Labs 01, 04, 05 i 06 (llum, materials i càmera ja construïts).
 
 ---
 
