@@ -611,3 +611,21 @@ Etiqueta a l'esquerra i control a la dreta, com a Blender. Només hi ha els par�
 - [ ] ❓ Mirror > Clipping: en moure vèrtexs (G, R, S, i també Extrude), els que són sobre el pla del mirall (a menys de la distància de Merge) s'hi queden, i cap vèrtex no el pot travessar: s'atura al pla
 - [ ] ❓ Clipping només funciona amb Realtime activat i sense Mirror Object
 - Fora d'abast: el botó "On Cage" de la capçalera dels modificadors
+
+## Fase 5 — Etapes i web del Lab 03
+
+### Decisions de disseny de les etapes (no són de Blender, però revisa-les)
+
+- Totes les etapes obren la pestanya Modifiers, excepte la 8 (Suau o pla), que obre Data. Les comprovacions miren la pila i el resultat dels modificadors
+- 1. Suavitzar: Subdivision Surface (Catmull-Clark) amb Levels Viewport 2, afegit amb Add Modifier. Ctrl+2 només s'explica, perquè al navegador canvia de pestanya
+- 2. Loops de suport: el cub ja té Subdivision 2. Silueta del resultat contra un cub amb loops a ±0,8, amb un llindar del 99 %: passen els loops de 0,6 cap a fora; no passen els que queden al terç (on els deixa Ctrl+R) ni a 0,5. La pista proposa 2 talls i S eix 2.4
+- 3. Mirror: mitja caixa oberta a X = 0. Cal un Mirror en X, amb Merge (costura tancada) i Clipping
+- 4. Array: un esglaó de 0,5 × 2 × 0,25 m. Cal Count 6 i Relative Offset X = 1, Z = 1 (es comprova per l'alçada i la profunditat del resultat)
+- 5. Bevel no destructiu: una llosa de 2 × 2 × 0,5 m. Cal un Bevel amb Limit Method Angle i 3 segments, i la malla base no pot haver canviat (si l'apliques, no val)
+- 6. L'ordre importa: mitja caixa amb [Subdivision, Mirror]. Cal que el Mirror vagi primer; després es compara la silueta amb el resultat correcte
+- 7. Gruix: un pla amb Solidify de 0,1 m (en valor absolut) i Fill Rim
+- 8. Suau o pla: un cilindre; per ordre, Shade Smooth, Shade Flat i Shade Auto Smooth
+- 9. Aplicar: mitja caixa amb [Mirror, Subdivision]. Cal aplicar el Mirror i conservar el Subdivision; si s'esborra el Mirror, l'etapa ho detecta
+- 10. Repte final: el tamboret del Lab 02 (silueta, 85 %), amb un Mirror a la pila, com a molt 24 cares a la malla base i el resultat net (sense costures obertes, duplicats ni n-gons). Sense pistes; temps i operacions en acabar
+- Al Lab 03 no hi ha analitzador de topologia: analitzaria la malla base, i al repte final una part oberta per fer Mirror semblaria plena d'errors
+- El plànol del tamboret de l'índex no canvia: el Lab 03 no hi afegeix línies

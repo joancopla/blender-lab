@@ -9,7 +9,8 @@ import { rotate } from '../math/quat';
 import { type Vec3, add, mul } from '../math/vec3';
 import { triangulateFace } from '../mesh/geometry';
 import type { MeshData } from '../mesh/mesh-data';
-import { type MeshObject, meshOf, objectRotation } from '../scene/scene';
+import { evaluatedMesh } from '../modifiers/stack';
+import { type MeshObject, type SceneState, meshOf, objectRotation } from '../scene/scene';
 
 export type SilhouetteView = 'front' | 'right' | 'top';
 export const SILHOUETTE_VIEWS: readonly SilhouetteView[] = ['front', 'right', 'top'];
@@ -34,7 +35,11 @@ export function worldTriangles(m: MeshData, place?: Pick<MeshObject, 'location' 
   return out;
 }
 
+/** The object's base mesh in world space (what Edit Mode edits). */
 export const objectTriangles = (o: MeshObject): Triangle[] => worldTriangles(meshOf(o), o);
+
+/** The object as drawn: its modifiers' result, in world space. */
+export const evaluatedTriangles = (o: MeshObject, scene: SceneState): Triangle[] => worldTriangles(evaluatedMesh(o, scene), o);
 
 interface Frame {
   readonly x0: number;

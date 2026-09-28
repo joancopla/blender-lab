@@ -4,20 +4,135 @@
     "desc": "Treball no destructiu amb la pila de modificadors: Subdivision Surface, Mirror, Array, Bevel i Solidify, i suavitzat de la malla.",
     "intro": {
       "eyebrow": "Lab 03",
-      "lead": "Aprendràs a treballar sense destruir la malla: la malla base es manté senzilla i els modificadors en generen el resultat final.",
+      "lead": "Aprendràs a treballar sense destruir la malla: la malla base es manté senzilla i els modificadors en generen el resultat final. Al final tornaràs a fer el tamboret, ara amb molt menys feina.",
       "controls": {
         "properties": "Afegir un modificador: Properties Editor, pestanya Modifiers (la clau anglesa) > Add Modifier",
-        "panel": "Amb el ratolí sobre un modificador: X l'esborra i Shift + D el duplica",
+        "panel": "Amb el ratolí sobre un modificador: Ctrl + A l'aplica, X l'esborra i Shift + D el duplica",
         "shade": "Suau o facetat: botó dret > Shade Smooth, Shade Auto Smooth o Shade Flat",
         "undo": "Desfer: Ctrl + Z"
       }
     },
     "real": {
-      "lead": "El que ja funciona en aquest avançament es fa igual a Blender.",
-      "subdivisionSet": "A Blender, Ctrl + 0…5 en Object Mode afegeix un Subdivision Surface amb aquell nivell (o el canvia). Al navegador no ho pots provar: Ctrl + 1…8 canvien de pestanya del navegador i la pàgina no rep la tecla. Aquí fes servir Add Modifier.",
+      "lead": "Tot el que fas en aquest lab es fa igual a Blender. Aquí tens on trobar cada cosa i què ha quedat fora.",
+      "stack": "Modificadors: Properties Editor > pestanya Modifiers. L'ordre de la pila és l'ordre en què s'apliquen, de dalt a baix.",
+      "subdivisionSet": "A Blender, Ctrl + 0…5 en Object Mode afegeix un Subdivision Surface amb aquell nivell (o el canvia). Al navegador no ho pots provar: Ctrl + 1…8 canvien de pestanya del navegador i la pàgina no rep la tecla.",
       "shade": "Shade Smooth, Shade Auto Smooth i Shade Flat: menú contextual del botó dret o menú Object. Auto Smooth és la casella de la pestanya Object Data > Normals, a 30°.",
       "levels": "Al lab, Levels Viewport arriba com a màxim a 3 perquè els ordinadors de l'aula vagin fluids. Al Blender real pots pujar més, però cada nivell multiplica per quatre les cares.",
-      "preview": "Aquest lab encara és en construcció: els paràmetres de cada modificador, Apply i les etapes hi aniran arribant."
+      "outOfScope": "Fora del lab: Boolean, Shrinkwrap, els modificadors de deformació (Simple Deform, Lattice, Curve...), Geometry Nodes, els creases de Subdivision i els pesos de Bevel. El Bevel del lab tampoc no sap arrodonir totes les formes: al Blender real sí."
+    },
+    "shape": {
+      "extra": "Vista {view}: la forma coincideix en un {pct} % (cal un {min} %). Sobra forma {zone}.",
+      "missing": "Vista {view}: la forma coincideix en un {pct} % (cal un {min} %). Falta forma {zone}."
+    },
+    "zone": {
+      "top-left": "a dalt a l'esquerra",
+      "top": "a dalt",
+      "top-right": "a dalt a la dreta",
+      "left": "a l'esquerra",
+      "centre": "al centre",
+      "right": "a la dreta",
+      "bottom-left": "a baix a l'esquerra",
+      "bottom": "a baix",
+      "bottom-right": "a baix a la dreta"
+    },
+    "s1": {
+      "title": "Suavitzar",
+      "instruction": "Afegeix un Subdivision Surface al cub (Add Modifier > Generate) i posa Levels Viewport a 2. Fixa't que el cub es converteix en una mena d'esfera: cada nivell divideix totes les cares i arrodoneix la forma.",
+      "hint1": "El botó Add Modifier és a dalt de la pestanya Modifiers, la de la clau anglesa. Amb el menú obert també pots escriure «sub» per buscar-lo.",
+      "hint2": "Clica el número de Levels Viewport i escriu 2, o arrossega'l cap a la dreta. A Blender també ho faries amb Ctrl + 2, però al navegador aquesta tecla canvia de pestanya.",
+      "add": "Afegeix un Subdivision Surface amb Add Modifier.",
+      "catmull": "Deixa'l en Catmull-Clark: és el que arrodoneix la forma.",
+      "levels": "Levels Viewport és {n}. Posa'l a 2.",
+      "success": "Molt bé. La malla base continua sent un cub de 8 vèrtexs: el modificador només en genera el resultat."
+    },
+    "s2": {
+      "title": "Loops de suport",
+      "instruction": "El Subdivision arrodoneix massa el cub. Perquè mantingui les arestes, afegeix loops de suport a prop de les vores: entra en Mode Edició i fes dos loop cuts en cada direcció (X, Y i Z), molt a prop de les cares. La forma ha de coincidir amb la silueta.",
+      "hint1": "Ctrl + R sobre una aresta, roda del ratolí per fer 2 talls, clic i clic dret perquè quedin al mig. Amb els dos loops nous seleccionats, escala'ls en aquell eix: S, l'eix (X, Y o Z), 2.4 i Enter.",
+      "hint2": "Com més a prop de la vora estiguin els loops, més viva queda l'aresta. Repeteix-ho en els tres eixos.",
+      "keepSubsurf": "No treguis el Subdivision Surface: és el que volem controlar.",
+      "start": "Entra en Mode Edició (Tab) i afegeix els loop cuts.",
+      "success": "Exacte. Els loops de suport controlen on el Subdivision manté la forma."
+    },
+    "s3": {
+      "title": "Mirror",
+      "instruction": "Aquí només hi ha mitja caixa. Completa-la amb un Mirror en l'eix X i activa Clipping, que fa que els vèrtexs del mig no puguin travessar el mirall quan editis. Les dues meitats han de quedar unides.",
+      "hint1": "Add Modifier > Generate > Mirror. Per defecte ja fa servir l'eix X i té Merge activat, que uneix els vèrtexs del mig.",
+      "hint2": "La casella Clipping és al panell del Mirror, sota Mirror Object.",
+      "add": "Afegeix un Mirror amb Add Modifier.",
+      "axis": "El mirall ha de fer servir l'eix X (botó X d'Axis).",
+      "seam": "Les dues meitats no queden unides. Activa Merge al Mirror.",
+      "clip": "Ara activa Clipping.",
+      "success": "Molt bé. Amb el Mirror només modeles una meitat, i l'altra sempre queda igual."
+    },
+    "s4": {
+      "title": "Array",
+      "instruction": "Fes una escala de 6 esglaons amb un Array. Cada còpia s'ha de desplaçar un esglaó endavant (X) i un esglaó amunt (Z): Relative Offset amb Factor X = 1 i Z = 1.",
+      "hint1": "Add Modifier > Generate > Array. Posa Count a 6.",
+      "hint2": "A Relative Offset, el Factor X ja és 1. Posa també el Factor Z a 1: cada còpia puja la seva pròpia alçada.",
+      "add": "Afegeix un Array amb Add Modifier.",
+      "count": "L'Array té {n} còpies. En volem {want}.",
+      "offset": "Les còpies no fan escala. Revisa Relative Offset: Factor X = 1, Y = 0 i Z = 1.",
+      "success": "Perfecte. Si canvies el primer esglaó, tots els altres canvien amb ell."
+    },
+    "s5": {
+      "title": "Bevel no destructiu",
+      "instruction": "Arrodoneix les arestes de la peça amb el modificador Bevel, amb Limit Method Angle i 3 segments. Al Lab 02 el bevel canviava la malla; ara la malla base no es toca i pots canviar l'arrodoniment quan vulguis.",
+      "hint1": "Add Modifier > Generate > Bevel. Limit Method Angle ja ve per defecte: només arrodoneix les arestes més marcades que l'angle.",
+      "hint2": "Posa Segments a 3. No l'apliquis: la gràcia és que continuï sent un modificador.",
+      "destructive": "La malla base ha canviat. Desfés (Ctrl + Z) fins que torni a ser la peça d'abans i fes l'arrodoniment amb el modificador.",
+      "add": "Afegeix un Bevel amb Add Modifier.",
+      "angle": "Posa Limit Method a Angle.",
+      "segments": "El Bevel té {n} segments. En volem {want}.",
+      "unsupported": "El Bevel del lab no sap fer aquesta forma amb aquests valors. Torna a posar Amount a 0.1 m.",
+      "success": "Molt bé. Pots canviar Amount o Segments quan vulguis sense tocar la malla."
+    },
+    "s6": {
+      "title": "L'ordre importa",
+      "instruction": "Aquesta pila està en l'ordre equivocat: el Subdivision arrodoneix la mitja caixa abans que el Mirror la completi, i la costura del mig queda marcada. Reordena la pila perquè coincideixi amb la silueta.",
+      "hint1": "Els modificadors s'apliquen de dalt a baix. Primer s'ha de completar la forma (Mirror) i després arrodonir-la (Subdivision).",
+      "hint2": "Arrossega el Mirror per l'agafador (⠿) fins a dalt, o fes servir el menú ▾ del Mirror > Move to First.",
+      "keep": "Cal que hi hagi el Mirror i el Subdivision: no n'esborris cap.",
+      "order": "El Subdivision encara va abans que el Mirror.",
+      "success": "Exacte. El mateix parell de modificadors dona un resultat diferent segons l'ordre."
+    },
+    "s7": {
+      "title": "Gruix",
+      "instruction": "Aquest pla serà el seient del tamboret. Dona-li un gruix de 0,1 m amb un Solidify.",
+      "hint1": "Add Modifier > Generate > Solidify. El gruix és Thickness.",
+      "hint2": "Clica el número de Thickness i escriu 0.1. Fill Rim ha de quedar activat perquè les vores quedin tancades.",
+      "add": "Afegeix un Solidify amb Add Modifier.",
+      "thickness": "Thickness és {n} m. Posa-hi 0.1 m.",
+      "rim": "Activa Fill Rim (subpanell Rim) perquè la làmina quedi tancada.",
+      "success": "Molt bé. Una superfície plana pot tenir gruix sense modelar-lo."
+    },
+    "s8": {
+      "title": "Suau o pla",
+      "instruction": "Prova les tres maneres d'ombrejar el cilindre, per ordre: Shade Smooth, després Shade Flat i finalment Shade Auto Smooth. Les tres són al menú del botó dret.",
+      "hint1": "Botó dret sobre el viewport, amb el cilindre seleccionat. Fixa't que Shade Smooth també arrodoneix les tapes, i queda estrany.",
+      "hint2": "Shade Auto Smooth només suavitza on les cares fan menys de 30°: el costat queda llis i les tapes, planes. L'angle és a la pestanya Data > Normals.",
+      "step0": "Primer, Shade Smooth.",
+      "step1": "Ara, Shade Flat.",
+      "step2": "Finalment, Shade Auto Smooth.",
+      "success": "Perfecte. Auto Smooth és el que faràs servir més: suau on cal i pla on hi ha arestes."
+    },
+    "s9": {
+      "title": "Aplicar",
+      "instruction": "Aplica el Mirror (Apply) i deixa el Subdivision com a modificador. Es fa quan vols editar les dues meitats per separat; mentre no calgui, és millor no aplicar i mantenir el treball no destructiu.",
+      "hint1": "Amb el ratolí sobre el panell del Mirror, Ctrl + A. També ho trobaràs al menú ▾ del Mirror > Apply.",
+      "hint2": "El Mirror és el primer de la pila, així que s'aplica sense avís. Si apliques un modificador que no és el primer, Blender avisa que el resultat pot no ser l'esperat.",
+      "keepSubsurf": "El Subdivision s'ha de quedar com a modificador.",
+      "apply": "Aplica el Mirror.",
+      "deleted": "La malla base encara és mitja caixa. Has esborrat el Mirror en lloc d'aplicar-lo? Desfés (Ctrl + Z) i fes Apply.",
+      "success": "Molt bé. Ara la malla base és la caixa sencera, i el Subdivision continua sent editable."
+    },
+    "s10": {
+      "title": "Repte final",
+      "instruction": "Torna a fer el tamboret de la silueta, ara amb modificadors: modela'n només una part i completa'l amb un Mirror (pots fer servir els eixos X i Y). La malla base ha de tenir com a molt 24 cares, i el resultat ha de quedar net.",
+      "mirror": "La forma ja s'hi assembla, però fes-la amb un Mirror.",
+      "faces": "La malla base té {n} cares; el màxim és {max}. Modela'n menys i deixa que el Mirror faci la resta.",
+      "clean": "El resultat té costures obertes, vèrtexs duplicats o n-gons. Revisa que Merge estigui activat al Mirror.",
+      "success": "Repte superat! Amb una quarta part del tamboret n'has tingut prou."
     }
   }
 }

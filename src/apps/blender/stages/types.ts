@@ -13,6 +13,7 @@ import type {
 import type { Vec3 } from '../math/vec3';
 import type { MeshData } from '../mesh/mesh-data';
 import type { SceneState } from '../scene/scene';
+import type { PropertiesTabId } from '../ui/properties/tabs';
 import type { ComponentHint } from '../viewport/lab-elements';
 import type { ViewportSize } from '../viewport/projection';
 import type { ViewProjection } from '../viewport/screen';
@@ -52,6 +53,8 @@ export interface BlenderSetup {
   readonly referenceMeshes?: readonly MeshData[];
   /** Turn the topology analyser on when the stage starts. */
   readonly analyzer?: boolean;
+  /** Properties Editor tab to show when the stage starts. */
+  readonly propertiesTab?: PropertiesTabId;
 }
 
 /** Lab elements a Blender check asks for (the app contract's Decorations). */
@@ -109,6 +112,7 @@ export function toCoreStage(def: BlenderStageDefinition): CoreBlenderStage {
     markers: def.markers,
     referenceMeshes: def.referenceMeshes,
     analyzer: def.analyzer,
+    propertiesTab: def.propertiesTab,
   };
   return {
     id: def.id,

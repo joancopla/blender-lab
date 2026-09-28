@@ -88,6 +88,7 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
     m.navigator.reset(setup.view?.() ?? defaultViewState());
     this.drawLabElements();
     if (setup.analyzer) this.analyzer?.setEnabled(true);
+    if (setup.propertiesTab) m.showPropertiesTab(setup.propertiesTab);
   }
 
   get log(): readonly LogEntry[] {

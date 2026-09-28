@@ -86,6 +86,8 @@ export interface MountedBlender {
   readonly viewport: HTMLElement;
   /** Projection of the settled view (no Smooth View in between), for stage checks. */
   settledProjection(): { projection: ViewProjection; size: ViewportSize };
+  /** Shows a Properties Editor tab (if the lab enables it and the active object has it). */
+  showPropertiesTab(id: PropertiesTabId): void;
 }
 
 export interface MountOptions {
@@ -643,5 +645,12 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
     const cam = activeCamera(store.state);
     return { projection: viewProjection(navigator.settled(), size, cam ? cameraData(store.state, cam) : null), size };
   };
-  return { navigator, store, renderer: view, viewport: layout.viewport, settledProjection };
+  return {
+    navigator,
+    store,
+    renderer: view,
+    viewport: layout.viewport,
+    settledProjection,
+    showPropertiesTab: (id) => properties.select(id),
+  };
 }

@@ -11,11 +11,10 @@ export const lab03: LabDefinition<BlenderState, BlenderSetup, BlenderDecorations
   descKey: 'lab03.desc',
   stages: toCoreLab(LAB03_STAGES),
   blueprint: STOOL_BLUEPRINT,
-  preview: true,
   createApp: () => new BlenderApp({ statistics: true, propertiesTabs: ['modifiers', 'data'] }),
   page: {
     prefix: 'lab03',
     controls: ['properties', 'panel', 'shade', 'undo'],
-    real: ['subdivisionSet', 'shade', 'levels', 'preview'],
+    real: ['stack', 'subdivisionSet', 'shade', 'levels', 'outOfScope'],
   },
 };

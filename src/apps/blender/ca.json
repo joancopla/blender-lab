@@ -43,6 +43,8 @@
     "m": "M",
     "ctrlR": "Ctrl + R",
     "ctrlB": "Ctrl + B",
+    "ctrlA": "Ctrl + A",
+    "shiftD": "Shift + D",
     "shiftZ": "Shift + Z"
   },
   "prefs": {
