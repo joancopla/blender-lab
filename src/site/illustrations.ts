@@ -1,5 +1,5 @@
 /**
- * Small isometric drawings for the lab cards of the home proposal. They show
+ * Small isometric drawings for the lab cards of the index. They show
  * what the lab is about in Blender's own visual language (solid grey objects,
  * orange outline for the active object, axis colours), so they always sit on a
  * dark, viewport-like panel whatever the page theme.

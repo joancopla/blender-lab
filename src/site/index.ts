@@ -1,7 +1,7 @@
 /**
- * Collection index (DESIGN.md, "Pàgina índex"): title block bar, hero with the
- * three-view blueprint and the main action, and the labs as numbered rows
- * grouped by program.
+ * Collection index (DESIGN.md, "Pàgina índex"): top bar, split hero with the
+ * main action and the three-view blueprint, and each program's labs as
+ * illustrated cards.
  */
 import type { LabDefinition } from '../core/lab';
 import { ProgressStore } from '../core/stages/progress';
@@ -17,55 +17,40 @@ import { lab01 } from '../labs/blender/01-viewport';
 import { lab02 } from '../labs/blender/02-edit-mode';
 import { lab03 } from '../labs/blender/03-modifiers';
 import { lab04 } from '../labs/blender/04-lights';
+import { LAB_ILLUSTRATIONS } from './illustrations';
 import '../core/shell/shell.css';
 import './site.css';
 
 interface LabEntry {
   readonly lab: LabDefinition;
   readonly href: string;
-}
-
-interface Shortcut {
-  /** i18n key of what it does. */
-  readonly labelKey: string;
-  /** Key ids (keys.<id>). */
+  /** Key ids (keys.<id>) shown on the card: the lab's signature shortcuts. */
   readonly keys: readonly string[];
 }
 
-interface ProgramGroup {
-  /** i18n key of the program name. */
-  readonly nameKey: string;
-  readonly labs: readonly LabEntry[];
-  /** Real shortcuts taught in the labs, for the index strip. */
-  readonly shortcuts: readonly Shortcut[];
-}
+const LABS: readonly LabEntry[] = [
+  { lab: lab01, href: 'labs/01-viewport/', keys: ['numpad1', 'numpad7', 'g', 'r', 's'] },
+  { lab: lab02, href: 'labs/02-edit-mode/', keys: ['tab', 'e', 'i', 'ctrlR', 'ctrlB'] },
+  { lab: lab03, href: 'labs/03-modifiers/', keys: ['ctrlA', 'ctrlR', 'tab'] },
+  { lab: lab04, href: 'labs/04-lights/', keys: ['shiftA', 'z', 'g', 'r'] },
+];
 
-const PROGRAMS: readonly ProgramGroup[] = [
-  {
-    nameKey: 'app.name',
-    labs: [
-      { lab: lab01, href: 'labs/01-viewport/' },
-      { lab: lab02, href: 'labs/02-edit-mode/' },
-      { lab: lab03, href: 'labs/03-modifiers/' },
-      { lab: lab04, href: 'labs/04-lights/' },
-    ],
-    shortcuts: [
-      { labelKey: 'shortcuts.grab', keys: ['g'] },
-      { labelKey: 'shortcuts.rotate', keys: ['r'] },
-      { labelKey: 'shortcuts.scale', keys: ['s'] },
-      { labelKey: 'shortcuts.axis', keys: ['g', 'x'] },
-      { labelKey: 'shortcuts.views', keys: ['numpad1', 'numpad3', 'numpad7'] },
-      { labelKey: 'shortcuts.editMode', keys: ['tab'] },
-      { labelKey: 'shortcuts.extrude', keys: ['e'] },
-      { labelKey: 'shortcuts.undo', keys: ['ctrlZ'] },
-    ],
-  },
+const SHORTCUTS: readonly { labelKey: string; keys: readonly string[] }[] = [
+  { labelKey: 'shortcuts.grab', keys: ['g'] },
+  { labelKey: 'shortcuts.rotate', keys: ['r'] },
+  { labelKey: 'shortcuts.scale', keys: ['s'] },
+  { labelKey: 'shortcuts.axis', keys: ['g', 'x'] },
+  { labelKey: 'shortcuts.views', keys: ['numpad1', 'numpad3', 'numpad7'] },
+  { labelKey: 'shortcuts.editMode', keys: ['tab'] },
+  { labelKey: 'shortcuts.extrude', keys: ['e'] },
+  { labelKey: 'shortcuts.undo', keys: ['ctrlZ'] },
 ];
 
 const PREF_TOGGLES = [
   ...BLENDER_PREFERENCES,
   { key: KEY_OVERLAY_PREF, labelKey: 'prefs.keyOverlay', helpKey: 'prefs.keyOverlayHelp' },
 ];
+
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
   const e = document.createElement(tag);
@@ -92,10 +77,14 @@ root.className = 'lab-page site-page';
 let justReset: string | null = null;
 
 function topBar(): HTMLElement {
-  const bar = el('header', 'site-top grid-paper');
-  const name = el('a', 'site-name', t('site.title'));
+  const bar = el('header', 'site-top');
+  const name = el('a', 'site-name');
   name.href = './';
+  name.append(el('span', 'site-name-mark'), el('span', undefined, t('site.title')));
   const tools = el('div', 'site-top-tools');
+
+  const labsLink = el('a', 'site-top-link', t('site.labsTitle'));
+  labsLink.href = '#labs';
 
   const prefs = el('details', 'site-prefs');
   const list = el('div', 'site-prefs-list');
@@ -110,30 +99,34 @@ function topBar(): HTMLElement {
   };
   renderPrefSwitches(list, PREF_TOGGLES, loadPrefs(defaults), set);
 
-  tools.append(prefs, themeButton('site-top-button'));
+  tools.append(labsLink, prefs, themeButton('site-top-button'));
   bar.append(name, tools);
   return bar;
 }
 
-function views(): HTMLElement {
+function blueprint(): HTMLElement {
   const earned = earnedLineIds(STOOL_BLUEPRINT, (labId, stageId) => ProgressStore.read(labId).completed.includes(stageId));
-  const figure = el('figure', 'site-blueprint grid-paper');
+  const figure = el('figure', 'site-blueprint');
   figure.setAttribute('aria-label', t('site.blueprintTitle'));
+  const grid = el('div', 'site-blueprint-views');
   for (const v of ['front', 'side', 'top'] as const) {
     const view = el('div', `site-view site-view-${v}`);
     const drawing = el('div', 'site-view-drawing');
     drawing.dataset.view = v;
     drawing.append(renderBlueprintView(STOOL_BLUEPRINT, v as BlueprintView, earned));
     view.append(drawing, el('span', 'site-view-label', t(`site.views.${v}`)));
-    figure.append(view);
+    grid.append(view);
   }
-  figure.append(el('figcaption', 'site-blueprint-note', t('site.blueprintEmpty')));
+  const note = el('div', 'site-view site-blueprint-note');
+  note.append(el('span', 'site-eyebrow', t('site.blueprintLabel')), el('p', undefined, t('site.blueprintEmpty')));
+  grid.append(note);
+  figure.append(grid);
   return figure;
 }
 
 function mainAction(): HTMLAnchorElement {
   // Labs still being built are never the main action.
-  const all = PROGRAMS.flatMap((g) => g.labs).filter((e) => !e.lab.preview);
+  const all = LABS.filter((e) => !e.lab.preview);
   const next = all.find((e) => {
     const p = progressOf(e.lab);
     return p.done < p.total;
@@ -141,87 +134,147 @@ function mainAction(): HTMLAnchorElement {
   const entry = next ?? all[0]!;
   const p = progressOf(entry.lab);
   const key = !next ? 'site.review' : p.started ? 'site.continue' : 'site.start';
-  const a = el('a', 'lab-button lab-button-primary site-cta', t(key, { n: entry.lab.number }));
+  const a = el('a', 'site-button site-button-primary', t(key, { n: entry.lab.number }));
   a.href = entry.href;
   return a;
 }
 
-function labRow(entry: LabEntry, blueprint: HTMLElement): HTMLLIElement {
+function hero(figure: HTMLElement): HTMLElement {
+  const section = el('section', 'site-hero');
+  const text = el('div', 'site-hero-text');
+  const title = el('h1', 'site-hero-title');
+  title.append(el('span', undefined, t('site.heroLead')), ' ', el('span', 'site-accent', t('site.heroAccent')));
+  const actions = el('div', 'site-hero-actions');
+  const secondary = el('a', 'site-button site-button-ghost', t('site.seeLabs'));
+  secondary.href = '#labs';
+  actions.append(mainAction(), secondary);
+  text.append(el('p', 'site-eyebrow site-eyebrow-dot', t('site.eyebrow')), title, el('p', 'site-hero-lead', t('site.tagline')), actions);
+  const art = el('div', 'site-hero-art');
+  art.append(figure);
+  section.append(text, art);
+  return section;
+}
+
+function keyChain(keys: readonly string[]): HTMLElement {
+  const chain = el('span', 'site-card-keys');
+  keys.forEach((k, i) => {
+    if (i > 0) chain.append(el('span', 'site-card-keys-sep', '·'));
+    chain.append(el('span', undefined, t(`keys.${k}`)));
+  });
+  return chain;
+}
+
+function card(entry: LabEntry, figure: HTMLElement): HTMLLIElement {
   const { lab } = entry;
   const p = progressOf(lab);
-  const row = el('li', 'site-row');
-  row.dataset.lab = lab.id;
-  if (lab.preview) return previewRow(entry, row, blueprint);
-  if (p.started && p.done < p.total) row.classList.add('is-current');
+  const done = !lab.preview && p.done === p.total;
+  const current = !lab.preview && p.started && !done;
+  const li = el('li', 'site-card');
+  if (current) li.classList.add('is-current');
+  if (done) li.classList.add('is-done');
 
-  const title = el('div', 'site-row-title');
+  const art = el('a', 'site-card-art');
+  art.href = entry.href;
+  art.tabIndex = -1;
+  art.setAttribute('aria-hidden', 'true');
+  art.innerHTML = LAB_ILLUSTRATIONS[lab.id] ?? '';
+  art.append(keyChain(entry.keys));
+
+  const body = el('div', 'site-card-body');
+  const meta = el('div', 'site-card-meta');
+  const count = lab.preview ? t('site.freeOnly') : t('site.cardStages', { total: p.total });
+  meta.append(el('span', 'site-card-n', lab.number), el('span', 'site-card-count', count));
+  const status = lab.preview
+    ? t('site.statusPreview')
+    : done
+      ? t('site.statusDone')
+      : current
+        ? t('site.statusInProgress')
+        : t('site.statusNotStarted');
+  meta.append(el('span', `site-status${done ? ' is-done' : current ? ' is-current' : ''}`, status));
+
+  const title = el('h3', 'site-card-title');
   const link = el('a', undefined, t(lab.nameKey));
   link.href = entry.href;
-  title.append(link, el('p', 'site-row-desc', t(lab.descKey)));
+  title.append(link);
 
-  const status =
-    p.done === p.total ? t('site.statusDone') : p.started ? t('site.statusInProgress') : t('site.statusNotStarted');
-  const state = el('div', 'site-row-state');
-  state.append(
-    el('span', 'site-row-count', t('site.stages', { n: p.done, total: p.total })),
-    el('span', p.done === p.total ? 'site-row-status is-done' : p.started ? 'site-row-status is-current' : 'site-row-status', status),
-  );
-  if (justReset === lab.id) state.append(el('span', 'site-row-note', t('site.progressReset')));
-  else if (p.started) {
-    let armed = false;
-    const reset = el('button', 'lab-link-button site-row-reset', t('site.resetProgress'));
-    reset.type = 'button';
-    // Two clicks instead of a browser dialog.
-    reset.addEventListener('click', () => {
-      if (!armed) {
-        armed = true;
-        reset.textContent = t('site.resetProgressConfirm');
-        return;
-      }
-      new ProgressStore(lab.id).reset();
-      justReset = lab.id;
-      render();
-    });
-    state.append(reset);
+  const foot = el('div', 'site-card-foot');
+  if (!lab.preview) {
+    const bar = el('div', 'site-progress');
+    bar.setAttribute('aria-hidden', 'true');
+    const fill = el('div');
+    fill.style.width = `${(p.done / p.total) * 100}%`;
+    bar.append(fill);
+    const row = el('div', 'site-card-foot-row');
+    row.append(el('span', 'site-card-progress-text', t('site.stages', { n: p.done, total: p.total })));
+    if (justReset === lab.id) row.append(el('span', 'site-card-note', t('site.progressReset')));
+    else if (p.started) row.append(resetButton(lab));
+    const go = el('a', 'site-card-go', t(done ? 'site.cardReview' : current ? 'site.cardContinue' : 'site.cardStart'));
+    go.href = entry.href;
+    go.setAttribute('aria-label', `${go.textContent}: ${t(lab.nameKey)}`);
+    row.append(go);
+    foot.append(bar, row);
+  } else {
+    const row = el('div', 'site-card-foot-row');
+    const go = el('a', 'site-card-go', t('site.cardOpen'));
+    go.href = entry.href;
+    row.append(go);
+    foot.append(row);
   }
 
-  const bar = el('div', 'site-row-progress');
-  bar.setAttribute('aria-hidden', 'true');
-  const fill = el('div');
-  fill.style.width = `${(p.done / p.total) * 100}%`;
-  bar.append(fill);
-  row.append(el('span', 'site-row-n', lab.number), title, state, bar);
+  body.append(meta, title, el('p', 'site-card-desc', t(lab.descKey)), foot);
+  li.append(art, body);
+
   // Highlights this lab's lines in the blueprint.
-  const highlight = (on: boolean) => highlightLab(blueprint, on ? lab.id : null);
-  row.addEventListener('mouseenter', () => highlight(true));
-  row.addEventListener('mouseleave', () => highlight(false));
-  row.addEventListener('focusin', () => highlight(true));
-  row.addEventListener('focusout', () => highlight(false));
-  return row;
+  const highlight = (on: boolean) => highlightLab(figure, on ? lab.id : null);
+  li.addEventListener('mouseenter', () => highlight(true));
+  li.addEventListener('mouseleave', () => highlight(false));
+  li.addEventListener('focusin', () => highlight(true));
+  li.addEventListener('focusout', () => highlight(false));
+  return li;
 }
 
-/** A lab still being built: free mode only, no stage count or progress. */
-function previewRow(entry: LabEntry, row: HTMLLIElement, blueprint: HTMLElement): HTMLLIElement {
-  const { lab } = entry;
-  const title = el('div', 'site-row-title');
-  const link = el('a', undefined, t(lab.nameKey));
-  link.href = entry.href;
-  title.append(link, el('p', 'site-row-desc', t(lab.descKey)));
-  const state = el('div', 'site-row-state');
-  state.append(el('span', 'site-row-count', t('site.freeOnly')), el('span', 'site-row-status', t('site.statusPreview')));
-  row.append(el('span', 'site-row-n', lab.number), title, state);
-  row.addEventListener('mouseenter', () => highlightLab(blueprint, lab.id));
-  row.addEventListener('mouseleave', () => highlightLab(blueprint, null));
-  return row;
+function resetButton(lab: LabDefinition): HTMLButtonElement {
+  let armed = false;
+  const reset = el('button', 'site-card-reset', t('site.resetProgress'));
+  reset.type = 'button';
+  // Two clicks instead of a browser dialog.
+  reset.addEventListener('click', () => {
+    if (!armed) {
+      armed = true;
+      reset.textContent = t('site.resetProgressConfirm');
+      return;
+    }
+    new ProgressStore(lab.id).reset();
+    justReset = lab.id;
+    render();
+  });
+  return reset;
 }
 
-function shortcuts(group: ProgramGroup): HTMLElement {
+function program(figure: HTMLElement): HTMLElement {
+  const section = el('section', 'site-program');
+  section.id = 'labs';
+  section.setAttribute('aria-labelledby', 'site-program-title');
+  const head = el('div', 'site-program-head');
+  const titles = el('div');
+  const h = el('h2', 'site-program-title', t('app.name'));
+  h.id = 'site-program-title';
+  titles.append(el('p', 'site-eyebrow', t('site.programEyebrow', { n: LABS.length })), h);
+  head.append(titles, el('p', 'site-program-lead', t('site.programLead')));
+  const list = el('ol', 'site-cards');
+  for (const entry of LABS) list.append(card(entry, figure));
+  section.append(head, list);
+  return section;
+}
+
+function shortcuts(): HTMLElement {
   const section = el('section', 'site-shortcuts');
   const head = el('div', 'site-shortcuts-head');
-  head.append(el('h2', undefined, t('site.shortcutsTitle')), el('p', 'lab-muted', t('site.shortcutsLead')));
+  head.append(el('h2', undefined, t('site.shortcutsTitle')), el('p', undefined, t('site.shortcutsLead')));
   const list = el('ul', 'site-shortcuts-list');
-  for (const sc of group.shortcuts) {
-    const li = el('li', sc.keys.length > 2 ? 'is-wide' : undefined);
+  for (const sc of SHORTCUTS) {
+    const li = el('li');
     const keys = el('span', 'site-shortcut-keys');
     for (const k of sc.keys) {
       const kbd = el('kbd', 'lab-kbd');
@@ -230,35 +283,19 @@ function shortcuts(group: ProgramGroup): HTMLElement {
     }
     const label = el('span', 'site-shortcut-label');
     label.append(axisText(t(sc.labelKey)));
-    li.append(label, keys);
+    li.append(keys, label);
     list.append(li);
   }
   section.append(head, list);
   return section;
 }
 
+
 function render(): void {
-  const hero = el('section', 'site-hero');
-  const blueprint = views();
-  const text = el('div', 'site-hero-text');
-  text.append(el('h1', 'site-title', t('site.heroTitle')), el('p', 'lab-lead', t('site.tagline')), mainAction());
-  hero.append(blueprint, text);
-
-  const labs = el('section', 'site-labs');
-  labs.setAttribute('aria-labelledby', 'site-labs-title');
-  const h = el('h2', undefined, t('site.labsTitle'));
-  h.id = 'site-labs-title';
-  labs.append(h);
-  for (const group of PROGRAMS) {
-    labs.append(el('h3', 'site-program', t(group.nameKey)));
-    const list = el('ol', 'site-rows');
-    for (const entry of group.labs) list.append(labRow(entry, blueprint));
-    labs.append(list);
-  }
-
-  const main = el('main', 'site');
-  main.append(hero, labs, ...PROGRAMS.map(shortcuts));
-  root.replaceChildren(topBar(), main, el('footer', 'lab-footer site-footer', t('site.footer')));
+  const figure = blueprint();
+  const main = el('main', 'site-main');
+  main.append(hero(figure), program(figure), shortcuts());
+  root.replaceChildren(topBar(), main, el('footer', 'site-footer', t('site.footer')));
 }
 
 render();

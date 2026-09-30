@@ -1,7 +1,6 @@
 {
   "site": {
     "title": "Labs de programari creatiu",
-    "heroTitle": "Aprèn programari creatiu construint, pas a pas",
     "tagline": "Laboratoris interactius al navegador per aprendre des de zero. Cada lab reprodueix una part del programa i et proposa etapes curtes amb comprovació automàtica.",
     "blueprintTitle": "Plànol del repte final",
     "blueprintEmpty": "El plànol es completarà a mesura que avancis: cada etapa superada hi afegeix línies.",
@@ -26,7 +25,19 @@
     "progressReset": "Progrés reiniciat",
     "footer": "Projecte educatiu independent, fet per a l'aula. No està vinculat a cap fabricant de programari.",
     "shortcutsTitle": "Control ràpid des del teclat",
-    "shortcutsLead": "Als labs aprens les dreceres reals de Blender. Aquestes són les que faràs servir més."
+    "shortcutsLead": "Als labs aprens les dreceres reals de Blender. Aquestes són les que faràs servir més.",
+    "eyebrow": "Labs interactius · Programari creatiu",
+    "heroLead": "Aprèn programari creatiu",
+    "heroAccent": "construint, pas a pas.",
+    "seeLabs": "Mira els labs",
+    "blueprintLabel": "El repte final",
+    "programEyebrow": "Programari 3D · {n} labs",
+    "programLead": "Comença per la interfície i avança cap al modelat, els modificadors i la llum. Tot el que fas aquí es fa exactament igual a Blender.",
+    "cardStart": "Comença",
+    "cardContinue": "Continua",
+    "cardReview": "Repassa",
+    "cardOpen": "Obre el lab",
+    "cardStages": "{total} etapes"
   },
   "ui": {
     "backToIndex": "← Tots els labs",
@@ -85,26 +96,5 @@
     "light": "clar",
     "dark": "fosc",
     "help": "Canvia entre el mode fosc i el clar"
-  },
-  "siteProposal": {
-    "eyebrow": "Labs interactius · Programari creatiu",
-    "heroLead": "Aprèn programari creatiu",
-    "heroAccent": "construint, pas a pas.",
-    "seeLabs": "Mira els labs",
-    "blueprintLabel": "El repte final",
-    "programEyebrow": "Programari 3D · {n} labs",
-    "programLead": "Comença per la interfície i avança cap al modelat, els modificadors i la llum. Tot el que fas aquí es fa exactament igual a Blender.",
-    "cardStart": "Comença",
-    "cardContinue": "Continua",
-    "cardReview": "Repassa",
-    "cardOpen": "Obre el lab",
-    "cardStages": "{total} etapes",
-    "panelTitle": "Proposta de disseny",
-    "panelAccent": "Color d'accent",
-    "accentAmber": "Ambre",
-    "accentTeal": "Turquesa",
-    "accentOrange": "Taronja",
-    "panelCurrent": "Mira la home actual",
-    "panelHide": "Amaga"
   }
 }
