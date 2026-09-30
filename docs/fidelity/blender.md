@@ -652,6 +652,7 @@ Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot 
 - [ ] Render de calibració a Blender: pla gris 0,8, Point 1000 W a 2 m, Cycles, view transform Standard; valor RGB al centre (esperat ≈5,07). Ajusta `POWER_CALIBRATION` a `render/light-units.ts`
 - [ ] Si Blender 5.2 té l'opció de temperatura (Kelvin) al color de les llums
 - [ ] Tots els ❓ de les fases 1 a 5 d'aquesta secció
+- [ ] Rendiment a l'aula amb `?perf` (vegeu la fase 6)
 
 ## Fase 1 — Dades de les llums, física i Shift+A
 
@@ -763,3 +764,19 @@ Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot 
 - Etapa 10: la comprovació fa servir mesures (proporcions i ombra) i no una comparació amb un render de referència, perquè hi ha moltes il·luminacions bones
 - Etapes 3, 6, 8 i 10 comencen amb el World fosc o apagat perquè la llum de l'ambient no amagui el que es comprova
 - Fora d'abast (a la pàgina del lab): rebots de llum, Emission, IES, Light Linking, volums i les opcions d'EEVEE i Cycles de cada llum
+
+## Fase 6 — Poliment
+
+### Rendiment (decisions del lab, no de Blender)
+
+- Resolució adaptativa només a Rendered: si els fotogrames que el lab encadena (les mostres
+  progressives, les animacions de vista) passen de 22 ms de mitjana, la resolució interna
+  baixa al 75 % i després al 50 %; torna a pujar si durant uns quants cops van per sota de
+  10 ms. Blender té una opció manual semblant (Resolution Scale); aquesta és automàtica
+- Les ombres de les Point es calculen amb mapes de 512 px (en fan sis, un per cara del cub);
+  les de Spot i Sun, amb 1024 px. La mitjana de mostres ho suavitza
+- [ ] Mesurar-ho en un ordinador de l'aula: obre el lab amb `?perf` al final de l'adreça
+  (per exemple `.../labs/04-lights/?perf`). A baix a la dreta del viewport surten els fps,
+  el fotograma típic a Rendered, les crides de dibuix, la resolució i les mostres. Prova
+  Rendered amb les quatre llums de l'etapa 10 i orbita: apunta els fps i la resolució que
+  queda

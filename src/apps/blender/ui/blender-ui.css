@@ -1078,3 +1078,18 @@
 .bl-viewport.is-click-tool {
   cursor: crosshair;
 }
+
+/* Performance readout (?perf): a testing aid, bottom right of the viewport. */
+.bl-perf {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 4;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #d9d9d9;
+  font: 11px/1.4 Consolas, monospace;
+  white-space: pre;
+  pointer-events: none;
+}

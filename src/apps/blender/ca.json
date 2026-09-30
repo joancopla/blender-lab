@@ -112,5 +112,12 @@
     "extrude": "Extrudir",
     "undo": "Desfer",
     "views": "Vistes frontal, lateral i superior"
+  },
+  "perf": {
+    "fps": "{n} fps",
+    "frame": "Fotograma típic a Rendered: {ms} ms",
+    "calls": "Crides de dibuix: {n}",
+    "scale": "Resolució: {n} %",
+    "samples": "Mostres: {n}"
   }
 }

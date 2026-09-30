@@ -48,6 +48,8 @@ import type { Ghost } from '../stages/ghost-match';
 import type { FaceMarker } from '../stages/types';
 import { type OutlineState, SelectionPasses } from './selection-passes';
 import { THEME } from './theme';
+import { FrameGovernor } from './frame-governor';
+import { PerfReadout } from './perf-readout';
 
 /** Keeps modest classroom computers at 60 fps on high-density screens. */
 const MAX_PIXEL_RATIO = 1.5;
@@ -123,6 +125,15 @@ export class ViewportRenderer {
   private lastCamera: THREE.Camera = this.perspCamera;
   private lastFrame: FrameInfo | null = null;
   private readonly drawListeners = new Set<(info: FrameInfo) => void>();
+  /** Adaptive resolution in Rendered (see frame-governor.ts). */
+  private readonly governor = new FrameGovernor();
+  private readonly basePixelRatio = Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO);
+  /** Inside a frame: a render requested now chains the next frame to this one. */
+  private inFrame = false;
+  private nextChained = false;
+  private lastFrameAt = 0;
+  /** Performance readout, only with ?perf in the address. */
+  private readonly perf: PerfReadout | null;
 
   constructor(
     private readonly container: HTMLElement,
@@ -131,8 +142,10 @@ export class ViewportRenderer {
   ) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'default' });
     // Capped: on high-density screens every pass (scene, grid, outlines) costs 4x at 2.0.
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
+    this.renderer.setPixelRatio(this.basePixelRatio);
     this.renderer.autoClear = false;
+    // Draw calls are counted per frame (several renders per frame).
+    this.renderer.info.autoReset = false;
     this.renderer.setClearColor(THEME.viewportBackground);
     this.canvas = this.renderer.domElement;
     this.canvas.className = 'bl-viewport-canvas';
@@ -148,6 +161,8 @@ export class ViewportRenderer {
     this.accumulator = new Accumulator(this.renderer);
     // Both cameras see surfaces and overlays, except in Rendered's sample pass.
     for (const c of [this.perspCamera, this.orthoCamera]) c.layers.enableAll();
+
+    this.perf = PerfReadout.fromLocation(container);
 
     navigator.onChange(() => this.requestRender());
     new ResizeObserver(() => this.resize()).observe(container);
@@ -198,7 +213,26 @@ export class ViewportRenderer {
   setShading(mode: ShadingMode): void {
     this.shading = mode;
     this.accumulator.reset();
+    this.governor.restartWindow();
+    this.applyPixelRatio();
     this.requestRender();
+  }
+
+  /**
+   * Buffer resolution: the screen's (capped), lowered by the governor only in
+   * Rendered, the one mode whose frames are expensive.
+   */
+  private applyPixelRatio(): void {
+    const scale = this.shading === 'RENDERED' ? this.governor.scale : 1;
+    const ratio = this.basePixelRatio * scale;
+    if (ratio === this.renderer.getPixelRatio()) return;
+    this.renderer.setPixelRatio(ratio);
+    this.renderer.setSize(this.size.width, this.size.height, false);
+    // Point sizes of the overlays are in buffer pixels: rebuild them.
+    for (const e of this.objects.values()) {
+      e.overlayFrom = undefined;
+      e.analyzerFor = undefined;
+    }
   }
 
   get shadingMode(): ShadingMode {
@@ -227,13 +261,34 @@ export class ViewportRenderer {
   }
 
   requestRender(): void {
+    if (this.inFrame) this.nextChained = true;
     if (this.scheduled) return;
     this.scheduled = true;
     requestAnimationFrame(() => {
       this.scheduled = false;
-      const more = this.navigator.tick();
-      this.draw();
-      if (more) this.requestRender();
+      const now = performance.now();
+      // Only frames the renderer chained itself measure what a frame costs.
+      const chained = this.nextChained;
+      this.nextChained = false;
+      if (chained && this.shading === 'RENDERED' && this.governor.record(now - this.lastFrameAt)) {
+        this.applyPixelRatio();
+      }
+      this.lastFrameAt = now;
+      this.inFrame = true;
+      try {
+        const more = this.navigator.tick();
+        this.renderer.info.reset();
+        this.draw();
+        this.perf?.frame(now, chained, {
+          calls: this.renderer.info.render.calls,
+          scale: this.renderer.getPixelRatio() / this.basePixelRatio,
+          typicalMs: this.governor.typicalFrameMs,
+          samples: this.shading === 'RENDERED' ? this.accumulator.count : null,
+        });
+        if (more) this.requestRender();
+      } finally {
+        this.inFrame = false;
+      }
     });
   }
 
@@ -275,6 +330,7 @@ export class ViewportRenderer {
     const h = Math.max(1, this.container.clientHeight);
     this.size = { width: w, height: h };
     this.renderer.setSize(w, h, false);
+    this.governor.restartWindow();
     this.requestRender();
   }
 

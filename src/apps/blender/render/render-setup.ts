@@ -32,6 +32,11 @@ export type ShadingMode = 'WIREFRAME' | 'SOLID' | 'MATERIAL' | 'RENDERED';
 
 /** Shadow map size: moderate, for classroom computers. */
 const SHADOW_MAP_SIZE = 1024;
+/**
+ * Point lights render six shadow maps (a cube): smaller ones. The progressive
+ * samples average them into soft shadows, which hides the lower resolution.
+ */
+const POINT_SHADOW_MAP_SIZE = 512;
 
 interface LightEntry {
   readonly light: THREE.Light;
@@ -184,7 +189,8 @@ export class RenderSetup {
       light.add(light.target);
     }
     if (light instanceof THREE.PointLight || light instanceof THREE.SpotLight || light instanceof THREE.DirectionalLight) {
-      light.shadow.mapSize.set(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+      const size = light instanceof THREE.PointLight ? POINT_SHADOW_MAP_SIZE : SHADOW_MAP_SIZE;
+      light.shadow.mapSize.set(size, size);
       light.shadow.bias = -0.0005;
       light.shadow.normalBias = 0.02;
     }
