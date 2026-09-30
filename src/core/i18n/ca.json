@@ -85,5 +85,26 @@
     "light": "clar",
     "dark": "fosc",
     "help": "Canvia entre el mode fosc i el clar"
+  },
+  "siteProposal": {
+    "eyebrow": "Labs interactius · Programari creatiu",
+    "heroLead": "Aprèn programari creatiu",
+    "heroAccent": "construint, pas a pas.",
+    "seeLabs": "Mira els labs",
+    "blueprintLabel": "El repte final",
+    "programEyebrow": "Programari 3D · {n} labs",
+    "programLead": "Comença per la interfície i avança cap al modelat, els modificadors i la llum. Tot el que fas aquí es fa exactament igual a Blender.",
+    "cardStart": "Comença",
+    "cardContinue": "Continua",
+    "cardReview": "Repassa",
+    "cardOpen": "Obre el lab",
+    "cardStages": "{total} etapes",
+    "panelTitle": "Proposta de disseny",
+    "panelAccent": "Color d'accent",
+    "accentAmber": "Ambre",
+    "accentTeal": "Turquesa",
+    "accentOrange": "Taronja",
+    "panelCurrent": "Mira la home actual",
+    "panelHide": "Amaga"
   }
 }

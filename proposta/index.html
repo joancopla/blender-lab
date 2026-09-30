@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ca" class="proposal">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Proposta de home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+    <script>
+      // Same theme key as src/core/shell/theme.ts; the accent is only for this proposal.
+      try {
+        var theme = localStorage.getItem('blender-lab:theme');
+        document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+        var accent = localStorage.getItem('blender-lab:proposal-accent');
+        document.documentElement.dataset.accent = accent === 'teal' || accent === 'orange' ? accent : 'amber';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+        document.documentElement.dataset.accent = 'amber';
+      }
+    </script>
+  </head>
+  <body>
+    <main id="site"></main>
+    <script type="module" src="/src/site/proposal/index.ts"></script>
+  </body>
+</html>
