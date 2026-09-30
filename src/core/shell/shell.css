@@ -1,5 +1,5 @@
 /*
- * Shell look (docs/DESIGN.md): dark studio with a turquoise accent (default),
+ * Shell look (docs/DESIGN.md): dark neutral studio with a turquoise accent (default),
  * plus a light variant the student can switch to. Axis colours only mean axes
  * (X also errors). The replicated program keeps its own theme and is never
  * styled from here.
@@ -12,14 +12,15 @@
 /* Dark (default). */
 :root {
   color-scheme: dark;
-  --bg: #111418;
-  --surface-low: #191c20;
-  --surface: #1d2024;
-  --surface-high: #272a2e;
-  --line: #2c343d;
-  --text: #e1e2e8;
-  --text-muted: #bacac5;
-  --text-faint: #859490;
+  --bg: #17191c;
+  --surface-low: #1c1e22;
+  --surface: #222529;
+  --surface-high: #2c3035;
+  --line: #363a41;
+  --line-strong: #4a4f57;
+  --text: #f2f3f4;
+  --text-muted: #b0b5bd;
+  --text-faint: #858b94;
   --accent: #57f1db;
   --accent-strong: #2dd4bf;
   --accent-tint: rgba(87, 241, 219, 0.12);
@@ -27,10 +28,10 @@
   --axis-x: #ff6b6b;
   --axis-y: #8bc34a;
   --axis-z: #6ea8ff;
-  --grid: rgba(60, 74, 70, 0.35);
+  --grid: rgba(255, 255, 255, 0.045);
   --radius: 4px;
   --radius-panel: 6px;
-  --font: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font: 'Inter', 'Segoe UI', Arial, sans-serif;
   --mono: 'JetBrains Mono', Consolas, monospace;
   /* Modular scale, ratio 1.25. */
   --step--1: 0.8rem;
@@ -45,14 +46,15 @@
 
 :root[data-theme='light'] {
   color-scheme: light;
-  --bg: #f4f6f8;
-  --surface-low: #edf0f3;
-  --surface: #e8ecef;
-  --surface-high: #dde2e6;
-  --line: #c9d1d8;
-  --text: #14181c;
-  --text-muted: #4a5754;
-  --text-faint: #5d6b68;
+  --bg: #f6f5f3;
+  --surface-low: #efeeeb;
+  --surface: #ffffff;
+  --surface-high: #e9e7e3;
+  --line: #dcd9d3;
+  --line-strong: #c3bfb8;
+  --text: #16181b;
+  --text-muted: #50555c;
+  --text-faint: #666b73;
   --accent: #0f766e;
   --accent-strong: #0b6b63;
   --accent-tint: rgba(15, 118, 110, 0.1);
@@ -60,7 +62,7 @@
   --axis-x: #c62828;
   --axis-y: #3d7420;
   --axis-z: #1d5fd1;
-  --grid: rgba(154, 170, 180, 0.3);
+  --grid: rgba(0, 0, 0, 0.05);
 }
 
 html,
