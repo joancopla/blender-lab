@@ -36,6 +36,8 @@ export interface BlenderAppOptions {
   readonly addObjects?: boolean;
   /** Offer the light meter in the lab panel. */
   readonly meter?: boolean;
+  /** Where new lights appear instead of the 3D Cursor (a lab decision). */
+  readonly newLightLocation?: Vec3;
 }
 
 export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, BlenderDecorations> {
@@ -67,6 +69,7 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
       statistics: this.options.statistics,
       propertiesTabs: this.options.propertiesTabs,
       addObjects: this.options.addObjects,
+      newLightLocation: this.options.newLightLocation,
     });
     this.inner.store.onChange(() => {
       this.analyzer?.update();

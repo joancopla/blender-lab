@@ -679,6 +679,7 @@ Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot 
 - [ ] ❓ L'objecte nou apareix al 3D Cursor (al lab, sempre a l'origen), sense rotació, seleccionat i actiu; els altres es deseleccionen
 - [ ] ❓ Noms: "Point", "Sun", "Spot", "Area", "Plane", "Cube", "Sphere" (la UV Sphere), "Cylinder", "Cone", "Torus", amb .001 si ja existeix
 - [ ] ❓ Noms a Undo History: "Add Light", "Add Cube", "Add UV Sphere"...
+- Decisió del lab (Lab 04): les llums noves apareixen a (5, 5, 5) i no al 3D Cursor, perquè a l'origen quedarien dins del cub de l'escena i no es veurien. Les malles noves continuen apareixent al 3D Cursor
 - Decisió del lab: Shift+A i el menú Add només funcionen als labs que ho ensenyen (a partir del 04). En Edit Mode el menú Add no hi és: a Blender hi afegeix primitives dins de la malla
 - Fora d'abast per ara: el panell Adjust Last Operation d'Add
 

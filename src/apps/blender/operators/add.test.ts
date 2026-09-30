@@ -17,6 +17,14 @@ describe('Add (Shift+A)', () => {
     expect(lightData(o).spotSizeDeg).toBe(45);
   });
 
+  it('a lab can place new lights elsewhere; meshes stay at the 3D Cursor', () => {
+    const at = vec3(5, 5, 5);
+    const light = addObject(blenderDefaultScene(), { kind: 'light', lightType: 'SUN' }, at);
+    expect(light.state.objects.find((x) => x.id === light.id)!.location).toEqual(at);
+    const cube = addObject(blenderDefaultScene(), { kind: 'mesh', primitive: 'cube' }, at);
+    expect(cube.state.objects.find((x) => x.id === cube.id)!.location).toEqual(vec3(0, 0, 0));
+  });
+
   it('names like Blender: Cube is taken, so Cube.001', () => {
     let s = addObject(blenderDefaultScene(), { kind: 'mesh', primitive: 'cube' }).state;
     expect(s.objects.at(-1)!.name).toBe('Cube.001');

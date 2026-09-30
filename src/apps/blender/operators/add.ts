@@ -4,8 +4,10 @@
  * defaults. One undo step, named after Blender's operator.
  * FIDELITY? The 3D Cursor is always at the world origin in the lab; Blender
  * also shows an Adjust Last Operation panel (size, location, rotation).
+ * A lab can place new lights elsewhere (`lightAt`): a lab decision, so that a
+ * new light is not hidden inside the scene's objects.
  */
-import { vec3 } from '../math/vec3';
+import { type Vec3, vec3 } from '../math/vec3';
 import { uniqueName } from '../scene/names';
 import type { LightObject, LightType, MeshObject, PrimitiveKind, SceneObject, SceneState } from '../scene/scene';
 import type { OperatorCall } from '../scene/store';
@@ -37,11 +39,15 @@ function freshId(s: SceneState, base: string): string {
   for (let i = 1; ; i++) if (!ids.has(`${base}-${i}`)) return `${base}-${i}`;
 }
 
-/** Adds the object (only in Object Mode). Returns the new state and the new object's id. */
-export function addObject(s: SceneState, what: AddKind): { state: SceneState; id: string | null } {
+/**
+ * Adds the object (only in Object Mode). Returns the new state and the new
+ * object's id. `lightAt`: where new lights go instead of the 3D Cursor.
+ */
+export function addObject(s: SceneState, what: AddKind, lightAt?: Vec3): { state: SceneState; id: string | null } {
   if ((s.editObjectIds?.length ?? 0) > 0) return { state: s, id: null };
   const names = s.objects.map((o) => o.name);
-  const place = { location: vec3(0, 0, 0), rotationDeg: vec3(0, 0, 0), scale: vec3(1, 1, 1) };
+  const at = what.kind === 'light' && lightAt ? lightAt : vec3(0, 0, 0);
+  const place = { location: at, rotationDeg: vec3(0, 0, 0), scale: vec3(1, 1, 1) };
   let object: SceneObject;
   if (what.kind === 'light') {
     const light: LightObject = {
@@ -68,7 +74,7 @@ export function addObject(s: SceneState, what: AddKind): { state: SceneState; id
   };
 }
 
-export const AddObjectOp = (what: AddKind): OperatorCall => ({
+export const AddObjectOp = (what: AddKind, lightAt?: Vec3): OperatorCall => ({
   name: what.kind === 'light' ? 'Add Light' : MESH_OPS[what.primitive],
-  apply: (s) => addObject(s, what).state,
+  apply: (s) => addObject(s, what, lightAt).state,
 });

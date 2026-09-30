@@ -25,7 +25,7 @@
     "s1": {
       "title": "Encendre",
       "instruction": "Aquesta escena no té cap llum. Afegeix-ne una (Shift + A > Light > Point) i passa a Rendered. En Solid, Blender il·lumina els objectes amb una llum d'estudi que segueix la vista; en Material Preview, amb una imatge d'entorn. Només Rendered fa servir les llums de l'escena.",
-      "hint1": "Amb el ratolí sobre el viewport, Shift + A obre el menú Add. La llum apareix al centre: mou-la amunt amb G Z.",
+      "hint1": "Amb el ratolí sobre el viewport, Shift + A obre el menú Add. En aquest lab, la llum nova apareix a 5 m en X, Y i Z, per sobre del cub i a un costat.",
       "hint2": "Z obre el menú de shading; tria Rendered. També hi ha quatre botons de dalt a la dreta del viewport.",
       "add": "Afegeix una llum amb Shift + A > Light.",
       "rendered": "Ara passa a Rendered (Z > Rendered) per veure-la.",

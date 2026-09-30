@@ -110,6 +110,8 @@ export interface MountOptions {
   readonly propertiesTabs?: readonly PropertiesTabId[];
   /** Add menu and Shift+A (off in the labs that do not teach adding objects). */
   readonly addObjects?: boolean;
+  /** Where new lights appear instead of the 3D Cursor (a lab decision). */
+  readonly newLightLocation?: Vec3;
 }
 
 /** World-space bounds of the selected vertices of the objects in Edit Mode. */
@@ -663,7 +665,7 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
   ];
   attachMenu(layout.objectMenu, shadeItems);
   // Add (Shift+A): only the entries of the lab work. FIDELITY? Entries and order in Blender 5.2.
-  const add = (what: AddKind) => () => store.execute(AddObjectOp(what));
+  const add = (what: AddKind) => () => store.execute(AddObjectOp(what, options.newLightLocation));
   const off = (...labels: string[]): MenuItem[] => labels.map((label) => ({ label, disabled: true }));
   const addItems = (): MenuItem[] => [
     {
