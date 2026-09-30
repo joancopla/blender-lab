@@ -642,7 +642,7 @@
 /* --- Small screens --------------------------------------------------------------- */
 @media (max-width: 900px) {
   .pp-hero {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     min-height: 0;
   }
   .pp-hero-art {
@@ -650,17 +650,72 @@
     border-top: 1px solid var(--line);
   }
   .pp-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
-@media (max-width: 560px) {
+/*
+ * Phone: a simpler hero. Title, one sentence and the main action only; the
+ * blueprint is a desktop element (the labs themselves need a keyboard).
+ */
+@media (max-width: 600px) {
   .pp-page a.pp-top-link {
     display: none;
   }
   .pp-top {
     flex-wrap: wrap;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    gap: 8px;
+    padding: 10px 16px;
+  }
+  .pp-hero-text {
+    gap: 20px;
+    padding: 40px 16px 44px;
+  }
+  .pp-page .pp-hero-title {
+    font-size: clamp(2.25rem, 11vw, 3rem);
+    letter-spacing: -0.045em;
+    overflow-wrap: anywhere;
+  }
+  .pp-hero-lead {
+    font-size: 16px;
+  }
+  .pp-hero-actions {
+    flex-direction: column;
+  }
+  .pp-page a.pp-button {
+    justify-content: center;
+  }
+  .pp-page a.pp-button-ghost,
+  .pp-hero-art {
+    display: none;
+  }
+  .pp-program {
+    padding: 56px 16px 0;
+  }
+  .pp-program-head {
+    margin-bottom: 24px;
+  }
+  .pp-card-body {
+    padding: 18px 16px 16px;
+  }
+  .pp-card-keys {
+    right: 12px;
+    left: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  .pp-shortcuts {
+    margin-top: 56px;
+    padding: 0 16px;
+  }
+  .pp-shortcuts-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pp-shortcuts-list li {
+    flex-wrap: wrap;
+  }
+  .pp-footer {
+    margin-top: 56px;
+    padding: 24px 16px 96px;
   }
   .pp-review {
     left: 16px;
