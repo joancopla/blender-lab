@@ -40,7 +40,6 @@
     "cardStages": "{total} etapes"
   },
   "ui": {
-    "backToIndex": "← Tots els labs",
     "stageOf": "Etapa {n} de {total}",
     "stagesNav": "Etapes",
     "keys": "Tecles",
@@ -60,7 +59,8 @@
     "panel": "Panell del lab",
     "fold": "Plega",
     "unfold": "Desplega el panell",
-    "stageShort": "Etapa {n}"
+    "stageShort": "Etapa {n}",
+    "progress": "{n}/{total}"
   },
   "page": {
     "controlsTitle": "Controls clau",
@@ -68,7 +68,13 @@
     "start": "Comença el lab",
     "realTitle": "Al Blender real",
     "labNumber": "Lab {n}",
-    "index": "Índex"
+    "index": "Índex",
+    "continue": "Continua el lab",
+    "allLabs": "Tots els labs",
+    "stagesCount": "{total} etapes",
+    "stagesDone": "{n}/{total} superades",
+    "realEyebrow": "Del lab al programa",
+    "nextEyebrow": "Següent lab"
   },
   "mobile": {
     "title": "Aquest lab necessita teclat i ratolí",

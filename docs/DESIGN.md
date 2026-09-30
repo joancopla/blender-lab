@@ -142,31 +142,76 @@ capçalera de l'índex i al caixetí del lab); la tria es recorda.
 
 ## Pàgina de lab
 
+La pàgina de lab segueix el mateix llenguatge que la pàgina índex. De dalt a baix:
+
 ```
 +----------------------------------------------------------------+
-| Caixetí: Lab 02  Mode Edició       Etapa 4 de 10   Mode  Índex |
+|  [marca] [nom del projecte]                 Tots els labs  Mode |
++--------------------------------+-------------------------------+
+|  · Lab 02 · Blender            |  (graella subtil)             |
+|  Títol gran del lab            |   +-----------------------+   |
+|  Frase del que aprendràs.      |   | il·lustració del lab  |   |
+|  10 etapes ───────  3/10       |   |        tecles del lab |   |
+|  [Continua el lab →] [Controls]|   +-----------------------+   |
++--------------------------------+-------------------------------+
+|  Controls clau                                                 |
+|  [Entrar al Mode Edició  Tab] [Vèrtexs, arestes i cares 1,2,3] |
++----------------------------------------------------------------+
+| Caixetí: 02 Mode Edició     Etapa 4 de 10 ───   Mode  [Índex]  |
 +-------------------------------------------+--------------------+
-|                                           | Etapes (1-10, en   |
-|                                           | llista vertical)   |
-|        Rèplica de Blender                 |--------------------|
-|        (tema de Blender)                  | Consigna           |
-|                                           | [Pista]            |
-|                                           | Tecles de l'etapa  |
-|                                           | Estat comprovació  |
-|                                           | [Reinicia l'etapa] |
+|                                           | Etapes 3/10  Plega |
+|                                           | [El repte final]   |
+|        Rèplica de Blender                 | ① Etapa superada   |
+|        (tema de Blender)                  | ④ Etapa actual     |
+|                                           | ○ Etapa pendent    |
+|                                           | +----------------+ |
+|                                           | | Etapa 4 de 10  | |
+|                                           | | Títol, consigna| |
+|                                           | | tecles, pista  | |
+|                                           | | [Següent →]    | |
+|                                           | +----------------+ |
 +-------------------------------------------+--------------------+
+|  Del lab al programa                                           |
+|  Al Blender real (títol gran)                 Frase d'entrada  |
+|  [Eina: on es troba]  [Eina: on es troba]  (dues columnes)     |
+|                                                                |
+|  Següent lab                                                   |
+|  +--------------------+-------------------------------------+ |
+|  | il·lustració       | 03  10 etapes                       | |
+|  |                    | Títol · descripció · Comença →      | |
+|  +--------------------+-------------------------------------+ |
++----------------------------------------------------------------+
 ```
 
-- El caixetí de dalt és una franja fina: número del lab (mono), títol, etapa actual, mode
-  i accés a l'índex.
-- El panell de la dreta té amplada fixa (320–360 px) i es pot plegar per donar tot l'espai
-  a Blender. Plegat, queda una pestanya vertical amb el número d'etapa.
-- Les etapes es mostren com una llista vertical numerada: superades (marca turquesa i la
-  paraula "Superada"), actual (barra turquesa a l'esquerra) i pendents (text tènue). Es pot
-  tornar a una etapa superada.
+- **Barra superior** igual que la de l'índex (marca i nom del projecte, "Tots els labs" i
+  "Mode"), però no queda fixa en desplaçar-se: el lab necessita tota l'alçada.
+- **Introducció partida en dos**, com el hero de l'índex: etiqueta petita "Lab 02 ·
+  Blender", títol gran (Inter 800, compacte), una frase, una línia amb el nombre d'etapes,
+  la barra de progrés i "3/10 superades", i les accions "Comença el lab" o "Continua el
+  lab" i "Controls clau". A la dreta, la mateixa il·lustració de la targeta de l'índex, en
+  gran, sobre graella subtil. Un lab sense il·lustració fa servir només la columna de text.
+- **Controls clau** en una graella de targetes petites: què fa cada control i, a la
+  dreta, les tecles dibuixades com una tecla.
+- El **caixetí** és una franja fina (50 px): número del lab en mono i turquesa, títol,
+  etapa actual amb una barra de progrés fina, "Mode" i "Índex" com a botons petits.
+- El **panell de la dreta** té amplada fixa (320–360 px) i es pot plegar per donar tot
+  l'espai a Blender. Plegat, queda una pestanya vertical amb el número d'etapa. La capçalera
+  mostra "Etapes" i el comptador de superades en turquesa.
+- El plànol en miniatura va dins una targeta petita amb l'etiqueta "El repte final".
+- Les etapes es mostren com un **recorregut vertical**: cercles numerats units per una
+  línia. Superada: cercle turquesa ple i la paraula "Superada". Actual: anell turquesa i
+  fons tint. Pendent: anell de línia forta i text tènue. Es pot tornar a una etapa
+  superada.
+- L'**etapa actual** va dins una targeta: "Etapa 4 de 10" en mono i turquesa, títol,
+  consigna, tecles, pista, estat i accions. El botó "Següent →" ocupa la resta de la fila i
+  és el botó principal quan l'etapa està superada.
 - Les tecles de l'etapa es dibuixen com a tecles. Quan l'alumne en prem una, la tecla del
   panell fa un petit clic visual (s'enfonsa i s'il·lumina en turquesa), connectat amb
   l'overlay de tecles.
+- **Al Blender real**: etiqueta petita, títol gran i una frase; cada punt és una targeta
+  amb el nom de l'eina en negreta i on es troba al programa, en dues columnes.
+- **Següent lab**: una targeta amb la il·lustració del lab següent, el número, les etapes,
+  el títol, la descripció i "Comença el Lab 03 →". L'últim lab d'un programa no en té.
 - L'overlay de tecles i les preferències segueixen aquest mateix estil, no el de Blender.
 
 ## Retroalimentació
@@ -189,12 +234,13 @@ capçalera de l'índex i al caixetí del lab); la tria es recorda.
 
 ## Detalls de qualitat
 
-- Radis petits i coherents: 4 px en tecles, botons i camps de les pàgines de lab; 6 px en
-  els seus panells i en els botons de la pàgina índex; 10 px en les targetes i les vistes
-  del plànol de la pàgina índex.
+- Radis petits i coherents: 4 px en tecles i camps; 6 px en botons, panells i targetes
+  petites (controls, punts d'"Al Blender real"); 10 px en les targetes grans (labs, etapa
+  actual, plànol, segell, lab següent) i en les vistes del plànol de l'índex.
 - Sense ombres difuses; la profunditat s'indica amb esglaons de superfície i línies.
-- Graella de fons subtil només al panell del plànol i al caixetí. Els únics degradats són
-  el tint suau del hero i el fons tipus viewport de les il·lustracions.
+- Graella de fons subtil només darrere del plànol i de la il·lustració de la introducció del
+  lab. Els únics degradats són el tint suau dels hero i el fons tipus viewport de les
+  il·lustracions.
 - Focus de teclat visible a tots els controls (contorn de 2 px en color accent).
 - Icones: com a molt unes poques icones SVG pròpies i simples. Sense fonts d'icones
   externes.

@@ -2,13 +2,14 @@
  * Collection index (DESIGN.md, "Pàgina índex"). Tokens and shared components
  * come from shell.css.
  */
-.site-page {
-  --site-radius: 6px;
-  --site-radius-card: 10px;
-  --site-art: radial-gradient(120% 110% at 50% 20%, #3b3e43 0%, #25272b 55%, #1b1d20 100%);
-}
-
 /* --- Page ------------------------------------------------------------------------ */
+/* The top bar stays visible while scrolling the index (not on lab pages, where
+   the lab needs the whole height). */
+.site-page .shell-top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 .site-page {
   min-height: 100vh;
   display: flex;
@@ -17,92 +18,6 @@
 }
 .site-main {
   flex: 1;
-}
-.site-page .site-eyebrow {
-  margin: 0;
-  color: var(--accent);
-  font: 600 13px/1.4 var(--font);
-  letter-spacing: 0.06em;
-}
-.site-eyebrow-dot {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.site-eyebrow-dot::before {
-  content: '';
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-/* --- Top bar --------------------------------------------------------------------- */
-.site-top {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 60px;
-  padding: 0 clamp(16px, 4vw, 48px);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--line);
-}
-.site-page a.site-name {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text);
-  font-weight: 800;
-  font-size: 16px;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-}
-.site-name-mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 5px;
-  background:
-    linear-gradient(135deg, transparent 50%, var(--on-accent) 50% 58%, transparent 58%),
-    var(--accent);
-}
-.site-top-tools {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.site-page a.site-top-link {
-  padding: 6px 10px;
-  color: var(--text-muted);
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-}
-.site-page a.site-top-link:hover {
-  color: var(--text);
-}
-.site-top-button {
-  display: flex;
-  align-items: center;
-  padding: 6px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--site-radius);
-  background: transparent;
-  color: var(--text-muted);
-  font: 500 14px/1.3 var(--font);
-  cursor: pointer;
-  list-style: none;
-}
-.site-top-button::-webkit-details-marker {
-  display: none;
-}
-.site-top-button:hover {
-  color: var(--text);
-  border-color: var(--line-strong);
 }
 .site-prefs {
   position: relative;
@@ -116,7 +31,7 @@
   padding: 8px 16px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--site-radius-card);
+  border-radius: var(--radius-card);
 }
 
 /* --- Hero ------------------------------------------------------------------------ */
@@ -159,37 +74,6 @@
   flex-wrap: wrap;
   gap: 12px;
 }
-.site-page a.site-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 22px;
-  border-radius: var(--site-radius);
-  border: 1px solid var(--line-strong);
-  font: 600 16px/1.2 var(--font);
-  text-decoration: none;
-  color: var(--text);
-}
-.site-page a.site-button-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
-}
-.site-page a.site-button-primary::after {
-  content: '→';
-}
-.site-page a.site-button-primary:hover {
-  background: var(--accent-strong);
-  border-color: var(--accent-strong);
-}
-.site-page a.site-button-ghost:hover {
-  border-color: var(--text-faint);
-}
-.site-page a.site-button-ghost::after {
-  content: '↓';
-  color: var(--text-faint);
-}
-
 .site-hero-art {
   display: flex;
   align-items: center;
@@ -217,7 +101,7 @@
   position: relative;
   aspect-ratio: 1;
   border: 1px solid var(--line);
-  border-radius: var(--site-radius-card);
+  border-radius: var(--radius-card);
   background: color-mix(in srgb, var(--bg) 70%, transparent);
 }
 .site-view-drawing {
@@ -290,7 +174,7 @@
   overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--site-radius-card);
+  border-radius: var(--radius-card);
   transition: border-color 0.15s;
 }
 .site-card:hover {
@@ -300,31 +184,8 @@
   border-color: var(--accent);
 }
 .site-page a.site-card-art {
-  position: relative;
-  display: block;
   aspect-ratio: 16 / 8;
-  background: var(--site-art);
   border-bottom: 1px solid var(--line);
-}
-.site-card-art svg {
-  position: absolute;
-  inset: 8px 0 28px;
-  width: 100%;
-  height: calc(100% - 36px);
-  overflow: visible;
-}
-.site-card-keys {
-  position: absolute;
-  right: 16px;
-  bottom: 12px;
-  display: flex;
-  gap: 6px;
-  color: rgba(255, 255, 255, 0.78);
-  font: 600 11px/1 var(--mono);
-  letter-spacing: 0.04em;
-}
-.site-card-keys-sep {
-  color: rgba(255, 255, 255, 0.35);
 }
 .site-card-body {
   display: flex;
@@ -390,16 +251,6 @@
   margin-top: auto;
   display: grid;
   gap: 12px;
-}
-.site-progress {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--surface-high);
-  overflow: hidden;
-}
-.site-progress > div {
-  height: 100%;
-  background: var(--accent);
 }
 .site-card-foot-row {
   display: flex;
@@ -481,7 +332,7 @@
   gap: 14px;
   padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: var(--site-radius);
+  border-radius: var(--radius-button);
   background: var(--surface-low);
 }
 .site-shortcut-keys {
@@ -522,14 +373,6 @@
  * blueprint is a desktop element (the labs themselves need a keyboard).
  */
 @media (max-width: 600px) {
-  .site-page a.site-top-link {
-    display: none;
-  }
-  .site-top {
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 10px 16px;
-  }
   .site-hero-text {
     gap: 20px;
     padding: 40px 16px 44px;
@@ -545,10 +388,7 @@
   .site-hero-actions {
     flex-direction: column;
   }
-  .site-page a.site-button {
-    justify-content: center;
-  }
-  .site-page a.site-button-ghost,
+  .site-hero .shell-button-ghost,
   .site-hero-art {
     display: none;
   }
@@ -560,12 +400,6 @@
   }
   .site-card-body {
     padding: 18px 16px 16px;
-  }
-  .site-card-keys {
-    right: 12px;
-    left: 12px;
-    justify-content: flex-end;
-    flex-wrap: wrap;
   }
   .site-shortcuts {
     margin-top: 56px;

@@ -20,6 +20,13 @@ export interface LabDefinition<State = unknown, Setup = unknown, Decorations = u
    * (no stage count or progress) and the page says so.
    */
   readonly preview?: boolean;
+  /**
+   * Small drawing of what the lab is about (inline SVG markup made by the
+   * program's own drawing kit), shown on the index card and the lab page.
+   */
+  readonly illustration?: string;
+  /** Key ids (keys.<id>) that sum up the lab, shown under the illustration. */
+  readonly signatureKeys?: readonly string[];
   /** Blueprint of the course's final challenge, shown as a miniature in the lab panel. */
   readonly blueprint?: Blueprint;
   /** Creates the replicated program for this lab (not mounted yet). */

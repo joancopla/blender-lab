@@ -1,5 +1,6 @@
 import type { LabDefinition } from '../../../core/lab';
 import { STOOL_BLUEPRINT } from '../blueprint';
+import { ILLUSTRATION } from './illustration';
 import { BlenderApp } from '../../../apps/blender/blender-app';
 import { type BlenderDecorations, type BlenderSetup, type BlenderState, toCoreLab } from '../../../apps/blender/stages/types';
 import { LAB03_STAGES } from './stages';
@@ -10,6 +11,8 @@ export const lab03: LabDefinition<BlenderState, BlenderSetup, BlenderDecorations
   nameKey: 'lab03.name',
   descKey: 'lab03.desc',
   stages: toCoreLab(LAB03_STAGES),
+  illustration: ILLUSTRATION,
+  signatureKeys: ['ctrlA', 'ctrlR', 'tab'],
   blueprint: STOOL_BLUEPRINT,
   createApp: () => new BlenderApp({ statistics: true, propertiesTabs: ['modifiers', 'data'] }),
   page: {

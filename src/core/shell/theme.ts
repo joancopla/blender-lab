@@ -10,6 +10,7 @@ import type { StorageLike } from './prefs';
 export type ThemeChoice = 'dark' | 'light';
 
 export const THEME_KEY = 'blender-lab:theme';
+const THEME_EVENT = 'shell-theme';
 
 function defaultStorage(): StorageLike | null {
   try {
@@ -58,6 +59,11 @@ export function themeButton(cls: string): HTMLButtonElement {
     choice = nextTheme(choice);
     saveTheme(choice);
     applyTheme(choice);
+    document.dispatchEvent(new CustomEvent<ThemeChoice>(THEME_EVENT, { detail: choice }));
+  });
+  // A page can have more than one of these buttons (lab page: top bar and title block).
+  document.addEventListener(THEME_EVENT, (e) => {
+    choice = (e as CustomEvent<ThemeChoice>).detail;
     label();
   });
   applyTheme(choice);
