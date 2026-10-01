@@ -8,13 +8,17 @@
     "mobileText": "Els faders i l'escenari necessiten espai. En una pantalla petita pots provar-ho, però millor obre'l en un ordinador o una tauleta en horitzontal.",
     "fixtures": {
       "dimmer": "Dimmer",
-      "ledPar4": "LED PAR · 4 ch"
+      "ledPar4": "LED PAR · 4 ch",
+      "movingHead16": "Moving head · 16 ch"
     }
   },
   "keys": {
     "dmxUniverse": "Univers",
     "dmxChannel": "Canal",
     "dmxAddress": "Adreça",
-    "dmxFader": "Fader"
+    "dmxFader": "Fader",
+    "dmxFootprint": "Footprint",
+    "dmxAbsolute": "Absoluta",
+    "dmxPercent": "% → 0–255"
   }
 }

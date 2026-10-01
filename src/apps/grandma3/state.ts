@@ -58,6 +58,19 @@ export function setChannel(universe: number, ch: number, value: number): Operato
   };
 }
 
+/** Moves a fixture to another universe and address (the patch). */
+export function setPatch(fixtureId: string, universe: number, address: number): OperatorCall<RigState> {
+  return {
+    name: 'Set Patch',
+    apply(s) {
+      const f = fixtureById(s, fixtureId);
+      if (!f || !isValidAddress(address) || universe < 1 || universe > s.universes.length) return s;
+      if (f.universe === universe && f.address === address) return s;
+      return { ...s, fixtures: s.fixtures.map((x) => (x.id === fixtureId ? { ...x, universe, address } : x)) };
+    },
+  };
+}
+
 /** Changes a fixture's start address (the patch). */
 export function setAddress(fixtureId: string, address: number): OperatorCall<RigState> {
   return {

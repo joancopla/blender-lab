@@ -1,0 +1,74 @@
+{
+  "ma3lab02": {
+    "name": "Adreces i valors",
+    "desc": "Calcula valors DMX a partir de percentatges, patcha aparells seguits sense forats, passa d'adreça absoluta a univers.adreça i salta a l'univers següent quan un ja és ple.",
+    "intro": {
+      "lead": "Al patch i a la sortida DMX hi ha sempre els mateixos càlculs: on acaba un aparell, on comença el següent, en quin univers cau una adreça i quin valor és cada percentatge. Aquí els faràs fins que surtin sols.",
+      "controls": {
+        "fader": "Mou un canal: arrossega el fader",
+        "value": "Valor exacte: escriu-lo a la casella de sobre el fader",
+        "pages": "Altres canals: ‹ › o la casella Ch",
+        "select": "Tria un aparell: clic a l'escenari",
+        "patch": "Canvia l'adreça o l'univers: − i + o escriu-la",
+        "undo": "Desfés: Ctrl + Z"
+      }
+    },
+    "real": {
+      "lead": "A l'onPC no faràs aquests càlculs a mà gaire sovint, però entendre'ls t'estalviarà errors de patch i aparells que no responen.",
+      "percent": "Valors: a l'onPC treballes en percentatge (At 50 posa el dimmer al 50 %); pel cable surt un valor de 0 a 255.",
+      "address": "Adreces: s'escriuen univers.adreça, per exemple 2.88.",
+      "absolute": "Adreça absoluta: a l'edició del patch, AddressMode alterna entre Univ.addr (2.88) i Absolute (600)."
+    },
+    "s1": {
+      "title": "Del percentatge al valor",
+      "instruction": "A l'onPC parlaràs en percentatges, però el cable només entén valors de 0 a 255. Posa el focus 1 al 100 %, el 2 al 60 % i el 3 al 20 %, escrivint el valor DMX de cada un.",
+      "hint1": "Valor DMX = percentatge × 255 ÷ 100. El 100 % és 255.",
+      "hint2": "60 % = 153 i 20 % = 51. Escriu-los a la casella de sobre els faders 2 i 3.",
+      "progress": "{n} de {total} canals correctes.",
+      "wrong": "El canal {ch} és a {v}, i el {pct} % és un altre valor. Valor = % × 255 ÷ 100.",
+      "success": "Molt bé. Els múltiples del 20 % donen valors exactes: 51, 102, 153, 204 i 255."
+    },
+    "s2": {
+      "title": "Un color en percentatges",
+      "instruction": "Fes un violeta amb el PAR LED: dimmer al 100 %, vermell al 100 %, verd a 0 i blau al 40 %.",
+      "hint1": "Els canals del PAR són 1 dimmer, 2 vermell, 3 verd i 4 blau. 100 % = 255.",
+      "hint2": "El 40 % és 255 × 40 ÷ 100 = 102. Posa el canal 4 a 102.",
+      "progress": "{n} de {total} canals correctes.",
+      "wrong": "El canal {ch} és a {v}, i el {pct} % és un altre valor.",
+      "success": "Exacte. Un color és una barreja de percentatges, i cada un viatja com un valor de 0 a 255."
+    },
+    "s3": {
+      "title": "En fila, sense forats",
+      "instruction": "Quatre PAR LED de 4 canals estan tots a l'adreça 1. Patcha'ls en fila: el PAR 1 a l'adreça 1 i cada un just després de l'anterior.",
+      "hint1": "Cada PAR ocupa 4 canals: el següent comença 4 adreces més enllà.",
+      "hint2": "Les adreces són 1, 5, 9 i 13. Clica cada PAR a l'escenari i canvia-li l'adreça.",
+      "progress": "{n} de {total} al seu lloc. Ara mira el PAR {f}.",
+      "success": "Perfecte. Adreça + footprint = adreça següent: és el càlcul que més faràs al patch."
+    },
+    "s4": {
+      "title": "Footprints diferents",
+      "instruction": "Ara cada aparell ocupa una quantitat diferent de canals: el dimmer 1, el cap mòbil 16 i el PAR LED 4. Posa'ls en aquest ordre, seguits, començant per l'adreça 1.",
+      "hint1": "El dimmer és a l'1 i n'ocupa un: el cap mòbil comença al 2. On acaba el cap mòbil?",
+      "hint2": "El cap mòbil fa servir del 2 al 17, així que el PAR LED va a l'adreça 18.",
+      "progress": "{n} de {total} al seu lloc. Ara mira l'aparell {f}.",
+      "success": "Molt bé. Abans de patchar, mira sempre quants canals té el mode de cada aparell."
+    },
+    "s5": {
+      "title": "Adreça absoluta",
+      "instruction": "Aquest cap mòbil ha d'anar a l'adreça absoluta 600. Posa'l a l'univers i l'adreça que hi corresponen.",
+      "hint1": "L'univers 1 té les adreces absolutes de l'1 al 512. On comença l'univers 2?",
+      "hint2": "600 − 512 = 88: és l'univers 2, adreça 88 (2.88).",
+      "universe": "L'adreça 600 no és a l'univers 1, que acaba a la 512.",
+      "address": "Univers correcte. L'adreça dins l'univers encara no.",
+      "success": "Exacte: 2.88 i 600 són la mateixa adreça."
+    },
+    "s6": {
+      "title": "Quan l'univers s'omple",
+      "instruction": "Patcha cinc caps mòbils de 16 canals seguits a partir de 1.449. El que no hi càpiga sencer ha de passar a l'univers 2, adreça 1.",
+      "hint1": "449 + 16 = 465, i així successivament. Recorda: un aparell hi cap si acaba al 512 o abans.",
+      "hint2": "Les adreces són 1.449, 1.465, 1.481 i 1.497. El cinquè començaria al 513, que ja no existeix: va a 2.1.",
+      "progress": "{n} de {total} al seu lloc. Ara mira el cap {f}.",
+      "success": "Molt bé. Quan un univers no té prou canals per a l'aparell sencer, l'aparell va a l'univers següent."
+    }
+  }
+}

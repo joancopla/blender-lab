@@ -6,7 +6,23 @@
 import { DMX_MAX, UNIVERSE_SIZE, lastChannel } from './dmx';
 
 /** What one channel of a fixture controls. */
-export type ChannelFunction = 'dimmer' | 'red' | 'green' | 'blue';
+export type ChannelFunction =
+  | 'dimmer'
+  | 'red'
+  | 'green'
+  | 'blue'
+  | 'white'
+  | 'pan'
+  | 'panFine'
+  | 'tilt'
+  | 'tiltFine'
+  | 'speed'
+  | 'shutter'
+  | 'zoom'
+  | 'focus'
+  | 'gobo'
+  | 'prism'
+  | 'control';
 
 export interface FixtureType {
   readonly id: string;
@@ -21,6 +37,12 @@ export const FIXTURE_TYPES = {
   dimmer: { id: 'dimmer', nameKey: 'ma3.fixtures.dimmer', channels: ['dimmer'] },
   /** LED PAR in a 4-channel mode: dimmer, red, green, blue. */
   ledPar4: { id: 'ledPar4', nameKey: 'ma3.fixtures.ledPar4', channels: ['dimmer', 'red', 'green', 'blue'] },
+  /** A generic moving head in a 16-channel mode (pan and tilt in 16 bits). */
+  movingHead16: {
+    id: 'movingHead16',
+    nameKey: 'ma3.fixtures.movingHead16',
+    channels: ['pan', 'panFine', 'tilt', 'tiltFine', 'speed', 'dimmer', 'shutter', 'red', 'green', 'blue', 'white', 'zoom', 'focus', 'gobo', 'prism', 'control'],
+  },
 } as const satisfies Record<string, FixtureType>;
 
 export type FixtureTypeId = keyof typeof FIXTURE_TYPES;
@@ -64,8 +86,13 @@ export function fixtureOutput(f: Fixture, universe: readonly number[]): FixtureO
   const missing = values.filter((v) => v === null).length;
   const dimmer = (get('dimmer') ?? 0) / DMX_MAX;
   const hasColor = fns.includes('red');
+  const w = (get('white') ?? 0) / DMX_MAX;
   const color = hasColor
-    ? { r: (get('red') ?? 0) / DMX_MAX, g: (get('green') ?? 0) / DMX_MAX, b: (get('blue') ?? 0) / DMX_MAX }
+    ? {
+        r: Math.min(1, (get('red') ?? 0) / DMX_MAX + w),
+        g: Math.min(1, (get('green') ?? 0) / DMX_MAX + w),
+        b: Math.min(1, (get('blue') ?? 0) / DMX_MAX + w),
+      }
     : { r: 1, g: 0.93, b: 0.8 }; // warm white of a halogen lamp
   // An LED with every colour at 0 gives no light, whatever the dimmer.
   const colorLevel = hasColor ? Math.max(color.r, color.g, color.b) : 1;

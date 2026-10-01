@@ -18,6 +18,12 @@ El simulador DMX és una eina genèrica del lab, no una còpia d'una finestra de
 - [ ] Sense DMX-key (o un altre maquinari de MA), l'onPC no envia DMX
 - [ ] ❓ Format de l'adreça al quadre de l'aparell (`1.005`): l'onPC el mostra igual?
 
+## Lab 02 — Adreces i valors
+
+- [ ] `At 50` posa el dimmer al 50 % (manual: QSG Control Simple Fixtures)
+- [ ] ❓ Escala de percentatge a DMX: el lab fa servir valor = % × 255 ÷ 100 arrodonit (60 % = 153). Comprovar amb la DMX Sheet de l'onPC
+- [ ] ❓ El cap mòbil de 16 canals és genèric (ordre de canals inventat per al lab); els reals segueixen el seu manual i la llibreria de l'onPC
+
 ## Lab 03 — Línia d'ordres (pendent)
 
 - [ ] ❓ Ordre exacte dels passos de `Clear` quan hi ha text a la línia d'ordres

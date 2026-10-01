@@ -189,14 +189,24 @@
   color: var(--rig-alert);
 }
 .rig-patch {
+  display: grid;
+  gap: 6px;
+}
+.rig-patch-title {
+  font-weight: 700;
+}
+.rig-patch-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
 }
 .rig-patch-label {
   color: var(--rig-muted);
-  width: 100%;
+  width: 64px;
+}
+.rig-chans {
+  max-height: 220px;
+  overflow-y: auto;
 }
 .rig-btn,
 .rig-tab {

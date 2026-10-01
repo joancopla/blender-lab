@@ -7,8 +7,8 @@
 import type { AppMountOptions, PreferenceDefinition, ReplicatedApp } from '../../core/app-contract';
 import { HistoryStore, type LogEntry, type OperatorCall } from '../../core/history/store';
 import { DMX_MAX, UNIVERSE_SIZE, absoluteAddress, fits, formatAddress, overlaps } from './dmx/dmx';
-import { FIXTURE_TYPES, type Fixture, channelRange, channelValues, fixtureOutput, footprintOf } from './dmx/fixtures';
-import { type RigDecorations, type RigSetup, type RigState, channel, fixtureById, initialState, setAddress, setChannel } from './state';
+import { type ChannelFunction, FIXTURE_TYPES, type Fixture, channelRange, channelValues, fixtureOutput, footprintOf } from './dmx/fixtures';
+import { type RigDecorations, type RigSetup, type RigState, channel, fixtureById, initialState, setChannel, setPatch } from './state';
 import './texts';
 import './ui/rig.css';
 
@@ -21,8 +21,25 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: 
   return e;
 };
 
-const CHANNEL_NAMES = { dimmer: 'Dimmer', red: 'Red', green: 'Green', blue: 'Blue' } as const;
-const TYPE_NAMES: Record<keyof typeof FIXTURE_TYPES, string> = { dimmer: 'Dimmer', ledPar4: 'LED PAR · 4 ch' };
+const CHANNEL_NAMES: Record<ChannelFunction, string> = {
+  dimmer: 'Dimmer',
+  red: 'Red',
+  green: 'Green',
+  blue: 'Blue',
+  white: 'White',
+  pan: 'Pan',
+  panFine: 'Pan fine',
+  tilt: 'Tilt',
+  tiltFine: 'Tilt fine',
+  speed: 'Speed',
+  shutter: 'Shutter',
+  zoom: 'Zoom',
+  focus: 'Focus',
+  gobo: 'Gobo',
+  prism: 'Prism',
+  control: 'Control',
+};
+const TYPE_NAMES: Record<keyof typeof FIXTURE_TYPES, string> = { dimmer: 'Dimmer', ledPar4: 'LED PAR · 4 ch', movingHead16: 'Moving head · 16 ch' };
 
 export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations> {
   readonly preferences: readonly PreferenceDefinition[] = [];
@@ -205,7 +222,7 @@ export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations>
     // DMX cables, one per universe, from the output on the left through its fixtures.
     for (let u = 1; u <= s.universes.length; u++) {
       const xs = s.fixtures.filter((f) => f.universe === u).map(xOf).sort((a, b) => a - b);
-      const y = top - 18 - (u - 1) * 10;
+      const y = top - 16 - (u - 1) * 18;
       if (xs.length) svg += `<path class="rig-cable rig-cable-${u}" d="M8 ${y} H${xs[xs.length - 1]}"/>${xs.map((x) => `<line class="rig-cable rig-cable-${u}" x1="${x}" y1="${y}" x2="${x}" y2="${top + 4}"/>`).join('')}`;
       svg += `<text class="rig-cable-label" x="8" y="${y - 4}">Universe ${u}</text>`;
     }
@@ -261,30 +278,49 @@ export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations>
     const clash = s.fixtures.filter((o) => o.id !== f.id && o.universe === f.universe && overlaps({ address: f.address, footprint: fp }, { address: o.address, footprint: footprintOf(o) }));
     if (clash.length) box.append(el('p', 'rig-alert', `Shares channels with Fixture ${clash.map((o) => o.number).join(', ')}.`));
 
-    if (this.setup.patch) {
-      const patch = el('div', 'rig-patch');
+    if (this.setup.patch) box.append(this.patchControls(f, s.universes.length));
+  }
+
+  /** Patch: universe (when there are several) and address, with − / + or typed. */
+  private patchControls(f: Fixture, universes: number): HTMLElement {
+    const patch = el('div', 'rig-patch');
+    const field = (label: string, value: number, max: number, set: (v: number) => void) => {
+      const row = el('div', 'rig-patch-row');
       const minus = el('button', 'rig-btn', '−');
       minus.type = 'button';
-      minus.setAttribute('aria-label', 'Address minus one');
+      minus.setAttribute('aria-label', `${label} minus one`);
       const plus = el('button', 'rig-btn', '+');
       plus.type = 'button';
-      plus.setAttribute('aria-label', 'Address plus one');
+      plus.setAttribute('aria-label', `${label} plus one`);
       const input = el('input', 'rig-address') as HTMLInputElement;
       input.type = 'number';
       input.min = '1';
-      input.max = String(UNIVERSE_SIZE);
-      input.value = String(f.address);
-      input.setAttribute('aria-label', `Address of Fixture ${f.number}`);
-      minus.addEventListener('click', () => this.run(setAddress(f.id, f.address - 1)));
-      plus.addEventListener('click', () => this.run(setAddress(f.id, f.address + 1)));
+      input.max = String(max);
+      input.value = String(value);
+      input.setAttribute('aria-label', `${label} of Fixture ${f.number}`);
+      minus.addEventListener('click', () => set(value - 1));
+      plus.addEventListener('click', () => set(value + 1));
       input.addEventListener('change', () => {
-        const a = Number(input.value);
-        this.run(setAddress(f.id, Number.isInteger(a) ? a : f.address));
-        input.value = String(fixtureById(this.store.state, f.id)?.address ?? f.address);
+        const v = Number(input.value);
+        set(Number.isInteger(v) ? v : value);
+        input.value = String(value);
       });
-      patch.append(el('span', 'rig-patch-label', 'Patch address'), minus, input, plus);
-      box.append(patch);
-    }
+      row.append(el('span', 'rig-patch-label', label), minus, input, plus);
+      return row;
+    };
+    const move = (universe: number, address: number) => {
+      this.run(setPatch(f.id, universe, address));
+      const moved = fixtureById(this.store.state, f.id);
+      if (moved && moved.universe !== this.universe) {
+        this.universe = moved.universe;
+        this.pageStart = this.pageOf(moved.address);
+        this.renderFaders();
+      }
+    };
+    patch.append(el('span', 'rig-patch-title', 'Patch'));
+    if (universes > 1) patch.append(field('Universe', f.universe, universes, (u) => move(u, f.address)));
+    patch.append(field('Address', f.address, UNIVERSE_SIZE, (a) => move(f.universe, a)));
+    return patch;
   }
 
   /** Builds the faders of the current universe and page. */

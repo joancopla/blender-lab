@@ -9,6 +9,7 @@ import { lab02 } from '../labs/blender/02-edit-mode';
 import { lab03 } from '../labs/blender/03-modifiers';
 import { lab04 } from '../labs/blender/04-lights';
 import { ma3Lab01 } from '../labs/grandma3/01-dmx';
+import { ma3Lab02 } from '../labs/grandma3/02-addresses';
 
 export interface CatalogEntry {
   readonly lab: LabDefinition;
@@ -66,7 +67,10 @@ export const PROGRAMS: readonly ProgramGroup[] = [
     leadKey: 'ma3.lead',
     realTitleKey: 'ma3.realTitle',
     deviceWarning: { titleKey: 'ma3.mobileTitle', textKey: 'ma3.mobileText' },
-    labs: [{ lab: ma3Lab01, path: 'labs/ma3-01-dmx/' }],
+    labs: [
+      { lab: ma3Lab01, path: 'labs/ma3-01-dmx/' },
+      { lab: ma3Lab02, path: 'labs/ma3-02-addresses/' },
+    ],
     // The keypad shortcuts arrive with the command line lab.
     shortcuts: [],
   },

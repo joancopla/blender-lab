@@ -26,7 +26,7 @@ ni Preset (Fixture és la paraula clau per defecte de grandMA3).
 | Lab | Nivell | Títol | Estat |
 |---|---|---|---|
 | 01 | Iniciació | Què és el DMX | Fet (`01-dmx.md`) |
-| 02 | Iniciació | Adreces i valors (càlculs) | Pendent |
+| 02 | Iniciació | Adreces i valors (càlculs) | Fet (`02-addresses.md`) |
 | 03 | Iniciació | Línia d'ordres amb el teclat del controlador | Pendent (esboç a `C:\ma3-lab\propostes\`) |
 | 04 | Iniciació | L'onPC per dins: programmer, grups, presets, cues, executors | Pendent |
 | 05–08 | Mitjà | Escenari amb color i moviment, patch, grups i presets, cues i tracking | Pendent |
@@ -35,7 +35,8 @@ ni Preset (Fixture és la paraula clau per defecte de grandMA3).
 ## El repte final
 
 Un **plànol de llums en alçat** (`src/labs/grandma3/blueprint.ts`): una vara, el terra i els
-aparells amb el feix. Cada etapa superada dibuixa un aparell. Com que només té vista frontal,
+aparells amb el feix. Cada etapa superada dibuixa un aparell: el Lab 01, els de la vara; el
+Lab 02, els focus de terra. Com que només té vista frontal,
 el plànol en miniatura del panell en mostra una sola.
 
 ## Arquitectura
