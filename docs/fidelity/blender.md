@@ -806,3 +806,30 @@ Dubtes oberts (no afecten les etapes):
 - [ ] ❓ Coeficients de luminància: el lab fa servir els de Rec.709 (0,2126, 0,7152, 0,0722); Blender els llegeix de la configuració OCIO
 - [ ] ❓ Silenciar (M) i Delete with Reconnect en nodes sense regla pròpia: cada sortida passa per la primera entrada del mateix tipus
 - [ ] ❓ Nom del pas de desfer en canviar un valor d'un node (el lab hi posa el nom del socket)
+
+## Fase 2 — Interfície de l'editor de nodes
+
+Verificat al codi font de Blender 5.2.1:
+
+- [x] Colors del tema per defecte: fons `#1a1a1a`, punts de la quadrícula `#303030`, cos del node `#303030`, contorn `#ffffff26`, seleccionat `#ed5700`, actiu blanc (`userdef_default_theme.c`, `space_node`)
+- [x] Capçalera per classe: Input `#82354c`, Output `#3e232a`, Shader `#2b652b`, Texture `#79461d`, Converter `#246283` (Mix, Color Ramp), Vector `#3c3c83` (Mapping, Bump, Normal Map) (`node_get_colorid`, `resources.cc`)
+- [x] Colors dels sockets: float gris, vector blau, color groc, shader verd, boolean lila (`std_node_socket_colors`, `drawnode.cc`)
+- [x] Amplades: 240 (Principled BSDF, Image Texture, Color Ramp), 160 (Noise, Wave, Normal Map), 140 la resta
+- [x] Opcions que mostra cada node i quan (`draw_buttons`): Noise (Normalize només amb fBM), Wave (Bands o Rings), Mix (Factor Mode amb Vector; blend i Clamp Result amb Color), Normal Map (Convention i, en Tangent Space, Base i UV Map), Mapping, Bump, Texture Coordinate, Material Output
+- [x] Noms de les opcions dels desplegables (`rna_nodetree.cc`, `rna_material.cc`, `rna_color.cc`)
+- [x] Normal Map 5.x: opcions Convention (OpenGL / DirectX) i Base (Original / Displaced), noves respecte a la 4.x
+- [x] Principled BSDF 5.2: el desplegable Distribution és dins del panell Specular i Subsurface Method dins de Subsurface
+- [x] Menú Shift+A de la 5.2 amb EEVEE: s'amaguen els nodes que Blender amaga (Light Output, Hair BSDF, Toon BSDF, Sheen BSDF, Script…); la resta surten en gris si el lab no els implementa
+- [x] Enllaços: corba amb mànecs horitzontals de curving × 0,1 × |dx| (noodle_curving 4)
+- [x] Inserir un node en un enllaç fa servir el socket principal (vegeu la fase 1)
+
+Diferències conegudes (decisions del lab o pendents):
+
+- [ ] ❓ Insert Offset: Blender aparta els nodes veïns quan n'insereixes un en un enllaç; el lab no ho fa
+- [ ] ❓ La selecció de nodes no és un pas de desfer (a Blender sí)
+- [ ] ❓ El menú Shift+A no té el camp de cerca de Blender
+- [ ] ❓ Selector de color del navegador en lloc de la roda de colors de Blender (com a la resta del lab)
+- [ ] ❓ Els menús View, Select i Node de la capçalera són decoració; clic dret sobre un node no obre el menú contextual
+- [ ] ❓ Image Texture: el botó Open encara no fa res (les textures arriben amb les etapes)
+- [ ] ❓ Els enllaços es pinten amb el color del socket de sortida; Blender pot fer un degradat entre els dos sockets
+- [ ] ❓ Mida i espaiat de les files dels nodes (20 px de capçalera, 22 px per fila) aproximats

@@ -1,0 +1,26 @@
+{
+  "lab05": {
+    "name": "Materials i nodes",
+    "desc": "Com respon una superfície a la llum i com es construeix un material amb nodes: el Principled BSDF, textures procedurals, coordenades i relleu.",
+    "intro": {
+      "eyebrow": "Lab 05",
+      "lead": "Aprendràs a fer materials com al workspace Shading de Blender: canviar el color, el metall i la rugositat al Principled BSDF i connectar nodes per fer superfícies tacades, amb relleu o rovellades.",
+      "controls": {
+        "add": "Afegir un node: Shift + A amb el ratolí sobre l'editor de nodes",
+        "link": "Connectar: arrossega d'un socket a un altre",
+        "move": "Moure nodes: arrossega'ls o prem G",
+        "cut": "Tallar connexions: Ctrl + botó dret arrossegant",
+        "nodeKeys": "Silenciar, plegar i esborrar: M, H i X (Ctrl + X reconnecta)",
+        "view": "Moure la vista de l'editor: botó del mig; zoom amb la roda; Home ho enquadra tot",
+        "undo": "Desfer: Ctrl + Z"
+      }
+    },
+    "real": {
+      "lead": "Tot el que fas en aquest lab es fa igual a Blender. Aquí tens on trobar cada cosa.",
+      "shading": "El workspace Shading (pestanya de dalt) posa el viewport en Material Preview i l'editor de nodes a sota.",
+      "material": "La pestanya Material del Properties Editor mostra els material slots, el botó New i les entrades del Principled BSDF.",
+      "addMenu": "El menú Shift + A de Blender 5.2 agrupa els nodes a Input, Output, Shader, Displacement, Color, Texture i Utilities. Al lab només funcionen els que fan servir les etapes; la resta surten en gris.",
+      "uv": "UV: per posar una imatge sobre un objecte cal desplegar-lo (UV unwrapping). Es veurà més endavant; en aquest lab les textures fan servir coordenades Generated i Object."
+    }
+  }
+}

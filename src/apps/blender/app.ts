@@ -81,6 +81,7 @@ import { chooseClickTarget, pickAt } from './viewport/picking';
 import { ViewportRenderer } from './viewport/renderer';
 import type { ViewportSize } from './viewport/projection';
 import { type ViewProjection, screenRay, viewProjection } from './viewport/screen';
+import { NodeEditor } from './ui/node-editor/node-editor';
 
 export interface MountedBlender {
   readonly navigator: Navigator;
@@ -112,6 +113,15 @@ export interface MountOptions {
   readonly addObjects?: boolean;
   /** Where new lights appear instead of the 3D Cursor (a lab decision). */
   readonly newLightLocation?: Vec3;
+  /** Shader Editor under the viewport, as in the Shading workspace (Lab 05). */
+  readonly shaderEditor?: boolean;
+}
+
+/** The material the Shader Editor shows: the active object's first slot. FIDELITY? Active slot index. */
+export function activeMaterialId(s: SceneState): string | null {
+  const o = s.objects.find((x) => x.id === s.activeId);
+  if (!o || o.type !== 'mesh') return null;
+  return o.materialSlots?.[0] ?? null;
 }
 
 /** World-space bounds of the selected vertices of the objects in Edit Mode. */
@@ -739,6 +749,21 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
         : []),
     ];
   });
+
+  // Shading workspace (Lab 05): the viewport on top, the Shader Editor below.
+  if (options.shaderEditor) {
+    const viewArea = layout.viewport.closest<HTMLElement>('.bl-area-view3d')!;
+    const column = document.createElement('div');
+    column.className = 'bl-column';
+    viewArea.replaceWith(column);
+    column.append(viewArea);
+    new NodeEditor(column, {
+      store,
+      materialId: () => activeMaterialId(store.state),
+      objects: () => store.state.objects.map((o) => ({ id: o.id, name: o.name })),
+      emulate3Button: () => options.inputPrefs().emulate3ButtonMouse,
+    });
+  }
 
   view.requestRender();
   const settledProjection = () => {

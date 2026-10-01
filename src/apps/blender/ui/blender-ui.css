@@ -122,6 +122,18 @@
 .bl-area-view3d {
   flex: 1;
 }
+/* Shading workspace (Lab 05): viewport over the Shader Editor. */
+.bl-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bl-column > .bl-area-view3d {
+  flex: 1.15;
+  min-height: 0;
+}
 .bl-right {
   width: 300px;
   flex: none;

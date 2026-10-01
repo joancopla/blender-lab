@@ -8,7 +8,7 @@
 import type { SocketType, SocketValue } from './sockets';
 
 /** Node options that are not sockets (enums, toggles, the Color Ramp, an image...). */
-export type PropValue = string | number | boolean | null | ColorRampData;
+export type PropValue = string | number | boolean | null | ColorRampData | readonly [number, number, number, number];
 
 export interface ColorRampStop {
   readonly position: number;
@@ -57,6 +57,10 @@ export interface PropDef {
   readonly default: PropValue;
   /** Enum identifiers, in Blender's order. */
   readonly options?: readonly string[];
+  /** Enum labels shown in the drop-down (rna_nodetree.cc, rna_material.cc, rna_color.cc). */
+  readonly labels?: Readonly<Record<string, string>>;
+  /** Label of a checkbox option ("Normalize", "Invert"...). */
+  readonly label?: string;
 }
 
 export type NodeClass = 'input' | 'output' | 'shader' | 'texture' | 'color' | 'vector' | 'converter';
@@ -71,6 +75,12 @@ export interface NodeTypeDef {
   readonly outputs: readonly OutputDef[];
   readonly props: readonly PropDef[];
   readonly panels?: readonly { readonly name: string; readonly defaultClosed: boolean }[];
+  /** Default width (bke::NodeWidth); 140 when the node does not set one. */
+  readonly width?: number;
+  /** Options drawn on the node (draw_buttons), in order, for the current values. */
+  readonly buttons?: (props: Props) => readonly string[];
+  /** Options drawn at the top of a panel (Principled BSDF in 5.2). */
+  readonly panelButtons?: Readonly<Record<string, readonly string[]>>;
   /** Output → input used when muting (M) or deleting with reconnect (Ctrl+X). */
   readonly passThrough?: (props: Props) => Readonly<Record<string, string>>;
   /** Blender source file the definition comes from. */
@@ -106,7 +116,8 @@ export const OUTPUT_MATERIAL: NodeTypeDef = {
     f('Thickness', 0, undefined, undefined, { hideValue: true }),
   ],
   outputs: [],
-  props: [{ id: 'target', default: 'ALL', options: ['ALL', 'EEVEE', 'CYCLES'] }],
+  props: [{ id: 'target', default: 'ALL', options: ['ALL', 'EEVEE', 'CYCLES'], labels: { ALL: 'All', EEVEE: 'EEVEE', CYCLES: 'Cycles' } }],
+  buttons: () => ['target'],
   source: 'node_shader_output_material.cc',
 };
 
@@ -151,9 +162,17 @@ export const PRINCIPLED_BSDF: NodeTypeDef = {
   ],
   outputs: [out('BSDF', 'shader')],
   props: [
-    { id: 'distribution', default: 'MULTI_GGX', options: ['GGX', 'MULTI_GGX'] },
-    { id: 'subsurface_method', default: 'RANDOM_WALK', options: ['BURLEY', 'RANDOM_WALK', 'RANDOM_WALK_SKIN'] },
+    { id: 'distribution', default: 'MULTI_GGX', options: ['GGX', 'MULTI_GGX'], labels: { GGX: 'GGX', MULTI_GGX: 'Multiscatter GGX' } },
+    {
+      id: 'subsurface_method',
+      default: 'RANDOM_WALK',
+      options: ['BURLEY', 'RANDOM_WALK', 'RANDOM_WALK_SKIN', 'RANDOM_WALK_LEGACY'],
+      labels: { BURLEY: 'Christensen-Burley', RANDOM_WALK: 'Random Walk', RANDOM_WALK_SKIN: 'Random Walk (Skin)', RANDOM_WALK_LEGACY: 'Random Walk (Legacy)' },
+    },
   ],
+  width: 240,
+  /** In 5.2 these drop-downs live inside the Subsurface and Specular panels (panel layouts). */
+  panelButtons: { Subsurface: ['subsurface_method'], Specular: ['distribution'] },
   panels: ['Diffuse', P_SUB, P_SPEC, 'Transmission', 'Coat', 'Sheen', 'Emission', 'Thin Film'].map((name) => ({ name, defaultClosed: true })),
   source: 'node_shader_bsdf_principled.cc',
 };
@@ -200,10 +219,17 @@ export const NOISE_TEXTURE: NodeTypeDef = {
   ],
   outputs: [out('Fac', 'float', { name: 'Factor' }), out('Color', 'color')],
   props: [
-    { id: 'noise_dimensions', default: '3D', options: ['1D', '2D', '3D', '4D'] },
-    { id: 'noise_type', default: 'FBM', options: ['MULTIFRACTAL', 'RIDGED_MULTIFRACTAL', 'HYBRID_MULTIFRACTAL', 'FBM', 'HETERO_TERRAIN'] },
-    { id: 'normalize', default: true },
+    { id: 'noise_dimensions', default: '3D', options: ['1D', '2D', '3D', '4D'], labels: { '1D': '1D', '2D': '2D', '3D': '3D', '4D': '4D' } },
+    {
+      id: 'noise_type',
+      default: 'FBM',
+      options: ['MULTIFRACTAL', 'RIDGED_MULTIFRACTAL', 'HYBRID_MULTIFRACTAL', 'FBM', 'HETERO_TERRAIN'],
+      labels: { MULTIFRACTAL: 'Multifractal', RIDGED_MULTIFRACTAL: 'Ridged Multifractal', HYBRID_MULTIFRACTAL: 'Hybrid Multifractal', FBM: 'fBM', HETERO_TERRAIN: 'Hetero Terrain' },
+    },
+    { id: 'normalize', default: true, label: 'Normalize' },
   ],
+  width: 160,
+  buttons: (p) => (p.noise_type === 'FBM' ? ['noise_dimensions', 'noise_type', 'normalize'] : ['noise_dimensions', 'noise_type']),
   source: 'node_shader_tex_noise.cc',
 };
 
@@ -232,11 +258,13 @@ export const WAVE_TEXTURE: NodeTypeDef = {
   ],
   outputs: [out('Color', 'color'), out('Fac', 'float', { name: 'Factor' })],
   props: [
-    { id: 'wave_type', default: 'BANDS', options: ['BANDS', 'RINGS'] },
-    { id: 'bands_direction', default: 'X', options: ['X', 'Y', 'Z', 'DIAGONAL'] },
-    { id: 'rings_direction', default: 'X', options: ['X', 'Y', 'Z', 'SPHERICAL'] },
-    { id: 'wave_profile', default: 'SIN', options: ['SIN', 'SAW', 'TRI'] },
+    { id: 'wave_type', default: 'BANDS', options: ['BANDS', 'RINGS'], labels: { BANDS: 'Bands', RINGS: 'Rings' } },
+    { id: 'bands_direction', default: 'X', options: ['X', 'Y', 'Z', 'DIAGONAL'], labels: { X: 'X', Y: 'Y', Z: 'Z', DIAGONAL: 'Diagonal' } },
+    { id: 'rings_direction', default: 'X', options: ['X', 'Y', 'Z', 'SPHERICAL'], labels: { X: 'X', Y: 'Y', Z: 'Z', SPHERICAL: 'Spherical' } },
+    { id: 'wave_profile', default: 'SIN', options: ['SIN', 'SAW', 'TRI'], labels: { SIN: 'Sine', SAW: 'Saw', TRI: 'Triangle' } },
   ],
+  width: 160,
+  buttons: (p) => ['wave_type', p.wave_type === 'BANDS' ? 'bands_direction' : 'rings_direction', 'wave_profile'],
   source: 'node_shader_tex_wave.cc',
 };
 
@@ -248,10 +276,12 @@ export const IMAGE_TEXTURE: NodeTypeDef = {
   outputs: [out('Color', 'color'), out('Alpha', 'float')],
   props: [
     { id: 'image', default: null },
-    { id: 'interpolation', default: 'Linear', options: ['Linear', 'Closest', 'Cubic', 'Smart'] },
-    { id: 'projection', default: 'FLAT', options: ['FLAT', 'BOX', 'SPHERE', 'TUBE'] },
-    { id: 'extension', default: 'REPEAT', options: ['REPEAT', 'EXTEND', 'CLIP', 'MIRROR'] },
+    { id: 'interpolation', default: 'Linear', options: ['Linear', 'Closest', 'Cubic', 'Smart'], labels: { Linear: 'Linear', Closest: 'Closest', Cubic: 'Cubic', Smart: 'Smart' } },
+    { id: 'projection', default: 'FLAT', options: ['FLAT', 'BOX', 'SPHERE', 'TUBE'], labels: { FLAT: 'Flat', BOX: 'Box', SPHERE: 'Sphere', TUBE: 'Tube' } },
+    { id: 'extension', default: 'REPEAT', options: ['REPEAT', 'EXTEND', 'CLIP', 'MIRROR'], labels: { REPEAT: 'Repeat', EXTEND: 'Extend', CLIP: 'Clip', MIRROR: 'Mirror' } },
   ],
+  width: 240,
+  buttons: () => ['image', 'interpolation', 'projection', 'extension'],
   source: 'node_shader_tex_image.cc',
 };
 
@@ -274,10 +304,19 @@ export const COLOR_RAMP: NodeTypeDef = {
   inputs: [factor('Fac', 0.5, { name: 'Factor' })],
   outputs: [out('Color', 'color'), out('Alpha', 'float')],
   props: [{ id: 'color_ramp', default: DEFAULT_RAMP }],
+  width: 240,
+  buttons: () => ['color_ramp'],
   source: 'node_shader_color_ramp.cc, blenkernel/intern/colorband.cc',
 };
 
 /** Blend modes of the Mix node (rna ramp_blend_items order). The lab implements MIX, MULTIPLY, OVERLAY and SCREEN. */
+const BLEND_LABELS: Readonly<Record<string, string>> = {
+  MIX: 'Mix', DARKEN: 'Darken', MULTIPLY: 'Multiply', BURN: 'Color Burn', LIGHTEN: 'Lighten', SCREEN: 'Screen',
+  DODGE: 'Color Dodge', ADD: 'Add', OVERLAY: 'Overlay', SOFT_LIGHT: 'Soft Light', LINEAR_LIGHT: 'Linear Light',
+  DIFFERENCE: 'Difference', EXCLUSION: 'Exclusion', SUBTRACT: 'Subtract', DIVIDE: 'Divide', HUE: 'Hue',
+  SATURATION: 'Saturation', COLOR: 'Color', VALUE: 'Value',
+};
+
 export const BLEND_TYPES = [
   'MIX', 'DARKEN', 'MULTIPLY', 'BURN', 'LIGHTEN', 'SCREEN', 'DODGE', 'ADD', 'OVERLAY',
   'SOFT_LIGHT', 'LINEAR_LIGHT', 'DIFFERENCE', 'EXCLUSION', 'SUBTRACT', 'DIVIDE', 'HUE', 'SATURATION', 'COLOR', 'VALUE',
@@ -305,11 +344,18 @@ export const MIX: NodeTypeDef = {
     out('Result_Color', 'color', { name: 'Result', when: (p) => dataType(p) === 'RGBA' }),
   ],
   props: [
-    { id: 'data_type', default: 'FLOAT', options: ['FLOAT', 'VECTOR', 'RGBA', 'ROTATION'] },
-    { id: 'factor_mode', default: 'UNIFORM', options: ['UNIFORM', 'NON_UNIFORM'] },
-    { id: 'blend_type', default: 'MIX', options: BLEND_TYPES },
-    { id: 'clamp_factor', default: true },
-    { id: 'clamp_result', default: false },
+    { id: 'data_type', default: 'FLOAT', options: ['FLOAT', 'VECTOR', 'RGBA', 'ROTATION'], labels: { FLOAT: 'Float', VECTOR: 'Vector', RGBA: 'Color', ROTATION: 'Rotation' } },
+    { id: 'factor_mode', default: 'UNIFORM', options: ['UNIFORM', 'NON_UNIFORM'], labels: { UNIFORM: 'Uniform', NON_UNIFORM: 'Non-Uniform' } },
+    { id: 'blend_type', default: 'MIX', options: BLEND_TYPES, labels: BLEND_LABELS },
+    { id: 'clamp_factor', default: true, label: 'Clamp Factor' },
+    { id: 'clamp_result', default: false, label: 'Clamp Result' },
+  ],
+  // sh_node_mix_layout: factor mode for vectors, blend mode and Clamp Result for colours.
+  buttons: (p) => [
+    'data_type',
+    ...(p.data_type === 'VECTOR' ? ['factor_mode'] : []),
+    ...(p.data_type === 'RGBA' ? ['blend_type', 'clamp_result'] : []),
+    'clamp_factor',
   ],
   // is_default_link_socket(): A passes through when muted.
   passThrough: () => ({ Result_Float: 'A_Float', Result_Vector: 'A_Vector', Result_Color: 'A_Color' }),
@@ -323,7 +369,8 @@ export const RGB: NodeTypeDef = {
   nodeClass: 'input',
   inputs: [],
   outputs: [out('Color', 'color')],
-  props: [{ id: 'color', default: null }],
+  props: [{ id: 'color', default: [0.5, 0.5, 0.5, 1] }],
+  buttons: () => ['color'],
   source: 'node_shader_rgb.cc',
 };
 
@@ -334,6 +381,7 @@ export const VALUE: NodeTypeDef = {
   inputs: [],
   outputs: [out('Value', 'float')],
   props: [{ id: 'value', default: 0 }],
+  buttons: () => ['value'],
   source: 'node_shader_value.cc',
 };
 
@@ -347,8 +395,9 @@ export const TEXTURE_COORDINATE: NodeTypeDef = {
   outputs: ['Generated', 'Normal', 'UV', 'Object', 'Camera', 'Window', 'Reflection'].map((id) => out(id, 'vector')),
   props: [
     { id: 'object', default: null },
-    { id: 'from_instancer', default: false },
+    { id: 'from_instancer', default: false, label: 'From Instancer' },
   ],
+  buttons: () => ['object', 'from_instancer'],
   source: 'node_shader_tex_coord.cc',
 };
 
@@ -364,7 +413,8 @@ export const MAPPING: NodeTypeDef = {
     vector('Scale', { default: [1, 1, 1] }),
   ],
   outputs: [out('Vector', 'vector')],
-  props: [{ id: 'vector_type', default: 'POINT', options: ['POINT', 'TEXTURE', 'VECTOR', 'NORMAL'] }],
+  props: [{ id: 'vector_type', default: 'POINT', options: ['POINT', 'TEXTURE', 'VECTOR', 'NORMAL'], labels: { POINT: 'Point', TEXTURE: 'Texture', VECTOR: 'Vector', NORMAL: 'Normal' } }],
+  buttons: () => ['vector_type'],
   passThrough: () => ({ Vector: 'Vector' }),
   source: 'node_shader_mapping.cc',
 };
@@ -381,7 +431,8 @@ export const BUMP: NodeTypeDef = {
     vector('Normal', { hideValue: true }),
   ],
   outputs: [out('Normal', 'vector')],
-  props: [{ id: 'invert', default: false }],
+  props: [{ id: 'invert', default: false, label: 'Invert' }],
+  buttons: () => ['invert'],
   passThrough: () => ({ Normal: 'Normal' }),
   source: 'node_shader_bump.cc',
 };
@@ -393,9 +444,19 @@ export const NORMAL_MAP: NodeTypeDef = {
   inputs: [f('Strength', 1, 0, 10), color('Color', [0.5, 0.5, 1, 1])],
   outputs: [out('Normal', 'vector')],
   props: [
-    { id: 'space', default: 'TANGENT', options: ['TANGENT', 'OBJECT', 'WORLD', 'BLENDER_OBJECT', 'BLENDER_WORLD'] },
+    {
+      id: 'space',
+      default: 'TANGENT',
+      options: ['TANGENT', 'OBJECT', 'WORLD', 'BLENDER_OBJECT', 'BLENDER_WORLD'],
+      labels: { TANGENT: 'Tangent Space', OBJECT: 'Object Space', WORLD: 'World Space', BLENDER_OBJECT: 'Blender Object Space', BLENDER_WORLD: 'Blender World Space' },
+    },
+    // New in 5.x (DNA NodeShaderNormalMap: OpenGL and Displaced by default).
+    { id: 'convention', default: 'OPENGL', options: ['OPENGL', 'DIRECTX'], labels: { OPENGL: 'OpenGL', DIRECTX: 'DirectX' } },
+    { id: 'base', default: 'DISPLACED', options: ['ORIGINAL', 'DISPLACED'], labels: { ORIGINAL: 'Original Base', DISPLACED: 'Displaced Base' } },
     { id: 'uv_map', default: '' },
   ],
+  width: 160,
+  buttons: (p) => (p.space === 'TANGENT' ? ['space', 'convention', 'base', 'uv_map'] : ['space', 'convention']),
   source: 'node_shader_normal_map.cc',
 };
 

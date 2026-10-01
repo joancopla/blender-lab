@@ -11,6 +11,7 @@ import { lab01 } from '../labs/blender/01-viewport';
 import { lab02 } from '../labs/blender/02-edit-mode';
 import { lab03 } from '../labs/blender/03-modifiers';
 import { lab04 } from '../labs/blender/04-lights';
+import { lab05 } from '../labs/blender/05-materials';
 import { ma3Lab01 } from '../labs/grandma3/01-dmx';
 import { ma3Lab02 } from '../labs/grandma3/02-addresses';
 import { ma3Lab03 } from '../labs/grandma3/03-command-line';
@@ -62,6 +63,7 @@ export const PROGRAMS: readonly ProgramGroup[] = [
       { lab: lab02, path: 'labs/02-edit-mode/' },
       { lab: lab03, path: 'labs/03-modifiers/' },
       { lab: lab04, path: 'labs/04-lights/' },
+      { lab: lab05, path: 'labs/05-materials/' },
     ],
     shortcuts: [
       { labelKey: 'shortcuts.grab', keys: ['g'] },

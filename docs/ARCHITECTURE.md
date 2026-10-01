@@ -115,6 +115,13 @@ Blender stage lists into core ones. `ghost-match.ts` and `silhouette.ts` are che
 - `scene/scene.ts`: `SceneState.materials` and `MeshObject.materialSlots`.
 - `operators/material-nodes.ts`: those edits as undoable operators with Blender's undo names.
 - Compilation (phase 3) generates GLSL for `WebGLRenderer` (decision in the Lab 05 spec).
+- `ui/node-editor/`: the Shader Editor. `node-editor.ts` (view, selection, moving with G and
+  drag, links, cut, keys while the pointer is over it, Shift+A), `node-view.ts` (one node:
+  header, sockets, fields, options, Principled panels, Color Ramp; rebuilt only when its
+  structure changes, so a dragged field is never rebuilt), `link-geometry.ts` (curves and cut
+  tests), `node-theme.ts` (Blender 5.2 theme colours), `add-menu-data.ts` (Shift+A of 5.2,
+  generated from the Blender source). `MountOptions.shaderEditor` puts it under the viewport
+  (Shading workspace); it shows the active object's first material slot.
 
 ### Replica UI
 

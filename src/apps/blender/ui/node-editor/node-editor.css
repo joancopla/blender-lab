@@ -1,0 +1,403 @@
+/*
+ * Shader Editor, with Blender 5.2's default theme (values and sources in node-theme.ts).
+ */
+.ne-area {
+  flex: 1;
+  min-height: 0;
+}
+.ne-material:empty {
+  display: none;
+}
+.ne-region {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  /* space_node.back with the grid dots (space_node.grid). */
+  background-color: #1a1a1a;
+  background-image: radial-gradient(circle, #303030 1.1px, transparent 1.4px);
+  background-size: 20px 20px;
+}
+.ne-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+.ne-links {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+.ne-link,
+.ne-link-shadow {
+  fill: none;
+  stroke-linecap: round;
+}
+.ne-link-shadow {
+  stroke: #1a1a1a;
+  stroke-width: 4.5px;
+}
+.ne-link {
+  stroke-width: 2.5px;
+}
+.ne-link.is-hot {
+  stroke-width: 3.5px;
+  filter: brightness(1.35);
+}
+.ne-link.is-muted {
+  stroke: #b84343 !important;
+  stroke-dasharray: 6 4;
+}
+.ne-link.is-dragging {
+  stroke: #d9d9d9;
+}
+.ne-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.ne-box {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: #e6e6e6;
+  stroke-dasharray: 3 3;
+}
+.ne-cut {
+  fill: none;
+  stroke: #e6e6e6;
+  stroke-dasharray: 4 3;
+}
+.ne-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #8a8a8a;
+}
+
+/* --- Nodes ------------------------------------------------------------------------- */
+.ne-node {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 5px;
+  background: #303030;
+  color: #e6e6e6;
+  font-size: 11px;
+  line-height: 1.2;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 3px 8px rgba(0, 0, 0, 0.45);
+}
+.ne-node.is-selected {
+  box-shadow:
+    0 0 0 1.5px #ed5700,
+    0 3px 8px rgba(0, 0, 0, 0.45);
+}
+.ne-node.is-active {
+  box-shadow:
+    0 0 0 1.5px #ffffff,
+    0 3px 8px rgba(0, 0, 0, 0.45);
+}
+.ne-node.is-muted {
+  opacity: 0.55;
+}
+.ne-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  padding: 0 6px 0 2px;
+  border-radius: 5px 5px 0 0;
+  background: var(--ne-header);
+  cursor: default;
+}
+.ne-node.is-collapsed .ne-header {
+  border-radius: 10px;
+}
+.ne-collapse {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #e6e6e6;
+  font-size: 10px;
+  cursor: pointer;
+}
+.ne-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ne-body {
+  padding: 4px 0 6px;
+}
+.ne-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 10px;
+  gap: 6px;
+}
+.ne-row-out {
+  justify-content: flex-end;
+}
+.ne-row-vector {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.ne-row-vector > .ne-label {
+  line-height: 18px;
+}
+.ne-row-vector > .ne-socket {
+  top: 11px;
+}
+.ne-label {
+  color: #e6e6e6;
+  white-space: nowrap;
+}
+
+/* Sockets: std_node_socket_colors, a dark ring around them. */
+.ne-socket {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.75);
+  background: var(--ne-socket);
+  cursor: crosshair;
+}
+.ne-socket:hover {
+  transform: scale(1.3);
+}
+.ne-socket-in {
+  left: -5px;
+}
+.ne-socket-out {
+  right: -5px;
+}
+.ne-socket-collapsed {
+  top: 50%;
+}
+
+/* Fields inside nodes: Blender's number field, with a slider fill for factors. */
+.ne-node .bl-num {
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 3px;
+}
+.ne-node .bl-num-label {
+  color: #e6e6e6;
+}
+.ne-node .bl-num.is-factor {
+  background: linear-gradient(90deg, #4772b3 var(--ne-fill, 0%), #545454 var(--ne-fill, 0%));
+}
+.ne-node .bl-num.is-factor:hover {
+  background: linear-gradient(90deg, #5680c2 var(--ne-fill, 0%), #656565 var(--ne-fill, 0%));
+}
+.ne-vector {
+  display: grid;
+  gap: 1px;
+}
+.ne-vector .bl-num {
+  border-radius: 0;
+}
+.ne-vector .bl-num:first-child {
+  border-radius: 3px 3px 0 0;
+}
+.ne-vector .bl-num:last-child {
+  border-radius: 0 0 3px 3px;
+}
+.ne-color {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.ne-swatch {
+  width: 50%;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  cursor: pointer;
+}
+.ne-swatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.ne-swatch::-webkit-color-swatch {
+  border: none;
+  border-radius: 3px;
+}
+.ne-swatch::-moz-color-swatch {
+  border: none;
+  border-radius: 3px;
+}
+.ne-swatch-big {
+  display: block;
+  width: calc(100% - 20px);
+  height: 60px;
+  margin: 2px 10px 4px;
+}
+.ne-dropdown {
+  display: block;
+  width: calc(100% - 20px);
+  height: 20px;
+  margin: 1px 10px 2px;
+  padding: 0 18px 0 6px;
+  border: none;
+  border-radius: 3px;
+  background: #282828
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23a6a6a6'/%3E%3C/svg%3E")
+    no-repeat right 6px center;
+  color: #e6e6e6;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ne-dropdown:hover {
+  background-color: #323232;
+}
+.ne-row .ne-dropdown {
+  margin: 0;
+  width: 100%;
+}
+.ne-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 1px 10px 2px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #e6e6e6;
+  font: inherit;
+  cursor: pointer;
+}
+.ne-row .ne-check {
+  margin: 0;
+}
+.ne-check-box {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #545454;
+  font-size: 10px;
+}
+.ne-check.is-on .ne-check-box {
+  background: #4772b3;
+}
+.ne-stub {
+  height: 20px;
+  margin: 1px 10px 2px;
+  padding: 0 6px;
+  border-radius: 3px;
+  background: #282828;
+  color: #8a8a8a;
+  line-height: 20px;
+}
+.ne-panel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 22px;
+  padding: 0 8px;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: none;
+  color: #e6e6e6;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ne-panel:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.ne-panel-arrow {
+  width: 10px;
+  font-size: 10px;
+}
+
+/* Color Ramp */
+.ne-ramp {
+  margin: 2px 10px 4px;
+}
+.ne-ramp-tools {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+.ne-ramp-tools .ne-dropdown {
+  flex: 1;
+  margin: 0;
+}
+.ne-ramp-btn {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: #545454;
+  color: #e6e6e6;
+  cursor: pointer;
+}
+.ne-ramp-mode {
+  padding: 0 6px;
+  color: #a6a6a6;
+}
+.ne-ramp-bar {
+  height: 18px;
+  margin-top: 4px;
+  border-radius: 2px;
+}
+.ne-ramp-stops {
+  position: relative;
+  height: 12px;
+}
+.ne-ramp-stop {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 10px;
+  margin-left: -4px;
+  padding: 0;
+  border: 1px solid #000;
+  border-radius: 1px;
+  background: #e6e6e6;
+  clip-path: polygon(50% 0, 100% 35%, 100% 100%, 0 100%, 0 35%);
+  cursor: pointer;
+}
+.ne-ramp-stop.is-active {
+  background: #ffbf3f;
+}
+.ne-ramp-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+.ne-ramp-foot .ne-swatch {
+  width: 40%;
+}

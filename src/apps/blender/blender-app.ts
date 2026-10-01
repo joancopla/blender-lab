@@ -38,6 +38,8 @@ export interface BlenderAppOptions {
   readonly meter?: boolean;
   /** Where new lights appear instead of the 3D Cursor (a lab decision). */
   readonly newLightLocation?: Vec3;
+  /** Shader Editor under the viewport (Lab 05). */
+  readonly shaderEditor?: boolean;
 }
 
 export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, BlenderDecorations> {
@@ -70,6 +72,7 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
       propertiesTabs: this.options.propertiesTabs,
       addObjects: this.options.addObjects,
       newLightLocation: this.options.newLightLocation,
+      shaderEditor: this.options.shaderEditor,
     });
     this.inner.store.onChange(() => {
       this.analyzer?.update();
