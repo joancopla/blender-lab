@@ -60,8 +60,13 @@ UV no entra en aquest lab, perquè no s'ha ensenyat a desplegar.
 
 ## 4. Compilació del graf
 
-- El graf de nodes es tradueix a un material de three.js amb TSL. Cada node de Blender té
-  el seu equivalent en TSL.
+**Decisió de Joan (01/10/2026), opció A:** els labs 01–04 fan servir `WebGLRenderer`, i TSL
+només funciona amb `WebGPURenderer`. Per no refer el render, les ombres toves ni la selecció,
+el graf es tradueix a **GLSL** injectat en un material de three.js (`onBeforeCompile`), en
+lloc de TSL. Per a l'alumne no canvia res.
+
+- El graf de nodes es tradueix a un material de three.js amb GLSL. Cada node de Blender té
+  el seu equivalent en GLSL.
 - El Principled BSDF s'aproxima amb `MeshPhysicalMaterial` (o l'equivalent de nodes).
   Documenta les diferències visibles a `docs/fidelity/blender.md`.
 - Les textures procedurals no cal que siguin idèntiques píxel a píxel, però els

@@ -781,3 +781,28 @@ Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot 
   el fotograma típic a Rendered, les crides de dibuix, la resolució i les mostres. Prova
   Rendered amb les quatre llums de l'etapa 10 i orbita: apunta els fps i la resolució que
   queda
+
+# Lab 05 — Materials i nodes
+
+## Fase 1 — Model de l'editor de nodes
+
+Verificat al codi font de Blender 5.2.1 (`v5.2.1`): no cal comprovar-ho a mà.
+
+- [x] Sockets, noms, identificadors, valors per defecte i rangs dels 16 nodes del lab (`source/blender/nodes/shader/nodes/node_shader_*.cc`)
+- [x] Principled BSDF 5.2: entrada Thin Wall, panells Diffuse, Subsurface, Specular, Transmission, Coat, Sheen, Emission i Thin Film, tots tancats per defecte; IOR 1,5, Coat Roughness 0,03, Emission Strength 0
+- [x] El node RGB es diu «Color» a la 5.2; el Value surt a 0
+- [x] Mix: el factor per defecte és 1,0 (el Mix Color del menú no el canvia; la cerca «Mix Color ▸ Mix» el posa a 0,5)
+- [x] Color Ramp per defecte: negre a 0 i blanc a 1, opacs, Linear (`BKE_colorband_init`)
+- [x] Disponibilitat de sockets: W (Noise 1D i 4D), Offset i Gain (tipus de Noise), Location (Mapping Point i Texture), A/B/Result del Mix segons el tipus de dades
+- [x] Un shader només es pot connectar a una entrada de shader; qualsevol altra sortida pot anar a un shader («s'interpreta com a emissió») (`node_shader_tree.cc`)
+- [x] Conversions: color a valor = luminància; vector a valor = mitjana (`intern/cycles/kernel/svm/convert.h`)
+- [x] Material nou: Principled BSDF a (−200, 100) connectat al Material Output a (200, 100) (`ED_node_shader_default`)
+- [x] Inserir un node en un enllaç fa servir el socket principal: el declarat (Mix: A) o el del tipus amb més prioritat (shader > color > vector > float > boolean) (`get_main_socket`)
+- [x] Noms de desfer: Add Node, Link Nodes, Cut Links, Delete, Delete with Reconnect, Duplicate Nodes, Toggle Node Mute, Collapse (H), Toggle Hidden Node Sockets
+- [x] Menú Shift+A de la 5.2: Input (amb Constant), Output, Shader, Displacement (Bump, Normal Map), Color (Color Ramp, Mix Color), Texture, Utilities (Math, Vector: Mapping) (`scripts/startup/bl_ui/node_add_menu_shader.py`). Es dibuixa a la fase 2
+
+Dubtes oberts (no afecten les etapes):
+
+- [ ] ❓ Coeficients de luminància: el lab fa servir els de Rec.709 (0,2126, 0,7152, 0,0722); Blender els llegeix de la configuració OCIO
+- [ ] ❓ Silenciar (M) i Delete with Reconnect en nodes sense regla pròpia: cada sortida passa per la primera entrada del mateix tipus
+- [ ] ❓ Nom del pas de desfer en canviar un valor d'un node (el lab hi posa el nom del socket)

@@ -10,6 +10,7 @@ import type { Bounds, SceneCameraData } from '../viewport/view-state';
 import type { MeshData } from '../mesh/mesh-data';
 import { primitiveMesh } from '../mesh/primitives';
 import type { Modifier } from '../modifiers/types';
+import type { NodeTree } from '../shading/tree';
 
 export type PrimitiveKind = 'cube' | 'uvSphere' | 'cylinder' | 'cone' | 'torus' | 'plane';
 
@@ -49,6 +50,16 @@ export interface MeshObject extends ObjectBase {
    */
   readonly autoSmooth?: boolean;
   readonly autoSmoothAngleDeg?: number;
+  /** Material slots (Properties > Material): material ids, null for an empty slot. Missing: none. */
+  readonly materialSlots?: readonly (string | null)[];
+}
+
+/** A material (Lab 05): its name and its shader node tree. */
+export interface Material {
+  readonly id: string;
+  /** Unique name: "Material", "Material.001"... */
+  readonly name: string;
+  readonly tree: NodeTree;
 }
 
 /** Default Auto Smooth angle, in degrees. */
@@ -183,6 +194,8 @@ export interface SceneState {
   readonly editObjectIds?: readonly string[];
   /** Edit Mode select mode (tool setting, shared by all meshes). */
   readonly selectMode?: SelectMode;
+  /** Materials of the file (Lab 05); missing: none. */
+  readonly materials?: readonly Material[];
 }
 
 export const isEditMode = (s: SceneState): boolean => (s.editObjectIds?.length ?? 0) > 0;

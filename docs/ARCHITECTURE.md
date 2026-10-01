@@ -102,6 +102,20 @@ Blender stage lists into core ones. `ghost-match.ts` and `silhouette.ts` are che
   three.js geometry; the material must not use `flatShading`.
 - `operators/shade.ts`: Shade Smooth / Auto Smooth / Flat and the Auto Smooth properties.
 
+### Shading (Lab 05)
+
+- `shading/sockets.ts`: socket types (shader, color, float, vector, bool), Blender's link rule
+  (a shader only into a shader; anything into a shader) and implicit conversions.
+- `shading/node-types.ts`: the Lab 05 nodes as Blender 5.2 declares them (identifiers, names,
+  defaults, ranges, options, Principled BSDF panels), each with its source file.
+- `shading/tree.ts`: `NodeTree` (nodes, links, never-reused ids), socket availability by
+  options, validation (red links, loops), main sockets, and the editing functions (add,
+  connect, cut, move, delete, delete with reconnect, duplicate, insert on link, mute,
+  collapse, hide sockets, values, options) plus the default material tree.
+- `scene/scene.ts`: `SceneState.materials` and `MeshObject.materialSlots`.
+- `operators/material-nodes.ts`: those edits as undoable operators with Blender's undo names.
+- Compilation (phase 3) generates GLSL for `WebGLRenderer` (decision in the Lab 05 spec).
+
 ### Replica UI
 
 `ui/`: header, Outliner, N panel, status bar, menus, adjust panel, statistics, analyser panel
