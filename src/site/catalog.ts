@@ -8,6 +8,7 @@ import { lab01 } from '../labs/blender/01-viewport';
 import { lab02 } from '../labs/blender/02-edit-mode';
 import { lab03 } from '../labs/blender/03-modifiers';
 import { lab04 } from '../labs/blender/04-lights';
+import { ma3Lab01 } from '../labs/grandma3/01-dmx';
 
 export interface CatalogEntry {
   readonly lab: LabDefinition;
@@ -25,14 +26,23 @@ export interface Shortcut {
 export interface ProgramGroup {
   /** i18n key of the program name. */
   readonly nameKey: string;
+  /** i18n keys of the small label over the name ("{n} labs") and of the sentence next to it. */
+  readonly eyebrowKey: string;
+  readonly leadKey: string;
+  /** i18n key of the "In the real program" title on its lab pages. */
+  readonly realTitleKey?: string;
+  /** Small-screen notice on its lab pages (default: the keyboard-and-mouse one). */
+  readonly deviceWarning?: { readonly titleKey: string; readonly textKey: string };
   readonly labs: readonly CatalogEntry[];
-  /** Real shortcuts taught in the labs, for the index strip. */
+  /** Real shortcuts taught in the labs, for the index strip (none: no strip). */
   readonly shortcuts: readonly Shortcut[];
 }
 
 export const PROGRAMS: readonly ProgramGroup[] = [
   {
     nameKey: 'app.name',
+    eyebrowKey: 'site.programEyebrow',
+    leadKey: 'site.programLead',
     labs: [
       { lab: lab01, path: 'labs/01-viewport/' },
       { lab: lab02, path: 'labs/02-edit-mode/' },
@@ -50,6 +60,16 @@ export const PROGRAMS: readonly ProgramGroup[] = [
       { labelKey: 'shortcuts.undo', keys: ['ctrlZ'] },
     ],
   },
+  {
+    nameKey: 'ma3.name',
+    eyebrowKey: 'ma3.eyebrow',
+    leadKey: 'ma3.lead',
+    realTitleKey: 'ma3.realTitle',
+    deviceWarning: { titleKey: 'ma3.mobileTitle', textKey: 'ma3.mobileText' },
+    labs: [{ lab: ma3Lab01, path: 'labs/ma3-01-dmx/' }],
+    // The keypad shortcuts arrive with the command line lab.
+    shortcuts: [],
+  },
 ];
 
 /** Where a lab page sits in the catalog: its program and the lab after it. */
@@ -62,6 +82,8 @@ export function labPageOptions(lab: LabDefinition): LabPageOptions {
   return {
     programKey: group.nameKey,
     indexHref: '../../',
+    realTitleKey: group.realTitleKey,
+    deviceWarning: group.deviceWarning,
     next: next ? { lab: next.lab, href: `../../${next.path}` } : undefined,
   };
 }

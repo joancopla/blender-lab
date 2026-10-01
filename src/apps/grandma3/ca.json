@@ -1,0 +1,20 @@
+{
+  "ma3": {
+    "name": "grandMA3 onPC",
+    "eyebrow": "Control de llums",
+    "lead": "Comença pel DMX: universos, canals i adreces. Després vindran les ordres, els grups, els presets i les cues. Tot el que fas aquí es fa igual a l'onPC.",
+    "realTitle": "Al grandMA3 onPC",
+    "mobileTitle": "Aquest lab es veu millor en un ordinador",
+    "mobileText": "Els faders i l'escenari necessiten espai. En una pantalla petita pots provar-ho, però millor obre'l en un ordinador o una tauleta en horitzontal.",
+    "fixtures": {
+      "dimmer": "Dimmer",
+      "ledPar4": "LED PAR · 4 ch"
+    }
+  },
+  "keys": {
+    "dmxUniverse": "Univers",
+    "dmxChannel": "Canal",
+    "dmxAddress": "Adreça",
+    "dmxFader": "Fader"
+  }
+}

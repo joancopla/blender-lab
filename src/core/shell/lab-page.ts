@@ -54,6 +54,10 @@ export interface LabPageOptions {
   readonly indexHref?: string;
   /** The lab after this one, for the closing card. */
   readonly next?: { readonly lab: LabDefinition; readonly href: string };
+  /** i18n key of the "In the real program" title (default: page.realTitle). */
+  readonly realTitleKey?: string;
+  /** i18n keys of the small-screen notice (default: mobile.title / mobile.text). */
+  readonly deviceWarning?: { readonly titleKey: string; readonly textKey: string };
 }
 
 /** "Label: keys" texts (controls, real program) split at the given colon. */
@@ -188,7 +192,7 @@ export function mountLabPage<State, Setup, Decorations>(
   const real = el('section', 'lab-real');
   const realHead = el('div', 'lab-real-head');
   const realTitles = el('div');
-  realTitles.append(el('p', 'shell-eyebrow', t('page.realEyebrow')), el('h2', 'lab-section-title', t('page.realTitle')));
+  realTitles.append(el('p', 'shell-eyebrow', t('page.realEyebrow')), el('h2', 'lab-section-title', t(options.realTitleKey ?? 'page.realTitle')));
   realHead.append(realTitles, el('p', 'lab-real-lead', t(`${P}.real.lead`)));
   const realList = el('ul', 'lab-real-list');
   for (const k of lab.page.real) {
@@ -324,7 +328,10 @@ export function mountLabPage<State, Setup, Decorations>(
     const mini = el('figure', 'lab-blueprint');
     mini.setAttribute('aria-label', t('site.blueprintTitle'));
     miniCard.append(el('span', 'shell-eyebrow', t('site.blueprintLabel')), mini);
-    for (const v of BLUEPRINT_VIEWS) {
+    // Only the views the blueprint draws (a lighting plot has just the front view).
+    const views = BLUEPRINT_VIEWS.filter((v) => blueprint.lines.some((l) => l.view === v));
+    if (views.length === 1) mini.classList.add('is-single');
+    for (const v of views) {
       const cell = el('div', 'lab-blueprint-view');
       cell.title = t(`site.views.${v}`);
       cell.append(renderBlueprintView(blueprint, v, earned));
@@ -350,5 +357,5 @@ export function mountLabPage<State, Setup, Decorations>(
   setFolded(loadFolded(), false);
   window.setInterval(() => runner.tick(), 5000);
 
-  showDeviceWarningIfNeeded();
+  showDeviceWarningIfNeeded(options.deviceWarning);
 }

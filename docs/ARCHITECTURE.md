@@ -127,6 +127,22 @@ quads in `triangulateFace`. Stage checks run on every change, view included, so 
 silhouette comparisons per evaluated mesh and placement. Levels Viewport is limited to 3.
 Still to be measured on a classroom computer.
 
+## grandMA3 (`apps/grandma3/`)
+
+A DMX rig simulator, not a replica of a grandMA3 window (see `specs/grandma3/README.md`).
+
+- `dmx/dmx.ts`: universes, `universe.address` and absolute addresses, fitting and overlaps,
+  percent ↔ 8-bit values. `dmx/fixtures.ts`: generic fixture types (Dimmer, LED PAR 4 ch) and
+  what a fixture outputs for the channels it receives.
+- `state.ts`: `RigState` (universes and fixtures), `RigSetup`, `RigDecorations` and the
+  operators (`setChannel`, `setAddress`) run through `core/history`.
+- `rig-app.ts`: `RigApp`, the app contract: SVG stage, fixture panel with patch, DMX output
+  faders (dragging is a store preview, release commits one undo step). `ui/rig.css`.
+- Lab ids start with `ma3-`. The blueprint is a lighting plot with only a front view; the lab
+  panel shows only the views a blueprint draws.
+- Program-specific texts of the site (eyebrow, lead, "In the real program" title, small-screen
+  notice) come from `ProgramGroup` in `site/catalog.ts`.
+
 ## Labs and pages
 
 A lab is a `LabDefinition` in `src/labs/blender/<id>/index.ts`: stages (`stages.ts`), texts

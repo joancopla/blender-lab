@@ -16,6 +16,7 @@ export default defineConfig({
         lab02: 'labs/02-edit-mode/index.html',
         lab03: 'labs/03-modifiers/index.html',
         lab04: 'labs/04-lights/index.html',
+        ma3lab01: 'labs/ma3-01-dmx/index.html',
       },
     },
   },

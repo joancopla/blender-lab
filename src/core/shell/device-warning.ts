@@ -11,7 +11,13 @@ export function needsDeviceWarning(): boolean {
   return touchOnly || window.innerWidth < MIN_WIDTH_PX;
 }
 
-export function showDeviceWarningIfNeeded(): void {
+/** Texts of the notice: the default one speaks about keyboard and mouse. */
+export interface DeviceWarningTexts {
+  readonly titleKey: string;
+  readonly textKey: string;
+}
+
+export function showDeviceWarningIfNeeded(texts: DeviceWarningTexts = { titleKey: 'mobile.title', textKey: 'mobile.text' }): void {
   if (!needsDeviceWarning()) return;
   const overlay = document.createElement('div');
   overlay.className = 'lab-device-warning';
@@ -21,10 +27,10 @@ export function showDeviceWarningIfNeeded(): void {
   box.className = 'lab-device-box';
   const h = document.createElement('h2');
   h.id = 'lab-device-title';
-  h.textContent = t('mobile.title');
+  h.textContent = t(texts.titleKey);
   overlay.setAttribute('aria-labelledby', h.id);
   const p = document.createElement('p');
-  p.textContent = t('mobile.text');
+  p.textContent = t(texts.textKey);
   const ok = document.createElement('button');
   ok.type = 'button';
   ok.className = 'lab-button';

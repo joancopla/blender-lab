@@ -202,8 +202,8 @@ function program(group: ProgramGroup, figure: HTMLElement): HTMLElement {
   const titles = el('div');
   const h = el('h2', 'site-program-title', t(group.nameKey));
   h.id = titleId;
-  titles.append(el('p', 'shell-eyebrow', t('site.programEyebrow', { n: group.labs.length })), h);
-  head.append(titles, el('p', 'site-program-lead', t('site.programLead')));
+  titles.append(el('p', 'shell-eyebrow', t(group.eyebrowKey, { n: group.labs.length })), h);
+  head.append(titles, el('p', 'site-program-lead', t(group.leadKey)));
   const list = el('ol', 'site-cards');
   for (const entry of group.labs) list.append(card(entry, figure));
   section.append(head, list);
@@ -235,7 +235,7 @@ function shortcuts(group: ProgramGroup): HTMLElement {
 function render(): void {
   const figure = blueprint();
   const main = el('main', 'site-main');
-  main.append(hero(figure), ...PROGRAMS.flatMap((g) => [program(g, figure), shortcuts(g)]));
+  main.append(hero(figure), ...PROGRAMS.flatMap((g) => (g.shortcuts.length > 0 ? [program(g, figure), shortcuts(g)] : [program(g, figure)])));
   root.replaceChildren(siteTopBar(), main, el('footer', 'site-footer', t('site.footer')));
 }
 

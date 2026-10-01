@@ -1,0 +1,328 @@
+/*
+ * DMX rig simulator. Its own dark console look (not the lab shell's): neutral
+ * greys, warm light, amber for the selected fixture. The lab's turquoise only
+ * appears in lab elements (the dashed mark a stage asks for).
+ */
+.rig {
+  --rig-bg: #111214;
+  --rig-panel: #191a1d;
+  --rig-panel-2: #212226;
+  --rig-line: #2e3035;
+  --rig-text: #e6e7e9;
+  --rig-muted: #9a9ea6;
+  --rig-sel: #ffb547;
+  --rig-alert: #ff8a7a;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--rig-bg);
+  color: var(--rig-text);
+  font: 400 13px/1.4 'Inter', 'Segoe UI', Arial, sans-serif;
+  overflow: auto;
+}
+.rig:focus {
+  outline: none;
+}
+.rig button,
+.rig input {
+  font: inherit;
+  color: inherit;
+}
+.rig :focus-visible {
+  outline: 2px solid var(--rig-sel);
+  outline-offset: 1px;
+}
+
+/* Stage */
+.rig-stage {
+  flex: 1 1 auto;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--rig-line);
+  background: radial-gradient(120% 90% at 50% 0%, #1b1c20, #0b0b0d);
+}
+.rig-svg {
+  width: 100%;
+  height: 100%;
+  max-height: 340px;
+}
+.rig-floor {
+  fill: #141518;
+}
+.rig-truss {
+  stroke: #5b6068;
+  stroke-width: 3;
+}
+.rig-truss-x {
+  stroke: #5b6068;
+  stroke-width: 1;
+  opacity: 0.7;
+}
+.rig-cable {
+  fill: none;
+  stroke: #6b5a3a;
+  stroke-width: 1.6;
+}
+.rig-cable-2 {
+  stroke: #4a6a8a;
+  stroke-dasharray: 5 3;
+}
+.rig-cable-label {
+  fill: var(--rig-muted);
+  font: 500 10px 'JetBrains Mono', Consolas, monospace;
+}
+.rig-beam {
+  transition: opacity 0.12s linear;
+}
+.rig-fixture {
+  cursor: pointer;
+}
+.rig-hit {
+  fill: transparent;
+}
+.rig-body {
+  fill: #2a2c31;
+  stroke: #4a4f57;
+  stroke-width: 1.2;
+}
+.rig-fixture:hover .rig-body {
+  stroke: #7a808a;
+}
+.rig-fixture.is-selected .rig-body {
+  stroke: var(--rig-sel);
+  stroke-width: 2.4;
+}
+.rig-display {
+  fill: #08090a;
+}
+.rig-display-text {
+  fill: #ff9b3d;
+  font: 600 9px 'JetBrains Mono', Consolas, monospace;
+  text-anchor: middle;
+}
+.rig-lens {
+  fill: #fff4dc;
+}
+.rig-number {
+  fill: var(--rig-muted);
+  font: 600 12px 'JetBrains Mono', Consolas, monospace;
+  text-anchor: middle;
+}
+.rig-fixture.is-selected .rig-number {
+  fill: var(--rig-sel);
+}
+.rig-warn {
+  fill: var(--rig-alert);
+  font: 800 14px 'Inter', Arial, sans-serif;
+}
+.rig-mark {
+  fill: none;
+  stroke: var(--accent, #57f1db);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+
+/* Bottom: fixture and DMX output */
+.rig-bottom {
+  flex: none;
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  min-height: 0;
+}
+.rig-inspector,
+.rig-output {
+  padding: 10px 12px 12px;
+  background: var(--rig-panel);
+}
+.rig-inspector {
+  border-right: 1px solid var(--rig-line);
+}
+.rig-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.rig-muted {
+  margin: 0 0 8px;
+  color: var(--rig-muted);
+}
+.rig-props {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  margin: 0 0 8px;
+}
+.rig-props dt {
+  color: var(--rig-muted);
+}
+.rig-props dd {
+  margin: 0;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+}
+.rig-chans {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.rig-chans li {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 8px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--rig-panel-2);
+  font-family: 'JetBrains Mono', Consolas, monospace;
+}
+.rig-chans li.is-missing {
+  color: var(--rig-alert);
+}
+.rig-ch-fn {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+.rig-alert {
+  margin: 0 0 8px;
+  color: var(--rig-alert);
+}
+.rig-patch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.rig-patch-label {
+  color: var(--rig-muted);
+  width: 100%;
+}
+.rig-btn,
+.rig-tab {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 4px;
+  border: 1px solid var(--rig-line);
+  background: var(--rig-panel-2);
+  cursor: pointer;
+}
+.rig-btn:hover,
+.rig-tab:hover {
+  border-color: #50545c;
+}
+.rig-tab.is-on {
+  border-color: var(--rig-sel);
+  color: var(--rig-sel);
+}
+.rig-address,
+.rig-goto,
+.rig-value {
+  height: 30px;
+  border-radius: 4px;
+  border: 1px solid var(--rig-line);
+  background: #0c0d0f;
+  padding: 0 6px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+}
+.rig-address {
+  width: 72px;
+}
+.rig-goto {
+  width: 64px;
+}
+
+.rig-output-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.rig-output-head .rig-title {
+  margin: 0;
+}
+.rig-tabs,
+.rig-pages {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.rig-pages {
+  margin-left: auto;
+}
+.rig-page-label {
+  min-width: 64px;
+  text-align: center;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  color: var(--rig-muted);
+}
+.rig-faders {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(36px, 1fr));
+  gap: 4px;
+  overflow-x: auto;
+}
+.rig-fader {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 4px 2px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+.rig-fader.is-owned {
+  background: var(--rig-panel-2);
+}
+.rig-fader.is-selected {
+  border-color: var(--rig-sel);
+}
+.rig-value {
+  width: 100%;
+  min-width: 0;
+  padding: 0 2px;
+  text-align: center;
+  font-size: 11px;
+  -moz-appearance: textfield;
+}
+.rig-value::-webkit-inner-spin-button,
+.rig-value::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.rig-range {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 22px;
+  height: 110px;
+  margin: 0;
+  accent-color: var(--rig-sel);
+  cursor: pointer;
+}
+.rig-ch {
+  font: 600 11px 'JetBrains Mono', Consolas, monospace;
+}
+.rig-owner {
+  min-height: 14px;
+  font: 500 10px 'JetBrains Mono', Consolas, monospace;
+  color: var(--rig-sel);
+}
+
+@media (max-width: 900px) {
+  .rig-bottom {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rig-inspector {
+    border-right: 0;
+    border-bottom: 1px solid var(--rig-line);
+  }
+  .rig-faders {
+    grid-template-columns: repeat(8, minmax(36px, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rig-beam {
+    transition: none;
+  }
+}

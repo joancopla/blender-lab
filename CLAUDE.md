@@ -7,9 +7,10 @@ de zero. Cada lab replica una part de la interfície del programa en HTML i prop
 curtes amb comprovació automàtica: l'alumne canvia alguna cosa, veu l'efecte i rep
 retroalimentació.
 
-- **Programari actual: Blender.** En el futur es podria afegir un altre programa (per
-  exemple, After Effects). Ara **no** es construeix res d'això, però l'arquitectura ha de
-  permetre afegir-lo sense tocar el nucli (vegeu "Arquitectura").
+- **Programari actual: Blender i grandMA3 onPC.** grandMA3 (control de llums per DMX) és el
+  segon programa des de l'01/10/2026: especificació a `specs/grandma3/README.md`, fidelitat a
+  `docs/fidelity/grandma3.md`. Se'n podrien afegir d'altres (per exemple, After Effects) sense
+  tocar el nucli (vegeu "Arquitectura").
 - **Autor:** Joan, professor de Blender (el domina a fons). És l'expert de domini i el
   validador final de tot el que fa referència al comportament del programari.
 - **Públic:** alumnes d'un cicle formatiu d'Imatge i So, sense experiència prèvia.

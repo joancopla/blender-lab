@@ -1,0 +1,82 @@
+{
+  "ma3lab01": {
+    "name": "Què és el DMX",
+    "desc": "Universos, canals i adreces: com arriba un valor de l'ordinador fins a cada llum, i com es reparteixen els canals entre els aparells.",
+    "intro": {
+      "lead": "Abans de programar res a l'onPC, cal entendre què viatja pel cable: 512 canals per univers, cada un amb un valor de 0 a 255, i cada aparell escoltant a partir de la seva adreça.",
+      "controls": {
+        "fader": "Mou un canal: arrossega el fader",
+        "value": "Valor exacte: escriu-lo a la casella de sobre el fader",
+        "pages": "Altres canals: ‹ › o la casella Ch",
+        "select": "Tria un focus: clic a l'escenari",
+        "patch": "Canvia l'adreça: − i + o escriu-la",
+        "undo": "Desfés: Ctrl + Z"
+      }
+    },
+    "real": {
+      "lead": "El lab simplifica l'equip perquè vegis el DMX en estat pur. A classe, tot això passa dins de l'onPC.",
+      "dmxkey": "DMX-key: el dispositiu USB que fa que l'onPC enviï DMX als llums. Sense ell, el programa funciona igual però no surt senyal pel cable.",
+      "patch": "Patch: és on dones d'alta cada aparell amb la seva adreça. L'adreça s'escriu univers.adreça, per exemple 2.1.",
+      "absolute": "Adreça absoluta: a l'edició del patch, AddressMode alterna entre Univ.addr (2.1) i Absolute (513).",
+      "sheet": "DMX Sheet: la finestra que mostra el valor de cada canal, com la sortida DMX d'aquest lab."
+    },
+    "s1": {
+      "title": "Un canal, un valor",
+      "instruction": "A dalt hi ha quatre focus; a baix, la sortida DMX, amb un fader per canal que va de 0 a 255. Puja el canal 1 fins a 255 i mira quin focus s'encén.",
+      "hint1": "Arrossega cap amunt el primer fader de l'esquerra, el que té el número 1 a sota, fins al capdamunt.",
+      "hint2": "També pots fer clic a la casella de sobre el fader, escriure 255 i prémer Retorn.",
+      "progress": "Canal 1: {v} de 255.",
+      "success": "Això és un canal DMX: un número de l'1 al 512 amb un valor de 0 a 255. 255 vol dir a ple."
+    },
+    "s2": {
+      "title": "Cada focus té una adreça",
+      "instruction": "Ara cada focus escolta un canal diferent. El número que porta a la pantalleta és la seva adreça. Encén a ple el focus número 3 i deixa els altres apagats.",
+      "hint1": "Mira la pantalleta taronja del focus 3: aquest número és el canal que has de pujar a 255.",
+      "hint2": "El focus 3 té l'adreça 10: puja el canal 10. Si en cliques el focus, la sortida salta als seus canals.",
+      "look": "Busca l'adreça a la pantalleta del focus 3.",
+      "notFull": "Ja s'encén. Puja'l fins a 255.",
+      "other": "El focus {n} també fa llum: el seu canal és el {ch}. Torna'l a 0.",
+      "success": "Molt bé. L'adreça és el primer canal que escolta un aparell. A l'onPC, l'assignes al patch."
+    },
+    "s3": {
+      "title": "Un focus, quatre canals",
+      "instruction": "Aquest PAR LED ocupa quatre canals seguits a partir de la seva adreça: dimmer, vermell, verd i blau. Fes-lo vermell: almenys a mitja intensitat, i sense verd ni blau.",
+      "hint1": "Al quadre de l'esquerra veus els quatre canals del focus: l'1 és el dimmer i el 2, el vermell.",
+      "hint2": "Puja el canal 1 (dimmer) i el canal 2 (vermell) per sobre de 128, i deixa el 3 i el 4 a 0.",
+      "start": "Mira els canals del focus al quadre de l'esquerra.",
+      "noDimmer": "El vermell ja és amunt, però el dimmer (canal 1) és a 0: sense dimmer no hi ha llum.",
+      "noColour": "El dimmer és amunt, però no hi ha cap color: un LED necessita almenys un color.",
+      "mixed": "Hi ha verd o blau barrejat. Deixa'ls a 0 perquè sigui vermell pur.",
+      "higher": "Ja es veu vermell. Puja el dimmer i el vermell almenys fins a 128.",
+      "success": "Exacte. Els canals que ocupa un aparell són el seu footprint. Depèn del model i del mode que triïs."
+    },
+    "s4": {
+      "title": "On comença el següent",
+      "instruction": "Els dos PAR tenen l'adreça 1, així que fan exactament el mateix. Canvia l'adreça del PAR 2 perquè comenci al primer canal lliure després del PAR 1.",
+      "hint1": "El PAR 1 comença a l'1 i ocupa 4 canals: 1, 2, 3 i 4. Quin és el primer que queda lliure?",
+      "hint2": "Adreça + footprint = primera adreça lliure: 1 + 4 = 5. Posa el PAR 2 a l'adreça 5.",
+      "overlap": "Encara comparteix canals amb el PAR 1, que fa servir de l'1 al 4.",
+      "gap": "Ja no se solapen, però a l'adreça {a} deixes canals buits: el primer lliure és el 5.",
+      "success": "Perfecte. Dos aparells amb canals compartits es mouen junts: al patch, cada un ha de tenir els seus."
+    },
+    "s5": {
+      "title": "No hi cap",
+      "instruction": "Aquest PAR de 4 canals és a l'adreça 510: necessitaria el 510, 511, 512 i 513, però un univers només té 512 canals. Porta'l a la darrera adreça on hi cap sencer.",
+      "hint1": "L'últim canal que ocupa és adreça + 4 − 1. Ha de ser 512 o menys.",
+      "hint2": "512 − 4 + 1 = 509. Posa'l a l'adreça 509.",
+      "tooHigh": "Encara li falten canals: ha d'acabar, com a molt, al 512.",
+      "tooLow": "Ara hi cap, però no és la darrera adreça possible.",
+      "success": "Molt bé. Quan un univers s'omple, el següent aparell va a un altre univers."
+    },
+    "s6": {
+      "title": "Un segon univers",
+      "instruction": "El focus 2 és a l'univers 2, adreça 1. A grandMA3 s'escriu 2.1 i, en adreça absoluta, és la 513. Encén només el focus 2 a ple.",
+      "hint1": "El canal 1 de l'univers 1 és un altre focus. Canvia a Universe 2 a la sortida DMX.",
+      "hint2": "Tria la pestanya Universe 2 i puja-hi el canal 1 fins a 255.",
+      "start": "Busca l'univers on hi ha el focus 2.",
+      "notFull": "Ja s'encén. Puja'l fins a 255.",
+      "wrongUniverse": "Has encès el focus 1: és el canal 1 de l'univers 1. Torna'l a 0 i canvia a l'univers 2.",
+      "success": "Exacte: 2.1 i 513 són la mateixa adreça. Cada univers és un cable DMX amb 512 canals més."
+    }
+  }
+}

@@ -1387,6 +1387,12 @@ body {
 .lab-blueprint .bp-svg {
   --bp-stroke: 0.9;
 }
+.lab-blueprint.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+.lab-blueprint.is-single .lab-blueprint-view {
+  aspect-ratio: 2;
+}
 .lab-blueprint .bp-line text {
   display: none;
 }
