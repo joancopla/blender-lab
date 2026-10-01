@@ -4,6 +4,9 @@
  */
 import type { LabDefinition } from '../core/lab';
 import type { LabPageOptions } from '../core/shell/lab-page';
+import type { Blueprint } from '../core/shell/blueprint';
+import { STOOL_BLUEPRINT } from '../labs/blender/blueprint';
+import { PLOT_BLUEPRINT } from '../labs/grandma3/blueprint';
 import { lab01 } from '../labs/blender/01-viewport';
 import { lab02 } from '../labs/blender/02-edit-mode';
 import { lab03 } from '../labs/blender/03-modifiers';
@@ -26,8 +29,12 @@ export interface Shortcut {
 }
 
 export interface ProgramGroup {
+  /** Tab id in the index address (?p=<id>); never change it once published. */
+  readonly id: string;
   /** i18n key of the program name. */
   readonly nameKey: string;
+  /** The program's final challenge, drawn in the index hero. */
+  readonly blueprint: Blueprint;
   /** i18n keys of the small label over the name ("{n} labs") and of the sentence next to it. */
   readonly eyebrowKey: string;
   readonly leadKey: string;
@@ -45,7 +52,9 @@ export interface ProgramGroup {
 
 export const PROGRAMS: readonly ProgramGroup[] = [
   {
+    id: 'blender',
     nameKey: 'app.name',
+    blueprint: STOOL_BLUEPRINT,
     eyebrowKey: 'site.programEyebrow',
     leadKey: 'site.programLead',
     labs: [
@@ -66,7 +75,9 @@ export const PROGRAMS: readonly ProgramGroup[] = [
     ],
   },
   {
+    id: 'grandma3',
     nameKey: 'ma3.name',
+    blueprint: PLOT_BLUEPRINT,
     eyebrowKey: 'ma3.eyebrow',
     leadKey: 'ma3.lead',
     realTitleKey: 'ma3.realTitle',
@@ -95,10 +106,10 @@ export function labPageOptions(lab: LabDefinition): LabPageOptions {
   if (!group) return {};
   const i = group.labs.findIndex((e) => e.lab.id === lab.id);
   const next = group.labs[i + 1];
-  // Lab pages live two folders below the root.
+  // Lab pages live two folders below the root; the index opens on their program's tab.
   return {
     programKey: group.nameKey,
-    indexHref: '../../',
+    indexHref: group === PROGRAMS[0] ? '../../' : `../../?p=${group.id}`,
     realTitleKey: group.realTitleKey,
     deviceWarning: group.deviceWarning,
     next: next ? { lab: next.lab, href: `../../${next.path}` } : undefined,

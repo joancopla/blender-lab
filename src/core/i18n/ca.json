@@ -37,7 +37,9 @@
     "cardContinue": "Continua",
     "cardReview": "Repassa",
     "cardOpen": "Obre el lab",
-    "cardStages": "{total} etapes"
+    "cardStages": "{total} etapes",
+    "programsTabs": "Programari",
+    "tabLabs": "{n} labs"
   },
   "ui": {
     "stageOf": "Etapa {n} de {total}",

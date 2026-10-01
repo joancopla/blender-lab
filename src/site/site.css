@@ -34,6 +34,55 @@
   border-radius: var(--radius-card);
 }
 
+/* --- Program tabs ---------------------------------------------------------------- */
+.site-tabs {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-low);
+}
+.site-tabs-list {
+  display: flex;
+  gap: 4px;
+  padding: 0 clamp(16px, 6vw, 96px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.site-tab {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  font: 700 16px/1.2 var(--font);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+.site-tab:hover {
+  color: var(--text);
+}
+.site-tab.is-current {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+.site-tab-count {
+  color: var(--text-faint);
+  font: 500 12px/1 var(--mono);
+  letter-spacing: 0;
+}
+.site-tab.is-current .site-tab-count {
+  color: var(--accent);
+}
+.site-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 /* --- Hero ------------------------------------------------------------------------ */
 .site-hero {
   display: grid;
@@ -124,6 +173,16 @@
   box-sizing: border-box;
   border-style: dashed;
   background: transparent;
+}
+/* A plot with only a front view: one wide drawing, the note under it. */
+.site-blueprint-views.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+.site-blueprint-views.is-single .site-view-front {
+  aspect-ratio: 2;
+}
+.site-blueprint-views.is-single .site-blueprint-note {
+  aspect-ratio: auto;
 }
 .site-blueprint-note p {
   margin: 0;

@@ -88,6 +88,8 @@ capçalera de l'índex i al caixetí del lab); la tria es recorda.
 ```
 +----------------------------------------------------------------+
 |  [marca] [nom del projecte]        Labs  Preferències  Mode    |
++----------------------------------------------------------------+
+|  Blender  4 labs   grandMA3 onPC  3 labs        (pestanyes)    |
 +--------------------------------+-------------------------------+
 |  · Etiqueta petita             |  (graella subtil)             |
 |  Aprèn programari creatiu      |   +--------+ +--------+       |
@@ -113,10 +115,19 @@ capçalera de l'índex i al caixetí del lab); la tria es recorda.
 +----------------------------------------------------------------+
 ```
 
+- **Pestanyes de programari** (decisió de Joan, 01/10/2026), sota la barra superior: una
+  pestanya per programa amb el nom (Inter 700) i el nombre de labs en mono. La pestanya activa
+  té el text en color text, el comptador en turquesa i una línia inferior turquesa de 2 px; les
+  altres, text secundari. Per defecte s'obre Blender; es recorda l'última triada i l'adreça
+  `?p=<id>` obre directament un programa (els labs de grandMA3 hi tornen així). Tota la resta
+  de la pàgina (hero, plànol, targetes i franja de tecles) és la del programa triat. Fletxes
+  esquerra i dreta per canviar de pestanya amb el teclat.
 - **Hero partit en dos**, a tota l'amplada: a l'esquerra, l'etiqueta petita amb un punt
   d'accent, el títol gran, una frase i les accions; a la dreta, el plànol en tres vistes
   sobre una graella subtil, amb la nota "El repte final". Un degradat molt suau del color
   d'accent (tint) il·lumina la cantonada superior esquerra del text.
+- Cada programa té el seu repte final: el tamboret de Blender en tres vistes i el plànol de
+  llums de grandMA3 només en alçat (una vista ampla amb la nota a sota).
 - Al plànol, les línies de les etapes superades es dibuixen en turquesa; les pendents, en
   línia discontínua de color text tènue. La primera vegada, el plànol està gairebé buit i
   la nota explica que es completarà a mesura que avancin.
