@@ -336,3 +336,183 @@
     transition: none;
   }
 }
+
+/* Command line and the classroom controller (console stages) */
+.rig-bottom.is-console {
+  grid-template-columns: minmax(0, 1fr);
+}
+.rig-prog {
+  fill: var(--rig-sel);
+  font: 600 11px 'JetBrains Mono', Consolas, monospace;
+  text-anchor: middle;
+}
+.rig-console {
+  padding: 10px 12px 14px;
+  background: var(--rig-panel);
+  display: grid;
+  gap: 8px;
+}
+.rig-cmd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--rig-line);
+  background: #0c0d0f;
+}
+.rig-cmd-prompt {
+  color: var(--rig-muted);
+  font: 600 12px 'JetBrains Mono', Consolas, monospace;
+  white-space: nowrap;
+}
+.rig-cmd-text {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  font: 500 17px 'JetBrains Mono', Consolas, monospace;
+}
+.rig-cmd-text::after {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 1.1em;
+  margin-left: 2px;
+  vertical-align: -3px;
+  background: var(--rig-sel);
+}
+.rig-cmd-result {
+  margin: 0;
+  min-height: 20px;
+  color: var(--rig-muted);
+}
+.rig-cmd-result.is-error {
+  color: var(--rig-alert);
+}
+.rig-ctrl {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    'enc enc enc'
+    'left exec pad';
+  align-items: end;
+  gap: 12px 18px;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--rig-line);
+  background: #d9dadc;
+  color: #1b1c1f;
+}
+.rig-encs {
+  grid-area: enc;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+.rig-enc {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #3b3f46, #121315);
+}
+.rig-ctrl-left {
+  grid-area: left;
+  display: grid;
+  gap: 8px;
+}
+.rig-ctrl-exec {
+  grid-area: exec;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+.rig-mini-faders {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.rig-mini-fader {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 30px;
+}
+.rig-mini-fader small {
+  font: 500 10px 'JetBrains Mono', Consolas, monospace;
+  color: #4a4d53;
+  min-height: 12px;
+}
+.rig-mini-slot {
+  position: relative;
+  width: 5px;
+  height: 78px;
+  border-radius: 3px;
+  background: #1b1c1f;
+}
+.rig-mini-cap {
+  position: absolute;
+  left: 50%;
+  width: 24px;
+  height: 12px;
+  margin-left: -12px;
+  border-radius: 2px;
+  background: #2a2c31;
+  border-top: 2px solid #c87b2a;
+}
+.rig-keypad {
+  grid-area: pad;
+  display: grid;
+  grid-template-columns: repeat(4, 50px);
+  gap: 5px;
+}
+.rig-go,
+.rig-xbtns {
+  display: grid;
+  gap: 5px;
+}
+.rig-go {
+  grid-template-columns: repeat(3, 50px);
+}
+.rig-xbtns {
+  grid-template-columns: repeat(6, 30px);
+  gap: 10px;
+}
+.rig .rig-key {
+  height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: #1e1f23;
+  color: #f2f3f4;
+  font: 700 15px 'Inter', 'Segoe UI', Arial, sans-serif;
+  box-shadow: inset 0 -2px 0 #000;
+  cursor: pointer;
+}
+.rig .rig-key.is-fn {
+  color: #e8a25a;
+  font-size: 13px;
+}
+.rig .rig-xbtns .rig-key {
+  height: 30px;
+  font-size: 12px;
+}
+.rig-key:hover {
+  background: #2a2c31;
+}
+.rig-key:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+@media (max-width: 1100px) {
+  .rig-ctrl {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'left pad';
+  }
+  .rig-encs,
+  .rig-ctrl-exec {
+    display: none;
+  }
+}

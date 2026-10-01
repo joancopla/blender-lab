@@ -10,6 +10,28 @@
       "dimmer": "Dimmer",
       "ledPar4": "LED PAR · 4 ch",
       "movingHead16": "Moving head · 16 ch"
+    },
+    "console": {
+      "otherLab": "La tecla {key} la faràs servir en un altre lab.",
+      "clearedLine": "Línia d'ordres esborrada.",
+      "clearedSelection": "Selecció treta. Els valors es queden al programmer.",
+      "clearedAll": "Programmer buit.",
+      "errors": {
+        "empty": "No hi ha cap ordre.",
+        "syntax": "No entenc l'ordre «{cmd}». Comença per un número o per At, i fes servir Thru, + i − entre números.",
+        "atValue": "Després d'At cal un valor, per exemple At 50, o At un altre cop per al valor normal.",
+        "noSelection": "No hi ha cap aparell seleccionat: primer tria'n algun."
+      }
+    },
+    "shortcutsTitle": "Les tecles del controlador",
+    "shortcutsLead": "Les mateixes tecles que al controlador de classe i a l'onPC. Aquestes són les del Lab 03.",
+    "shortcuts": {
+      "select": "Executa l'ordre (1 Please selecciona el focus 1)",
+      "range": "Rang: 1 Thru 4",
+      "addRemove": "Afegeix i treu de la selecció",
+      "value": "Valor: At 50",
+      "normal": "Valor normal (100 %)",
+      "clear": "Treu la selecció (llarg: buida el programmer)"
     }
   },
   "keys": {
@@ -19,6 +41,13 @@
     "dmxFader": "Fader",
     "dmxFootprint": "Footprint",
     "dmxAbsolute": "Absoluta",
-    "dmxPercent": "% → 0–255"
+    "dmxPercent": "% → 0–255",
+    "ma3Please": "Please",
+    "ma3Thru": "Thru",
+    "ma3At": "At",
+    "ma3Plus": "+",
+    "ma3Minus": "−",
+    "ma3Clear": "Clear",
+    "ma3ClearHold": "Clear (mantingut)"
   }
 }

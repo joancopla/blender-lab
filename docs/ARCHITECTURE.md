@@ -138,6 +138,12 @@ A DMX rig simulator, not a replica of a grandMA3 window (see `specs/grandma3/REA
   operators (`setChannel`, `setAddress`) run through `core/history`.
 - `rig-app.ts`: `RigApp`, the app contract: SVG stage, fixture panel with patch, DMX output
   faders (dragging is a store preview, release commits one undo step). `ui/rig.css`.
+- `console/command.ts`: the verified part of the command line as keypad tokens (default
+  keyword Fixture, Thru, + and − in lists, At, At At) parsed into a selection and a dimmer value.
+  `console/console-ui.ts`: the command line and the classroom controller (keypad works; faders,
+  encoders and Go keys are drawn). `RigState` carries the programmer (selection and dimmer
+  percent); `runCommand`, `clearSelection` and `clearAll` also write the dimmer channels, so the
+  DMX output is what the programmer holds. A stage turns it on with `RigSetup.console`.
 - Lab ids start with `ma3-`. The blueprint is a lighting plot with only a front view; the lab
   panel shows only the views a blueprint draws.
 - Program-specific texts of the site (eyebrow, lead, "In the real program" title, small-screen

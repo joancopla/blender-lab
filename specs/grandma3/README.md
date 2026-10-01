@@ -27,7 +27,7 @@ ni Preset (Fixture és la paraula clau per defecte de grandMA3).
 |---|---|---|---|
 | 01 | Iniciació | Què és el DMX | Fet (`01-dmx.md`) |
 | 02 | Iniciació | Adreces i valors (càlculs) | Fet (`02-addresses.md`) |
-| 03 | Iniciació | Línia d'ordres amb el teclat del controlador | Pendent (esboç a `C:\ma3-lab\propostes\`) |
+| 03 | Iniciació | Línia d'ordres amb el teclat del controlador | Fet (`03-command-line.md`) |
 | 04 | Iniciació | L'onPC per dins: programmer, grups, presets, cues, executors | Pendent |
 | 05–08 | Mitjà | Escenari amb color i moviment, patch, grups i presets, cues i tracking | Pendent |
 | 09–12 | Pro | 16 bits, temps, sintaxi completa i abreujada, repte final | Pendent |
@@ -36,7 +36,7 @@ ni Preset (Fixture és la paraula clau per defecte de grandMA3).
 
 Un **plànol de llums en alçat** (`src/labs/grandma3/blueprint.ts`): una vara, el terra i els
 aparells amb el feix. Cada etapa superada dibuixa un aparell: el Lab 01, els de la vara; el
-Lab 02, els focus de terra. Com que només té vista frontal,
+Lab 02, els focus de terra; el Lab 03, una segona vara amb contrallums. Com que només té vista frontal,
 el plànol en miniatura del panell en mostra una sola.
 
 ## Arquitectura
@@ -59,11 +59,13 @@ Cap ordre ni nom de finestra de grandMA3 entra als labs sense haver-lo verificat
 oficial (https://help.malighting.com/grandMA3/), indicant la pàgina. El que no es pugui
 verificar va a `docs/fidelity/grandma3.md` com a pregunta oberta.
 
-### Ordres verificades fins ara (per al Lab 03)
+### Ordres verificades (fet servir al Lab 03)
 
 | Ordre | Què fa | Font |
 |---|---|---|
 | `1 Please` | Selecciona l'aparell 1 (Fixture per defecte) | QSG Control Simple Fixtures |
+| `Fixture 1 Thru 10 - 6 Thru 8` | Treu de la llista (− dins una llista) | Minus Keyword |
+| `Fixture 1 Thru 4 At 4` | Llista i valor en una ordre (amb una xifra activada, 4 = 40 %) | At Keyword |
 | `+ 2 Please` | Afegeix el 2 a la selecció | QSG |
 | `1 Thru 10 Please` | Rang | QSG |
 | `At 50 Please` | Dimmer de la selecció al 50 % | QSG |

@@ -10,6 +10,7 @@ import { lab03 } from '../labs/blender/03-modifiers';
 import { lab04 } from '../labs/blender/04-lights';
 import { ma3Lab01 } from '../labs/grandma3/01-dmx';
 import { ma3Lab02 } from '../labs/grandma3/02-addresses';
+import { ma3Lab03 } from '../labs/grandma3/03-command-line';
 
 export interface CatalogEntry {
   readonly lab: LabDefinition;
@@ -35,6 +36,9 @@ export interface ProgramGroup {
   /** Small-screen notice on its lab pages (default: the keyboard-and-mouse one). */
   readonly deviceWarning?: { readonly titleKey: string; readonly textKey: string };
   readonly labs: readonly CatalogEntry[];
+  /** Title and sentence of the shortcuts strip (default: the keyboard ones). */
+  readonly shortcutsTitleKey?: string;
+  readonly shortcutsLeadKey?: string;
   /** Real shortcuts taught in the labs, for the index strip (none: no strip). */
   readonly shortcuts: readonly Shortcut[];
 }
@@ -70,9 +74,18 @@ export const PROGRAMS: readonly ProgramGroup[] = [
     labs: [
       { lab: ma3Lab01, path: 'labs/ma3-01-dmx/' },
       { lab: ma3Lab02, path: 'labs/ma3-02-addresses/' },
+      { lab: ma3Lab03, path: 'labs/ma3-03-command-line/' },
     ],
-    // The keypad shortcuts arrive with the command line lab.
-    shortcuts: [],
+    shortcutsTitleKey: 'ma3.shortcutsTitle',
+    shortcutsLeadKey: 'ma3.shortcutsLead',
+    shortcuts: [
+      { labelKey: 'ma3.shortcuts.select', keys: ['ma3Please'] },
+      { labelKey: 'ma3.shortcuts.range', keys: ['ma3Thru'] },
+      { labelKey: 'ma3.shortcuts.addRemove', keys: ['ma3Plus', 'ma3Minus'] },
+      { labelKey: 'ma3.shortcuts.value', keys: ['ma3At'] },
+      { labelKey: 'ma3.shortcuts.normal', keys: ['ma3At', 'ma3At'] },
+      { labelKey: 'ma3.shortcuts.clear', keys: ['ma3Clear'] },
+    ],
   },
 ];
 

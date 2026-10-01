@@ -8,7 +8,9 @@ import type { AppMountOptions, PreferenceDefinition, ReplicatedApp } from '../..
 import { HistoryStore, type LogEntry, type OperatorCall } from '../../core/history/store';
 import { DMX_MAX, UNIVERSE_SIZE, absoluteAddress, fits, formatAddress, overlaps } from './dmx/dmx';
 import { type ChannelFunction, FIXTURE_TYPES, type Fixture, channelRange, channelValues, fixtureOutput, footprintOf } from './dmx/fixtures';
-import { type RigDecorations, type RigSetup, type RigState, channel, fixtureById, initialState, setChannel, setPatch } from './state';
+import { type RigDecorations, type RigSetup, type RigState, channel, clearAll, clearSelection, fixtureById, initialState, runCommand, setChannel, setPatch } from './state';
+import { commandText, parseCommand } from './console/command';
+import { ConsoleUI } from './console/console-ui';
 import './texts';
 import './ui/rig.css';
 
@@ -43,7 +45,7 @@ const TYPE_NAMES: Record<keyof typeof FIXTURE_TYPES, string> = { dimmer: 'Dimmer
 
 export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations> {
   readonly preferences: readonly PreferenceDefinition[] = [];
-  private store = new HistoryStore<RigState>({ universes: [], fixtures: [] });
+  private store = new HistoryStore<RigState>({ universes: [], fixtures: [], selection: [], programmer: {} });
   private setup: RigSetup = { fixtures: [], universes: 1 };
   private root: HTMLElement | null = null;
   private stage!: HTMLElement;
@@ -58,15 +60,28 @@ export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations>
   private pageStart = 1;
   private highlight: readonly string[] = [];
   private listeners = new Set<() => void>();
+  private console!: ConsoleUI;
+  private bottom!: HTMLElement;
 
   mount(container: HTMLElement, _options: AppMountOptions): void {
     const root = el('div', 'rig');
     root.tabIndex = -1;
     this.stage = el('div', 'rig-stage');
     const bottom = el('div', 'rig-bottom');
+    this.bottom = bottom;
     this.inspector = el('section', 'rig-inspector');
     this.output = el('section', 'rig-output');
-    bottom.append(this.inspector, this.output);
+    this.console = new ConsoleUI({
+      run: (tokens) => {
+        const s = this.store.state;
+        const parsed = parseCommand(tokens, s.fixtures.map((f) => f.number), s.selection);
+        if (!parsed.ok) return parsed.error;
+        this.store.execute(runCommand(parsed.command, commandText(tokens)));
+        return null;
+      },
+      clear: (long) => this.store.execute(long ? clearAll : clearSelection),
+    });
+    bottom.append(this.inspector, this.output, this.console.root);
     root.append(this.stage, bottom);
     container.append(root);
     this.root = root;
@@ -103,7 +118,7 @@ export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations>
 
     this.stage.addEventListener('click', (e) => {
       const g = (e.target as Element).closest<SVGGElement>('[data-fixture]');
-      if (g) this.select(g.dataset.fixture!);
+      if (g && !this.setup.console) this.select(g.dataset.fixture!);
     });
     root.addEventListener('keydown', (e) => this.onKey(e));
     this.store.onChange(() => {
@@ -133,6 +148,12 @@ export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations>
     this.selected = first?.id ?? null;
     this.universe = first?.universe ?? 1;
     this.pageStart = first ? this.pageOf(first.address) : 1;
+    const consoleMode = setup.console === true;
+    this.bottom.classList.toggle('is-console', consoleMode);
+    this.inspector.hidden = consoleMode;
+    this.output.hidden = consoleMode;
+    this.console.root.hidden = !consoleMode;
+    this.console.reset();
     this.store.reset(initialState(setup));
     this.renderFaders();
   }
@@ -182,8 +203,16 @@ export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations>
   }
 
   private onKey(e: KeyboardEvent): void {
-    const typing = (e.target as HTMLElement).matches('input[type="number"]');
-    if (typing || !(e.ctrlKey || e.metaKey)) return;
+    const target = e.target as HTMLElement;
+    const typing = target.matches('input[type="number"]');
+    if (typing) return;
+    if (this.setup.console && !(e.ctrlKey || e.metaKey || e.altKey)) {
+      // Enter or Space on a focused key already presses that key.
+      if (target.closest('button') && (e.key === 'Enter' || e.key === ' ')) return;
+      if (this.console.keyboard(e)) e.preventDefault();
+      return;
+    }
+    if (!(e.ctrlKey || e.metaKey)) return;
     const k = e.key.toLowerCase();
     if (k === 'z' && !e.shiftKey) this.store.undo();
     else if ((k === 'z' && e.shiftKey) || k === 'y') this.store.redo();
@@ -229,7 +258,8 @@ export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations>
     for (const f of s.fixtures) {
       const x = xOf(f);
       const out = fixtureOutput(f, s.universes[f.universe - 1] ?? []);
-      const sel = f.id === this.selected;
+      const sel = this.setup.console ? s.selection.includes(f.number) : f.id === this.selected;
+      const value = this.setup.console ? s.programmer[f.number] : undefined;
       svg += `<g class="rig-fixture${sel ? ' is-selected' : ''}" data-fixture="${f.id}" tabindex="0" role="button" aria-label="Fixture ${f.number}, address ${formatAddress(f)}">
         <rect class="rig-hit" x="${x - 34}" y="${top - 6}" width="68" height="${H - top - 20}"/>
         <rect class="rig-body" x="${x - 20}" y="${top + 4}" width="40" height="32" rx="6"/>
@@ -237,6 +267,7 @@ export class RigApp implements ReplicatedApp<RigState, RigSetup, RigDecorations>
         <text class="rig-display-text" x="${x}" y="${top + 18}">${String(f.address).padStart(3, '0')}</text>
         <ellipse class="rig-lens" cx="${x}" cy="${top + 34}" rx="11" ry="4" style="opacity:${(0.35 + out.intensity * 0.65).toFixed(3)}"/>
         <text class="rig-number" x="${x}" y="${top + 54}">${f.number}</text>
+        ${value !== undefined ? `<text class="rig-prog" x="${x}" y="${top + 70}">${value}</text>` : ''}
         ${out.missing ? `<text class="rig-warn" x="${x + 24}" y="${top + 8}">!</text>` : ''}
         ${this.highlight.includes(f.id) ? `<circle class="rig-mark" cx="${x}" cy="${top + 22}" r="34"/>` : ''}
       </g>`;

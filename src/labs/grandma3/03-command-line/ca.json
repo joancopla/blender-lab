@@ -1,0 +1,89 @@
+{
+  "ma3lab03": {
+    "name": "Línia d'ordres",
+    "desc": "Selecciona aparells i dona'ls valor amb el teclat del controlador de classe: Thru, +, −, At, Please i Clear, tal com ho faràs a l'onPC.",
+    "intro": {
+      "lead": "A grandMA3, gairebé tot passa per la línia d'ordres. Si comences per un número, l'onPC entén Fixture: amb el teclat numèric i quatre tecles ja pots triar aparells i donar-los intensitat.",
+      "controls": {
+        "type": "Escriu una ordre: tecles del controlador o números del teclat",
+        "please": "Executa-la: Please o Retorn",
+        "back": "Esborra l'última tecla: Retrocés",
+        "clear": "Treu la selecció: Clear",
+        "clearAll": "Buida el programmer: mantén premut Clear",
+        "undo": "Desfés: Ctrl + Z"
+      }
+    },
+    "real": {
+      "lead": "Al controlador de classe hi ha les mateixes tecles. El que escrius aquí és exactament el que escriuràs a l'onPC.",
+      "default": "Fixture per defecte: si comences per un número, l'onPC entén Fixture. A la línia d'ordres veuràs [Fixture]>.",
+      "minus": "Treure de la selecció: el manual ho fa dins d'una llista, per exemple Fixture 1 Thru 10 − 6 Thru 8.",
+      "single": "Una xifra: a l'onPC es pot activar que At 5 vulgui dir 50 %. Si algú ho ha activat, At 60 no farà el que esperes.",
+      "clear": "Clear: una pulsació curta treu la selecció i una de llarga buida el programmer."
+    },
+    "selection": "Selecció actual: {list}.",
+    "s1": {
+      "title": "Selecciona un aparell",
+      "instruction": "Selecciona el focus 1. No cal escriure Fixture: és la paraula clau per defecte. Escriu el número i executa l'ordre amb Please.",
+      "hint1": "Prem 1 al teclat del controlador i després Please.",
+      "hint2": "Si no passa res, mira la línia d'ordres: hi ha d'haver un 1. Please l'executa.",
+      "success": "Molt bé. Els aparells seleccionats es marquen a l'escenari."
+    },
+    "s2": {
+      "title": "Afegeix-ne un",
+      "instruction": "El focus 1 ja està seleccionat. Afegeix-hi el 2 sense perdre l'1.",
+      "hint1": "Si comences l'ordre amb +, afegeixes a la selecció que ja tens.",
+      "hint2": "Prem + 2 Please.",
+      "success": "Exacte: + afegeix a la selecció. Sense +, la selecció nova substitueix l'anterior."
+    },
+    "s3": {
+      "title": "Un rang",
+      "instruction": "Selecciona de l'1 al 4 amb una sola ordre.",
+      "hint1": "Thru vol dir «fins a».",
+      "hint2": "Prem 1 Thru 4 Please.",
+      "success": "Perfecte. Amb Thru fas rangs de qualsevol mida."
+    },
+    "s4": {
+      "title": "Dona'ls valor",
+      "instruction": "En una sola ordre, selecciona de l'1 al 5 i posa'ls al 60 %. Els altres s'han de quedar apagats.",
+      "hint1": "Primer el rang, després At i el valor, i al final Please.",
+      "hint2": "Prem 1 Thru 5 At 6 0 Please.",
+      "extra": "Els focus {list} també tenen valor. Prem Ctrl + Z o reinicia l'etapa.",
+      "value": "El focus {n} és al {v} %, no al 60 %.",
+      "success": "Molt bé. At aplica el valor a la selecció, i els valors queden al programmer."
+    },
+    "s5": {
+      "title": "Tots menys dos",
+      "instruction": "Posa al 30 % tots els focus menys el 4 i el 5, en una sola ordre.",
+      "hint1": "El signe − treu aparells d'una llista: tots, menys un rang.",
+      "hint2": "Prem 1 Thru 8 − 4 Thru 5 At 3 0 Please.",
+      "extra": "El focus {list} no hauria de tenir valor. Desfés amb Ctrl + Z o reinicia l'etapa.",
+      "value": "El focus {n} és al {v} %, no al 30 %.",
+      "success": "Exacte. Amb + i − pots fer qualsevol selecció en una sola ordre."
+    },
+    "s6": {
+      "title": "Al valor normal",
+      "instruction": "Els vuit focus estan seleccionats. Posa'ls al valor normal prement At dues vegades.",
+      "hint1": "At At aplica el valor Normal, que per defecte és el 100 %.",
+      "hint2": "Prem At At Please.",
+      "extra": "El focus {list} té un valor que no toca.",
+      "value": "El focus {n} és al {v} %: el normal és el 100 %.",
+      "success": "Molt bé. At At és la manera ràpida de posar a ple."
+    },
+    "s7": {
+      "title": "Treu la selecció",
+      "instruction": "Deixa els focus encesos, però sense cap aparell seleccionat.",
+      "hint1": "Clear, amb una pulsació curta, treu la selecció i no toca els valors.",
+      "hint2": "Prem Clear una vegada i deixa-la anar de seguida.",
+      "emptied": "Has buidat el programmer: era una pulsació curta. Reinicia l'etapa.",
+      "success": "Exacte. Els valors continuen al programmer encara que no hi hagi res seleccionat."
+    },
+    "s8": {
+      "title": "Buida el programmer",
+      "instruction": "Apaga-ho tot buidant el programmer.",
+      "hint1": "Clear, amb una pulsació llarga, buida tot el programmer.",
+      "hint2": "Mantén premut Clear fins que s'apaguin tots els focus.",
+      "left": "Encara tenen valor: {list}.",
+      "success": "Molt bé. Ja domines la línia d'ordres bàsica: prova-ho igual a l'onPC."
+    }
+  }
+}

@@ -213,7 +213,7 @@ function program(group: ProgramGroup, figure: HTMLElement): HTMLElement {
 function shortcuts(group: ProgramGroup): HTMLElement {
   const section = el('section', 'site-shortcuts');
   const head = el('div', 'site-shortcuts-head');
-  head.append(el('h2', undefined, t('site.shortcutsTitle')), el('p', undefined, t('site.shortcutsLead')));
+  head.append(el('h2', undefined, t(group.shortcutsTitleKey ?? 'site.shortcutsTitle')), el('p', undefined, t(group.shortcutsLeadKey ?? 'site.shortcutsLead')));
   const list = el('ul', 'site-shortcuts-list');
   for (const sc of group.shortcuts) {
     const li = el('li');
