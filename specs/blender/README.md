@@ -15,6 +15,16 @@
 | 09 | Graph Editor | `09-graph-editor.md` |
 | 10 | Projecte final: el tamboret | `10-final-project.md` |
 
+### Visuals
+
+Labs curts per a l'alumnat del cicle de Vídeo, Discjòquei i So, que fa visuals projectats.
+No segueixen el fil del tamboret ni l'ordre d'ensenyament de la taula anterior: només
+demanen haver fet el Lab 01.
+
+| Lab | Títol | Especificació |
+|---|---|---|
+| 11 | Look neó | `11-neon-look.md` |
+
 L'objecte que travessa tot el curs és un **tamboret**: es modela al Lab 02, es
 perfecciona amb modificadors al 03, s'il·lumina al 04, s'hi posa material al 05, es fotografia,
 es renderitza i s'anima al projecte final. És també l'objecte del plànol de la pàgina índex
@@ -43,6 +53,9 @@ deixar per al final els que tenen més risc tècnic.
 9. **07** Render i sortida
 10. **10** Projecte final
 
+**Canvi de Joan (02/11/2026):** el Lab 11 (Look neó) es construeix just després d'acabar el
+Lab 05.
+
 Joan pot canviar aquest ordre. El que no es pot saltar són les dependències de la taula
 següent.
 
@@ -62,7 +75,10 @@ ampliació, s'amplia sense trencar els labs anteriors (cal passar-ne els tests).
 | Timeline i Dope Sheet | `ui/timeline/` | 08, 09, 10 | 08 |
 | Graph Editor | `ui/graph-editor/` | 09, 10 | 09 |
 | Pila de modificadors | `modifiers/` | 03, 10 | 03 |
-| Editor de nodes | `ui/node-editor/`, `shading/` | 05, 10 | 05 |
+| Editor de nodes | `ui/node-editor/`, `shading/` | 05, 10, 11 | 05 (el 11 hi afegeix el compositor) |
+| Compositor (Render Layers, Glare, Group Output, Viewer, Reroute) | `compositor/` | 11 | 11 |
+| Cadena HDR i bloom | `render/` | 11 | 11 |
+| Color Management (pestanya Render) | `ui/properties/` | 07, 11 | 11 (el 07 l'amplia) |
 
 ## Decisió que cal prendre abans de la Fase 1 del Lab 01
 

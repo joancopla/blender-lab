@@ -22,8 +22,8 @@ imprescindible d'aquestes eines, i res més. El lab és independent del fil del 
 - Lab 03: Properties Editor i pila de modificadors (aquí s'hi afegeix **Wireframe**).
 - Lab 04: mòdul de render (Rendered, pestanya World, AgX i Standard al model).
 - Lab 05: editor de nodes (fases 1–2, ja fetes), compilació a GLSL amb Emission (fase 3) i
-  pestanya Material amb el selector de materials (fase 4). **Aquest lab no es pot construir
-  abans que el Lab 05 tingui acabades les fases 3 i 4.**
+  pestanya Material amb el selector de materials (fase 4). **Decisió de Joan (02/11/2026):
+  primer s'acaba el Lab 05 sencer i després es construeix aquest.**
 
 Construeix tres components nous: el **compositor** mínim, la **cadena HDR amb bloom** i el
 panell **Color Management** de la pestanya Render (el Lab 07 l'ampliarà).
@@ -53,11 +53,12 @@ aquest workspace (vegeu "Al Blender real").
   Cylinder, Cone, Torus).
 - Grid nova (verificat a la 5.1.2): X Subdivisions 10, Y Subdivisions 10, Size 2 m. Dona
   11 × 11 vèrtexs i 10 × 10 cares. Nom de l'objecte: "Grid".
-- **Adjust Last Operation** després d'Add Grid: X Subdivisions, Y Subdivisions, Size,
-  Generate UVs (sense efecte al lab), Align, Location, Rotation. Al lab només funcionen les
-  tres primeres; la resta surten però no fan res. `// FIDELITY?` amb l'ordre i el nom exacte
-  dels camps a la 5.2. El panell ja existeix per a les eines del Mode Edició
-  (`ui/adjust-panel.ts`); aquí es fa servir també per a Add Grid.
+- **Adjust Last Operation** després d'Add Grid, amb els camps de l'operador en l'ordre de
+  Blender (verificat a la 5.1.2): X Subdivisions, Y Subdivisions, Size, Generate UVs, Align,
+  Location, Rotation. Al lab funcionen X Subdivisions, Y Subdivisions i Size; la resta surten
+  però no es poden canviar. `// FIDELITY?` Si Blender hi mostra també Enter Edit Mode i Scale
+  (són propietats de l'operador, però normalment amagades). El panell ja existeix per a les
+  eines del Mode Edició (`ui/adjust-panel.ts`); aquí es fa servir també per a Add Grid.
 - Decisió del lab: l'Adjust Last Operation de les altres primitives continua fora d'abast.
 
 ### Modificador Wireframe (amplia la pila del Lab 03)
@@ -129,10 +130,9 @@ Options...). El lab només en replica el subpanell Compositor, amb una nota a
   node Composite: la sortida és el Group Output.
 - **Nodes dins d'abast:** Render Layers (sortides Image i Alpha), Glare, Group Output,
   Viewer, Reroute.
-- **Shift+A** amb les categories del compositor de la 5.2. Glare és a **Filter**, i el menú
-  ofereix entrades directes per a cada tipus ("Glare ▸ Bloom"...). `// FIDELITY?` amb com es
-  mostra l'entrada amb el tipus al menú i a la cerca. Els nodes que el lab no implementa
-  surten en gris, com al Lab 05.
+- **Shift+A** amb les categories del compositor de la 5.2. Glare és a **Filter**, amb una
+  entrada per a cada tipus ("Glare ▸ Bloom"...) tant al menú com a la cerca (validat per
+  Joan). Els nodes que el lab no implementa surten en gris, com al Lab 05.
 - **Node Glare** (verificat al codi de la 5.2.1, `node_composite_glare.cc`):
   - Sortides Image, Glare i Highlights.
   - Entrades de menú **Type** (Bloom, Ghosts, Streaks, Fog Glow, Simple Star, Sun Beams,
@@ -146,8 +146,8 @@ Options...). El lab només en replica el subpanell Compositor, amb una nota a
     amb els seus tipus.
   - Al lab només funciona el tipus **Bloom**. Els altres es poden triar, però el node passa
     la imatge tal qual i el lab mostra un avís.
-  - `// FIDELITY?` Si Blender amaga o només enfosqueix els camps que no es fan servir amb el
-    tipus triat (`usage_by_menu`).
+  - Els camps que no es fan servir amb el tipus triat surten enfosquits, no amagats
+    (validat per Joan).
 - Això vol dir que l'editor de nodes necessita tres coses que el Lab 05 no té: sockets de
   tipus **menú** (Type, Quality), el node **Reroute** i els nodes **Group Output** i
   **Viewer** sense entrades de shader.
@@ -161,11 +161,13 @@ Options...). El lab només en replica el subpanell Compositor, amb una nota a
 - Amb Compositor a Always (o a Camera, en vista de càmera), en Material Preview i Rendered,
   la imatge del viewport passa pel node tree del compositor abans del View Transform, com a
   Blender. Sense node tree, o en Solid i Wireframe, no hi passa.
-- El viewport mostra el que arriba al **Group Output**. `// FIDELITY?` Si el viewport de
-  Blender 5.2 mostra el Viewer actiu en lloc del Group Output. Amb el node tree que crea New,
-  el Viewer penja del mateix Reroute: si el Glare s'insereix entre el Reroute i el Group
-  Output, el Viewer no té bloom. La consigna demana inserir el Glare entre Render Layers i el
-  Reroute, que funciona en tots dos casos.
+- El viewport mostra el **Viewer actiu** si n'hi ha; si no, el que arriba al **Group
+  Output** (verificat al codi de la 5.2.1, `compositor_engine.cc`: el viewport tracta el
+  Viewer com una sortida i, si l'ha escrit, ja no escriu el Group Output). Amb el node tree
+  que crea New, el Viewer penja del mateix Reroute: si el Glare s'insereix entre el Reroute i
+  el Group Output, el viewport no mostra el bloom. Per això la consigna demana inserir el
+  Glare entre Render Layers i el Reroute, i la comprovació mira el camí fins a la sortida
+  que es veu.
 - Un enllaç vermell o un node tree sense camí fins al Group Output deixa el viewport sense
   composició, i el lab ho diu.
 
@@ -242,14 +244,16 @@ de buscar al programa real.
   no és de Blender".
 - Simula una paret projectada en una aula amb una mica de llum, en una passada final sobre la
   imatge ja en sRGB:
-  - negres aixecats (el negre passa a un gris fosc, uns 0,10);
+  - negres aixecats (el negre passa a un gris fosc);
   - menys contrast i una mica menys de saturació;
-  - suavitzat d'uns 2 px equivalents a 1920 × 1080, perquè les línies fines es perdin com a
-    la paret;
+  - suavitzat d'uns pocs píxels equivalents a 1920 × 1080, perquè les línies fines es
+    perdin com a la paret;
   - una mica de caiguda de llum a les vores.
 - Cost: una passada a mida completa i un desenfocament separable petit. Uns 0,3 ms.
-- Decisió que cal prendre (vegeu les preguntes): un sol perfil o dos ("Aula amb llum" i
-  "Sala fosca").
+- **Dos perfils** (decisió de Joan): **Aula amb llum** (negres a uns 0,14, més pèrdua de
+  contrast i un suavitzat de 2,5 px) i **Sala fosca** (negres a uns 0,06, suavitzat de
+  1,5 px). Per defecte, Aula amb llum, que és la situació habitual i la més exigent. Els
+  valors són de partida i es calibren a l'aula amb un projector de veritat.
 
 ## 5. Etapes
 
@@ -279,7 +283,8 @@ Només el repte final analitza una imatge, feta amb el renderer del lab.
    Reroute. Després, a Viewport Shading, posar Compositor a Always. Apareix l'halo.
    La consigna avisa que sense el pas d'Always el bloom no es veu al viewport.
    *Comprova:* l'escena té node tree de composició; hi ha un camí Render Layers → Glare
-   (Type Bloom) → … → Group Output; Compositor a Always, o a Camera en vista de càmera.
+   (Type Bloom) → … fins a la sortida que mostra el viewport (el Viewer actiu o, si no n'hi
+   ha, el Group Output); Compositor a Always, o a Camera en vista de càmera.
 5. **AgX o Standard.** A la pestanya Render > Color Management, canviar View Transform
    d'AgX a Standard i tornar-hi. Amb AgX el neó i el seu halo es tornen blancs; amb Standard,
    el cian es manté. Triar Standard.
@@ -290,14 +295,16 @@ Només el repte final analitza una imatge, feta amb el renderer del lab.
    *Comprova:* un segon objecte amb Wireframe i emissió taronja (to 15°–40°, saturació
    ≥ 0,8); la relació entre la luminància × Strength del cian i del taronja, entre 0,67 i
    1,5; i no hi ha cap altre to emissiu a l'escena (paleta de dos colors).
-7. **Repte final: a la paret.** Amb la prova de projector activada, en vista de càmera
+7. **Repte final: a la paret.** Amb la prova de projector activada (perfil Aula amb
+   llum), en vista de càmera
    (Numpad 0), fer que l'escena aguanti: engruixir el Wireframe i fer el bloom prou generós
    perquè les línies no desapareguin, sense que tot es converteixi en una taca.
    *Comprova:* tots els requisits anteriors es mantenen (World negre, Standard, bloom
    actiu, dos colors equilibrats) i una anàlisi de la imatge de càmera feta amb el renderer
    del lab i la simulació de projector: proporció de fons fosc dins d'un marge, les línies
    de la graella visibles amb un contrast mínim respecte del fons, i els dos tons presents.
-   Els marges es calibren amb una escena solució (vegeu les preguntes).
+   Els marges es calibren amb una escena solució. No es compara píxel a píxel amb una
+   referència, perquè hi ha moltes escenes bones (decisió de Joan).
 
 En acabar, **mode lliure** amb tot el que fa servir el lab.
 
@@ -326,7 +333,8 @@ Les imatges de Blender d'aquest bloc les fa Joan. Mai es presenta un render del 
 fos de Blender.
 
 La il·lustració de la targeta de l'índex (`docs/DESIGN.md`) és una graella i un cub en línia,
-amb l'estil de la resta de targetes.
+amb l'estil de la resta de targetes. Aquest lab no afegeix línies al plànol del tamboret i el
+seu panell no mostra la targeta "El repte final" (decisió de Joan, de moment).
 
 ## 7. Fases
 

@@ -844,7 +844,9 @@ Especificació a `specs/blender/11-neon-look.md`. Les dades marcades «codi 5.2.
 - [x] Glare: sortides Image, Glare, Highlights; Type (Bloom, Ghosts, Streaks, Fog Glow, Simple Star, Sun Beams, Kernel; per defecte Streaks) i Quality (High, Medium, Low; per defecte Medium) són entrades de menú (codi 5.2.1, `node_composite_glare.cc`)
 - [x] Glare: panell Highlights plegat (Threshold 1, Smoothness 0,1, subpanell Clamp plegat amb Clamp i Maximum 10); panell Adjust (Strength 1 de 0 a 1, Saturation 1, Tint blanc); panell Glare (Size 0,5 de 0 a 1, només per a Bloom, Fog Glow i Sun Beams) (codi 5.2.1)
 - [x] Algorisme del Bloom: highlights en HSV amb retall suau; cadena de llargada floor(log2(costat curt × Size)); primera reducció amb mitjana de Karis, ampliació amb tent 3 × 3; barreja imatge + glare × Tint × Strength / llargada; Quality divideix la mida per 1, 2 o 4 (codi 5.2.1)
-- [x] Glare és a Shift+A > Filter, amb entrades per a cada tipus (codi 5.2.1, `node_add_menu_compositor.py`)
+- [x] Glare és a Shift+A > Filter, amb entrades per a cada tipus (codi 5.2.1, `node_add_menu_compositor.py`), al menú i a la cerca (Joan)
+- [x] Els camps del Glare que no es fan servir amb el tipus triat surten enfosquits, no amagats (Joan)
+- [x] Amb el compositor actiu, el viewport mostra el Viewer actiu si n'hi ha i, si no, el Group Output (codi 5.2.1, `draw/engines/compositor/compositor_engine.cc`)
 - [x] Capçalera del Compositor: botó New, que crida `node.new_compositing_node_group`, amb el nom «Compositor Nodes» (codi 5.2.1, `space_node.py`, `node_add.cc`)
 - [x] Panell Wireframe: Thickness, Offset, Boundary, Replace Original, columna Thickness amb Even i Relative, Crease Edges amb pes, Material Offset, i subpanell Vertex Group amb Factor (codi 5.2.1, `MOD_wireframe.cc`)
 - [x] EEVEE no té cap opció de bloom (5.1.2)
@@ -861,11 +863,8 @@ Especificació a `specs/blender/11-neon-look.md`. Les dades marcades «codi 5.2.
 
 ## Preguntes obertes
 
-- [ ] ❓ El viewport amb el compositor activat mostra el Group Output o el Viewer actiu? (la consigna de l'etapa 4 insereix el Glare abans del Reroute perquè funcioni en tots dos casos)
-- [ ] ❓ Els camps del Glare que no es fan servir amb el tipus triat s'amaguen o només s'enfosqueixen?
-- [ ] ❓ Com es mostra «Glare ▸ Bloom» al menú Shift+A i a la cerca (submenú, entrada directa o només a la cerca)
 - [ ] ❓ Nom del pas de desfer de New al Compositor
-- [ ] ❓ Camps i ordre de l'Adjust Last Operation d'Add Grid (X Subdivisions, Y Subdivisions, Size, Generate UVs, Align, Location, Rotation)
+- [ ] ❓ Adjust Last Operation d'Add Grid: el lab mostra X Subdivisions, Y Subdivisions, Size, Generate UVs, Align, Location i Rotation (ordre de l'operador a la 5.1.2); falta saber si Blender hi mostra també Enter Edit Mode i Scale. Només funcionen les tres primeres
 - [ ] ❓ Ordre del desplegable View Transform a la interfície
 - [ ] ❓ Una superfície emissiva il·lumina els objectes del costat a EEVEE 5.2? (al lab, no)
 - [ ] ❓ El workspace Compositing de la 5.2 no té viewport 3D? (el lab posa el Compositor sota el viewport, canviant l'Editor Type)
@@ -876,4 +875,5 @@ Especificació a `specs/blender/11-neon-look.md`. Les dades marcades «codi 5.2.
 - L'escena inicial té el cub a Z = 1 m perquè quedi sobre la graella
 - Del desplegable de Viewport Shading només es replica el subpanell Compositor
 - Al Glare només funciona el tipus Bloom; els altres passen la imatge tal qual amb un avís
-- Prova de projector: element del lab, no de Blender (negres a 0,10, menys contrast, suavitzat de 2 px, caiguda a les vores)
+- Prova de projector: element del lab, no de Blender, amb dos perfils: Aula amb llum (per defecte i al repte final; negres a 0,14, suavitzat de 2,5 px) i Sala fosca (negres a 0,06, suavitzat de 1,5 px); valors de partida per calibrar a l'aula
+- L'etapa 4 insereix el Glare entre Render Layers i el Reroute, perquè el bloom arribi al Viewer, que és el que mostra el viewport
