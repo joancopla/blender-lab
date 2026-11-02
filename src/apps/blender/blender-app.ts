@@ -110,6 +110,7 @@ export class BlenderApp implements ReplicatedApp<BlenderState, BlenderSetup, Ble
     this.drawLabElements();
     if (setup.analyzer) this.analyzer?.setEnabled(true);
     if (setup.propertiesTab) m.showPropertiesTab(setup.propertiesTab);
+    if (setup.shading) m.setShading(setup.shading);
   }
 
   get log(): readonly LogEntry[] {

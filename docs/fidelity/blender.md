@@ -858,6 +858,28 @@ Diferències conegudes (aproximacions del lab):
 - [ ] ❓ L'emissió es retalla a 0 com a EEVEE (Cycles deixa passar els valors negatius d'una Noise Hetero Terrain)
 - Decisió del lab: un material que no compila es dibuixa en magenta, com Blender amb un shader trencat
 
+## Fase 4 — Pestanya Material i workspace Shading
+
+Verificat al codi de Blender ( de la 5.1.2,  i  de la 5.2.1):
+
+- [x] Panells amb EEVEE: Preview (plegat), Surface, Volume, Displacement, Thickness (plegats), Settings, Line Art, Viewport Display, Custom Properties. Al lab només funciona Surface
+- [x] Llista de ranures (3 files; 5 si n'hi ha més d'una) amb + i − i el menú Material Specials a la dreta; a sota, el selector, el nom, el botó de còpia i la ×
+- [x] New: sense material, en crea un de nou anomenat «Material» amb el Principled BSDF i el Material Output; amb un material a la ranura, en fa una còpia («Material.001»). Si l'objecte no té ranures, n'afegeix una ()
+- [x] Noms de desfer: New Material, Add Material Slot, Remove Material Slot
+- [x] Surface segueix : entrada connectada amb el nom del node ( per a nodes sense entrades i amb diverses sortides) i, a sota, les entrades d'aquell node; més avall, darrere d'una fletxa. Entrada sense connexió: un botó petit i el valor. Sense camp de valor (Normal): «Default». Shader sense connexió: «None»
+- [x] Els panells del node (Diffuse, Subsurface, Specular... al Principled BSDF) surten plegats, amb els seus desplegables a dins
+
+Diferències i dubtes:
+
+- [ ] ❓ El botó de connexió de cada entrada: a Blender obre un menú amb tots els nodes per connectar-n'hi un; al lab només ofereix Remove i Disconnect quan l'entrada ja està connectada
+- [ ] ❓ Les entrades connectades de més avall comencen plegades (SOCK_COLLAPSED)
+- [ ] ❓ Noms de desfer d'escollir un material al selector («Material»), de la × («Unlink»), de canviar el nom («Name») i de clicar una ranura («Active Material Index»)
+- [ ] ❓ El camí de dalt de la pestanya: «Cube › Material»
+- [ ] ❓ Els camps de factor (Metallic, Roughness...) es mostren com a camps numèrics, no com a barres
+- [ ] ❓ El viewport dibuixa el material de la primera ranura (totes les cares tenen l'índex de material 0, com una malla nova de Blender); l'editor de nodes i la pestanya mostren la ranura activa
+- [ ] HDRI de Material Preview: continua sent l'estudi generat del Lab 04 (vegeu el Lab 04, fase 2). L'especificació del Lab 05 en demana un de CC0 (Poly Haven); pendent que Joan ho decideixi
+- Decisió del lab: el mode lliure del Lab 05 comença en Material Preview, com el workspace Shading
+
 # Lab 11 — Look neó (especificació, encara sense codi)
 
 Especificació a `specs/blender/11-neon-look.md`. Les dades marcades «codi 5.2.1» s'han llegit al codi font de Blender (`v5.2.1`); les marcades «5.1.2» s'han obtingut executant Blender 5.1.2 en segon pla i cal confirmar-les a la 5.2.

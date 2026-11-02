@@ -52,7 +52,13 @@ export interface MeshObject extends ObjectBase {
   readonly autoSmoothAngleDeg?: number;
   /** Material slots (Properties > Material): material ids, null for an empty slot. Missing: none. */
   readonly materialSlots?: readonly (string | null)[];
+  /** The active slot in the Material tab (Blender's active_material_index). Missing: 0. */
+  readonly activeMaterialIndex?: number;
 }
+
+/** The active material slot index, kept inside the slot list. */
+export const activeSlotIndex = (o: MeshObject): number =>
+  Math.max(0, Math.min((o.materialSlots?.length ?? 1) - 1, o.activeMaterialIndex ?? 0));
 
 /** A material (Lab 05): its name and its shader node tree. */
 export interface Material {

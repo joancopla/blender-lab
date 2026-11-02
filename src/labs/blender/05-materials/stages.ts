@@ -23,4 +23,6 @@ export const LAB05_STAGES: LabStages = {
   labId: '05-materials',
   stages: [],
   freeScene: materialScene,
+  // The Shading workspace opens in Material Preview.
+  freeShading: 'MATERIAL',
 };

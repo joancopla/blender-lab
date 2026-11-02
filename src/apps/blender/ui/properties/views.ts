@@ -3,6 +3,7 @@
  * enables some of them (MountOptions.propertiesTabs); the rest stay inactive.
  */
 import { dataTab } from './data-tab';
+import { materialTab } from './material-tab';
 import { modifiersTab } from './modifiers-tab';
 import type { TabViewFactory } from './properties-editor';
 import type { PropertiesTabId } from './tabs';
@@ -13,6 +14,7 @@ export const TAB_VIEWS: Partial<Record<PropertiesTabId, TabViewFactory>> = {
   modifiers: modifiersTab,
   data: dataTab,
   world: worldTab,
+  material: materialTab,
 };
 
 /** The views for the tabs a lab enables (tabs the replica does not implement are left out). */

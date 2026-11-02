@@ -58,6 +58,8 @@ export interface BlenderSetup {
   readonly analyzer?: boolean;
   /** Properties Editor tab to show when the stage starts. */
   readonly propertiesTab?: PropertiesTabId;
+  /** Viewport Shading when the stage starts (missing: left as it is). */
+  readonly shading?: ShadingMode;
 }
 
 /** Lab elements a Blender check asks for (the app contract's Decorations). */
@@ -103,6 +105,8 @@ export interface BlenderLabStages {
   readonly labId: string;
   readonly stages: readonly BlenderStageDefinition[];
   freeScene(): SceneState;
+  /** Viewport Shading in free mode (missing: left as it is). */
+  readonly freeShading?: ShadingMode;
 }
 
 export type CoreBlenderStage = StageDefinition<BlenderState, BlenderSetup, BlenderDecorations>;
@@ -149,7 +153,7 @@ export function toCoreLab(lab: BlenderLabStages): CoreBlenderLab {
   return {
     labId: lab.labId,
     stages: lab.stages.map(toCoreStage),
-    freeSetup: () => ({ scene: lab.freeScene }),
+    freeSetup: () => ({ scene: lab.freeScene, ...(lab.freeShading ? { shading: lab.freeShading } : {}) }),
   };
 }
 

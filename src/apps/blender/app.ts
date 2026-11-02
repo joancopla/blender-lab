@@ -33,6 +33,7 @@ import { BoxSelectOp, OutlinerSelectOp, SelectAllOp, SelectOp } from './operator
 import {
   type SceneState,
   activeCamera,
+  activeSlotIndex,
   cameraData,
   isEditMode,
   meshOf,
@@ -93,6 +94,8 @@ export interface MountedBlender {
   settledProjection(): { projection: ViewProjection; size: ViewportSize };
   /** Shows a Properties Editor tab (if the lab enables it and the active object has it). */
   showPropertiesTab(id: PropertiesTabId): void;
+  /** Sets Viewport Shading (a stage starting in Material Preview). */
+  setShading(mode: ShadingMode): void;
   /** Viewport Shading changed (Z pie, header buttons). */
   onShadingChange(fn: () => void): () => void;
   /** A lab tool that takes the next plain click in the viewport (null: none). */
@@ -117,11 +120,11 @@ export interface MountOptions {
   readonly shaderEditor?: boolean;
 }
 
-/** The material the Shader Editor shows: the active object's first slot. FIDELITY? Active slot index. */
+/** The material the Shader Editor shows: the one in the active object's active slot. */
 export function activeMaterialId(s: SceneState): string | null {
   const o = s.objects.find((x) => x.id === s.activeId);
   if (!o || o.type !== 'mesh') return null;
-  return o.materialSlots?.[0] ?? null;
+  return o.materialSlots?.[activeSlotIndex(o)] ?? null;
 }
 
 /** World-space bounds of the selected vertices of the objects in Edit Mode. */
@@ -210,6 +213,12 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
   const properties = new PropertiesEditor(layout.propertiesArea, viewsFor(options.propertiesTabs ?? []), {
     store,
     report: (message) => status.report(message),
+  });
+  // Things a material uses that the lab does not draw, and broken materials (magenta).
+  view.onMaterialWarnings((id, warnings, failed) => {
+    const name = store.state.materials?.find((m) => m.id === id)?.name ?? '';
+    if (failed) status.report(t('lab.materialFailed', { name }));
+    else if (warnings.length) status.report(t('lab.materialWarnings', { name, list: warnings.join(', ') }));
   });
   const onSceneChange = () => {
     outliner.update(store.displayState);
@@ -778,6 +787,7 @@ export function mountBlender(container: HTMLElement, options: MountOptions): Mou
     viewport: layout.viewport,
     settledProjection,
     showPropertiesTab: (id) => properties.select(id),
+    setShading: (mode) => setShading(mode),
     onShadingChange: (fn) => {
       shadingListeners.add(fn);
       return () => shadingListeners.delete(fn);

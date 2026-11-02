@@ -16,7 +16,7 @@ export const lab05: LabDefinition<BlenderState, BlenderSetup, BlenderDecorations
   illustration: ILLUSTRATION,
   signatureKeys: ['shiftA', 'g'],
   blueprint: STOOL_BLUEPRINT,
-  createApp: () => new BlenderApp({ statistics: false, shaderEditor: true }),
+  createApp: () => new BlenderApp({ statistics: false, shaderEditor: true, propertiesTabs: ['material'] }),
   page: {
     prefix: 'lab05',
     controls: ['add', 'link', 'move', 'cut', 'nodeKeys', 'view', 'undo'],

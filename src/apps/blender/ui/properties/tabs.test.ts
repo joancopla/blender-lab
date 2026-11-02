@@ -38,7 +38,7 @@ describe('Properties Editor tabs', () => {
   });
 
   it('a lab only gets the tabs the replica implements', () => {
-    expect(Object.keys(viewsFor(['modifiers', 'data', 'material']))).toEqual(['modifiers', 'data']);
+    expect(Object.keys(viewsFor(['modifiers', 'data', 'render']))).toEqual(['modifiers', 'data']);
     expect(viewsFor([])).toEqual({});
   });
 });

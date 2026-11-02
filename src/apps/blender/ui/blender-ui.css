@@ -1105,3 +1105,182 @@
   white-space: pre;
   pointer-events: none;
 }
+
+/* Material tab (Lab 05): slot list, data-block row and the Surface node view. */
+.bl-mat-slots {
+  display: flex;
+  gap: 4px;
+  margin: 4px 0 6px;
+}
+.bl-mat-slot-list {
+  flex: 1;
+  min-width: 0;
+  padding: 2px;
+  border-radius: 4px;
+  background: #1d1d1d;
+}
+.bl-mat-slot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 3px;
+  cursor: default;
+}
+.bl-mat-slot.is-active {
+  background: #334d80;
+}
+.bl-mat-slot-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bl-mat-sphere {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e0e0e0, #6a6a6a 70%);
+}
+.bl-mat-slot-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bl-mat-tool,
+.bl-mat-icon,
+.bl-mat-users,
+.bl-mat-browse {
+  flex: none;
+  width: 22px;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background: #545454;
+  color: var(--bl-text);
+  font: inherit;
+  cursor: pointer;
+}
+.bl-mat-tool:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.bl-mat-browse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+}
+.bl-mat-browse::after {
+  content: '▾';
+  margin-left: 2px;
+  font-size: 9px;
+  opacity: 0.7;
+}
+.bl-mat-id {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+.bl-mat-new {
+  flex: 1;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background: #545454;
+  color: var(--bl-text);
+  font: inherit;
+  cursor: pointer;
+}
+.bl-mat-name {
+  flex: 1;
+  min-width: 0;
+  height: 20px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 4px;
+  background: #1d1d1d;
+  color: var(--bl-text);
+  font: inherit;
+}
+.bl-mat-name:focus {
+  outline: 1px solid var(--bl-widget-active);
+}
+.bl-mat-label {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2px;
+}
+.bl-mat-control {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+.bl-mat-control > .bl-num,
+.bl-mat-control > .bl-mp-color,
+.bl-mat-control > .bl-mat-vector {
+  flex: 1;
+  min-width: 0;
+}
+.bl-mat-vector {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.bl-mat-link {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 20px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 4px;
+  background: #282828;
+  color: var(--bl-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.bl-mat-link.is-icon {
+  flex: none;
+  width: 20px;
+  padding: 0;
+  justify-content: center;
+}
+.bl-mat-link-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.bl-mat-link-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bl-mat-expand {
+  flex: none;
+  width: 16px;
+  border: none;
+  background: none;
+  color: var(--bl-text-dim);
+  font: inherit;
+  cursor: pointer;
+}
+.bl-mat-sep {
+  height: 6px;
+}
+.bl-mat-error {
+  color: #e8c96a;
+}
+.bl-mat-panel-header {
+  cursor: pointer;
+}
+.bl-mat-note {
+  color: var(--bl-text-dim);
+}
