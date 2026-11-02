@@ -114,7 +114,7 @@ la pestanya Material i què és UV (que es veurà més endavant).
 1. **Editor de nodes (model).** Model de dades del graf, tipus de sockets, conversions,
    validació i tests.
 2. **Editor de nodes (interfície).** Dibuix, navegació, selecció, connexions i Shift+A.
-3. **Compilació.** Traducció a TSL de tots els nodes del lab, amb recompilació en viu.
+3. **Compilació.** Traducció a GLSL de tots els nodes del lab (decisió de l'apartat 4), amb recompilació en viu.
 4. **Pestanya Material i workspace Shading.** Slots, panell Surface sincronitzat i HDRI.
 5. **Etapes i web.**
 6. **Poliment.** Rendiment dels shaders en ordinadors modestos i fidelitat documentada.

@@ -834,6 +834,30 @@ Diferències conegudes (decisions del lab o pendents):
 - [ ] ❓ Els enllaços es pinten amb el color del socket de sortida; Blender pot fer un degradat entre els dos sockets
 - [ ] ❓ Mida i espaiat de les files dels nodes (20 px de capçalera, 22 px per fila) aproximats
 
+## Fase 3 — Compilació del graf (Material Preview i Rendered)
+
+El GLSL dels nodes és el de Blender 5.2.1 adaptat a WebGL2 (projecte sota llicència GPL-3.0-or-later per aquest motiu).
+
+Verificat comparant píxel a píxel amb renders de Cycles fets amb Blender 5.1.2 (pla de 2 m, Generated, emissió, 64 × 64):
+
+- [x] Noise Texture 1D, 2D, 3D i 4D; fBM, Multifractal, Hetero Terrain, Hybrid Multifractal i Ridged Multifractal; Detail amb decimals, Distortion i sortida Color: diferència mitjana de 0,000–0,003 (el que fa la mitjana de Cycles dins del píxel)
+- [x] Wave Texture (Bands i Rings, Sine/Saw/Triangle, Distortion), Checker Texture, Mapping (Point amb rotació, posició i escala), Color Ramp B-Spline amb tres parades i Mix Overlay: mateixos valors, llevat dels píxels de les vores
+- [x] Color Ramp: `BKE_colorband_evaluate` portat tal qual (Linear, Ease, Constant, B-Spline, Cardinal), amb la taula de 257 entrades que Blender envia a la GPU
+
+Diferències conegudes (aproximacions del lab):
+
+- [ ] ❓ Mix Shader barreja els paràmetres dels dos shaders (color, rugositat, normal...), no la llum de cada un com fa EEVEE. Amb Emission i Principled el resultat és molt semblant; amb dos BSDF de rugositat molt diferent, no
+- [ ] ❓ El Principled BSDF es dibuixa amb el model físic de three.js: IOR Level escala el reflex (0,5 = sense canvi), Coat no té Tint ni IOR propi, i Transmission refracta amb un gruix fix de 0,5 m (Blender traça l'objecte real). Subsurface, Sheen i Thin Film no tenen efecte i el lab avisa
+- [ ] ❓ Alpha < 1 fa servir transparència tramada (com el Render Method Dithered per defecte d'EEVEE)
+- [ ] ❓ Bump: Blender torna a avaluar l'alçada desplaçada Filter Width píxels; el lab fa servir les derivades de la GPU (el mateix a primer ordre)
+- [ ] ❓ Generated: la caixa de la malla base; amb modificadors, Blender passa per les coordenades originals i el lab per les de la malla dibuixada dins d'aquesta caixa
+- [ ] ❓ Normal Map en Tangent Space no fa res (cal un UV Map, fora d'abast), igual que Blender sense UV. Object i World Space sí que funcionen
+- [ ] ❓ Image Texture: sense imatge, magenta (com Blender); només la projecció Flat. Al lab el Vector per defecte és Generated perquè no hi ha UV; a Blender seria el UV Map
+- [ ] ❓ Texture Coordinate: UV val (0, 0, 0) i Object no admet un altre objecte
+- [ ] ❓ Res connectat a Surface: negre
+- [ ] ❓ L'emissió es retalla a 0 com a EEVEE (Cycles deixa passar els valors negatius d'una Noise Hetero Terrain)
+- Decisió del lab: un material que no compila es dibuixa en magenta, com Blender amb un shader trencat
+
 # Lab 11 — Look neó (especificació, encara sense codi)
 
 Especificació a `specs/blender/11-neon-look.md`. Les dades marcades «codi 5.2.1» s'han llegit al codi font de Blender (`v5.2.1`); les marcades «5.1.2» s'han obtingut executant Blender 5.1.2 en segon pla i cal confirmar-les a la 5.2.

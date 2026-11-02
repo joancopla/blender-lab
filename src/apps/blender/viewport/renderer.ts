@@ -13,6 +13,7 @@ import {
   activeCamera,
   cameraData,
   autoSmoothAngle,
+  meshLocalBounds,
   meshOf,
   objectRotation,
   selectModeOf,
@@ -40,6 +41,7 @@ import {
 } from './object-meshes';
 import { RenderSetup, type ShadingMode } from '../render/render-setup';
 import { Accumulator, halton } from '../render/accumulator';
+import { NodeMaterials } from '../render/node-material';
 import { type ViewportSize, CLIP_END, CLIP_START } from './projection';
 import { type ViewProjection, viewProjection } from './screen';
 import { Grid } from './grid';
@@ -110,6 +112,9 @@ export class ViewportRenderer {
   /** Overlay materials already kept out of the view transform. */
   private readonly untoned = new WeakSet<THREE.Material>();
   private readonly accumulator: Accumulator;
+  /** Materials from node trees (Material Preview and Rendered). */
+  private readonly nodeMaterials: NodeMaterials;
+  private readonly materialWarningListeners = new Set<(materialId: string, warnings: readonly string[], failed: boolean) => void>();
   /** Writes depth only, with the same offset as the surfaces (see object-meshes.ts). */
   private readonly depthOnly = new THREE.MeshBasicMaterial({
     colorWrite: false,
@@ -159,6 +164,11 @@ export class ViewportRenderer {
     this.buildLightRig();
     this.renderSetup = new RenderSetup(this.renderer, this.scene, this.root);
     this.accumulator = new Accumulator(this.renderer);
+    this.nodeMaterials = new NodeMaterials(this.renderer, () => null, {
+      onWarnings: (id, warnings, failed) => {
+        for (const fn of this.materialWarningListeners) fn(id, warnings, failed);
+      },
+    });
     // Both cameras see surfaces and overlays, except in Rendered's sample pass.
     for (const c of [this.perspCamera, this.orthoCamera]) c.layers.enableAll();
 
@@ -196,6 +206,7 @@ export class ViewportRenderer {
   setXray(on: boolean): void {
     this.xray = on;
     setSolidXray(on);
+    this.nodeMaterials.setXray(on);
     this.requestRender();
   }
 
@@ -253,6 +264,12 @@ export class ViewportRenderer {
   setSeenMarkers(ids: readonly string[]): void {
     this.labElements.setSeen(ids);
     this.requestRender();
+  }
+
+  /** Things a material uses that the lab does not replicate, or a material that failed (magenta). */
+  onMaterialWarnings(fn: (materialId: string, warnings: readonly string[], failed: boolean) => void): () => void {
+    this.materialWarningListeners.add(fn);
+    return () => this.materialWarningListeners.delete(fn);
   }
 
   onDraw(fn: (info: FrameInfo) => void): () => void {
@@ -351,6 +368,7 @@ export class ViewportRenderer {
       });
       this.objectsKey = key;
     }
+    this.nodeMaterials.retain(new Set((scene.materials ?? []).map((m) => m.id)));
     for (const o of scene.objects) {
       const e = this.objects.get(o.id);
       if (!e) continue;
@@ -383,13 +401,22 @@ export class ViewportRenderer {
     const smooth = autoSmoothAngle(o);
     if (e.meshData !== drawn || e.autoSmooth !== smooth) {
       mesh.geometry.dispose();
-      mesh.geometry = meshToGeometry(drawn, smooth).geometry;
+      mesh.geometry = meshToGeometry(drawn, smooth, meshLocalBounds(m)).geometry;
       e.meshData = drawn;
       e.autoSmooth = smooth;
     }
-    // Shading mode: Solid's studio material, the grey default surface when lit, or only edges.
+    // Shading mode: Solid's studio material; when lit, the first slot's material (or
+    // Blender's grey default surface); or only edges.
     const wireframe = this.shading === 'WIREFRAME';
-    mesh.material = wireframe ? getHiddenMaterial() : this.shading === 'SOLID' ? getSolidMaterial() : getLitMaterial();
+    const slot = o.materialSlots?.[0];
+    const material = slot ? scene.materials?.find((x) => x.id === slot) : undefined;
+    mesh.material = wireframe
+      ? getHiddenMaterial()
+      : this.shading === 'SOLID'
+        ? getSolidMaterial()
+        : material
+          ? this.nodeMaterials.get(material)
+          : getLitMaterial();
     if (wireframe && e.wireFor !== drawn) {
       if (e.wire) {
         mesh.remove(e.wire);
@@ -463,6 +490,7 @@ export class ViewportRenderer {
 
     const info = this.frameInfo(scene, view);
     const { projection: vp, metresPerPixelAt } = info;
+    this.renderer.getDrawingBufferSize(this.nodeMaterials.resolution.value);
     const camera = vp.orthographic ? this.orthoCamera : this.perspCamera;
     this.lastCamera = camera;
     for (const obj of [camera, this.lightRig]) {
@@ -513,6 +541,7 @@ export class ViewportRenderer {
       this.drawDirect(camera, axisOrtho);
     }
     this.drawOutlines(camera);
+    this.nodeMaterials.checkPrograms();
 
     this.lastFrame = info;
     for (const fn of this.drawListeners) fn(info);

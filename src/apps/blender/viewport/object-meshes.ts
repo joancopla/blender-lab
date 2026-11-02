@@ -167,7 +167,7 @@ export function getHiddenMaterial(): THREE.MeshBasicMaterial {
 
 /** The materials that show surfaces (and go through the view transform). */
 export const isSurfaceMaterial = (m: THREE.Material): boolean =>
-  m === solidMaterial || m === litMaterial || m === hiddenMaterial;
+  m === solidMaterial || m === litMaterial || m === hiddenMaterial || m.userData.blSurface === true;
 
 /** X-ray (Alt+Z): solid objects become see-through. FIDELITY? Blender's default X-ray alpha is 0.5. */
 export function setSolidXray(on: boolean): void {

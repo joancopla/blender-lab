@@ -114,7 +114,19 @@ Blender stage lists into core ones. `ghost-match.ts` and `silhouette.ts` are che
   collapse, hide sockets, values, options) plus the default material tree.
 - `scene/scene.ts`: `SceneState.materials` and `MeshObject.materialSlots`.
 - `operators/material-nodes.ts`: those edits as undoable operators with Blender's undo names.
-- Compilation (phase 3) generates GLSL for `WebGLRenderer` (decision in the Lab 05 spec).
+- `shading/compile.ts`: tree → GLSL. One function `bl_eval()` returns a `BlClosure` (physical parameters);
+  unlinked values and numeric options are uniforms, so editing a value never recompiles; the program key
+  changes only with links, node types and enum options. Muted nodes pass through, invalid links count as
+  unlinked, a colour into Surface is emission.
+- `shading/glsl.ts`: the nodes' GLSL, **adapted from Blender 5.2.1 (GPL-2.0-or-later)**. Each noise call
+  site is a loop running to `N * blOne` (a uniform equal to 1): written out as in Blender, or unrolled,
+  ANGLE on Windows takes seconds to compile a 4D Noise. Only the fractal function a material uses is included.
+- `shading/ramp.ts`: Color Ramp evaluation (port of `BKE_colorband_evaluate`) into Blender's 257-entry table.
+- `render/node-material.ts`: `NodeMaterials`, one `MeshPhysicalMaterial` per scene material; `onBeforeCompile`
+  injects `bl_eval()` and patches three's chunks (roughness, metalness, normal, clearcoat, emissive,
+  lights_physical, transmission). A failed compile or program draws magenta. `mesh-geometry.ts` adds the
+  `blOrco` attribute (Generated coordinates from the base mesh's box).
+- Because of the code adapted from Blender, the project is licensed GPL-3.0-or-later (`LICENSE`).
 - `ui/node-editor/`: the Shader Editor. `node-editor.ts` (view, selection, moving with G and
   drag, links, cut, keys while the pointer is over it, Shift+A), `node-view.ts` (one node:
   header, sockets, fields, options, Principled panels, Color Ramp; rebuilt only when its
