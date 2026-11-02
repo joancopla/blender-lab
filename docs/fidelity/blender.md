@@ -860,13 +860,13 @@ Diferències conegudes (aproximacions del lab):
 
 ## Fase 4 — Pestanya Material i workspace Shading
 
-Verificat al codi de Blender ( de la 5.1.2,  i  de la 5.2.1):
+Verificat al codi de Blender (`properties_material.py` de la 5.1.2, `node_templates.cc` i `render_shading.cc` de la 5.2.1):
 
 - [x] Panells amb EEVEE: Preview (plegat), Surface, Volume, Displacement, Thickness (plegats), Settings, Line Art, Viewport Display, Custom Properties. Al lab només funciona Surface
 - [x] Llista de ranures (3 files; 5 si n'hi ha més d'una) amb + i − i el menú Material Specials a la dreta; a sota, el selector, el nom, el botó de còpia i la ×
-- [x] New: sense material, en crea un de nou anomenat «Material» amb el Principled BSDF i el Material Output; amb un material a la ranura, en fa una còpia («Material.001»). Si l'objecte no té ranures, n'afegeix una ()
+- [x] New: sense material, en crea un de nou anomenat «Material» amb el Principled BSDF i el Material Output; amb un material a la ranura, en fa una còpia («Material.001»). Si l'objecte no té ranures, n'afegeix una (`new_material_exec`)
 - [x] Noms de desfer: New Material, Add Material Slot, Remove Material Slot
-- [x] Surface segueix : entrada connectada amb el nom del node ( per a nodes sense entrades i amb diverses sortides) i, a sota, les entrades d'aquell node; més avall, darrere d'una fletxa. Entrada sense connexió: un botó petit i el valor. Sense camp de valor (Normal): «Default». Shader sense connexió: «None»
+- [x] Surface segueix `template_node_view`: entrada connectada amb el nom del node (`Nom | Sortida` per a nodes sense entrades i amb diverses sortides) i, a sota, les entrades d'aquell node; més avall, darrere d'una fletxa. Entrada sense connexió: un botó petit i el valor. Sense camp de valor (Normal): «Default». Shader sense connexió: «None»
 - [x] Els panells del node (Diffuse, Subsurface, Specular... al Principled BSDF) surten plegats, amb els seus desplegables a dins
 
 Diferències i dubtes:
