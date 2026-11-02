@@ -122,6 +122,7 @@ export function toCoreStage(def: BlenderStageDefinition): CoreBlenderStage {
     referenceMeshes: def.referenceMeshes,
     analyzer: def.analyzer,
     propertiesTab: def.propertiesTab,
+    shading: def.shading,
   };
   return {
     id: def.id,

@@ -11,8 +11,6 @@ export const lab05: LabDefinition<BlenderState, BlenderSetup, BlenderDecorations
   nameKey: 'lab05.name',
   descKey: 'lab05.desc',
   stages: toCoreLab(LAB05_STAGES),
-  // Being built: free mode only (phase 2, the Shader Editor).
-  preview: true,
   illustration: ILLUSTRATION,
   signatureKeys: ['shiftA', 'g'],
   blueprint: STOOL_BLUEPRINT,
@@ -20,6 +18,6 @@ export const lab05: LabDefinition<BlenderState, BlenderSetup, BlenderDecorations
   page: {
     prefix: 'lab05',
     controls: ['add', 'link', 'move', 'cut', 'nodeKeys', 'view', 'undo'],
-    real: ['shading', 'material', 'addMenu', 'uv'],
+    real: ['shading', 'material', 'preview', 'addMenu', 'uv'],
   },
 };

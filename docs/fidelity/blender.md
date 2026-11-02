@@ -880,6 +880,32 @@ Diferències i dubtes:
 - [ ] HDRI de Material Preview: continua sent l'estudi generat del Lab 04 (vegeu el Lab 04, fase 2). L'especificació del Lab 05 en demana un de CC0 (Poly Haven); pendent que Joan ho decideixi
 - Decisió del lab: el mode lliure del Lab 05 comença en Material Preview, com el workspace Shading
 
+## Fase 5 — Les 10 etapes i la pàgina del lab
+
+### Què es comprova i com
+
+Les comprovacions llegeixen els arbres de nodes a través del contracte (mai la imatge). El material que compta és el de la primera ranura, que és el que es dibuixa.
+
+- Etapa 1: un material amb un Principled BSDF a Surface i un Base Color a més de 0,15 (distància lineal) del gris per defecte 0,8, o connectat a un node
+- Etapa 2: Or: Metallic ≥ 0,9, Roughness ≤ 0,35, Base Color amb R ≥ 0,5, R > G > B i B < 0,6 R. Plàstic: Metallic ≤ 0,1, Roughness entre 0,25 i 0,6, R ≥ 0,2 i R ≥ 2 G i 2 B. No compten els materials de referència ni les seves còpies (el nom comença per «Referència»)
+- Etapa 3: Roughness a 0,07 o menys de la referència (0,25)
+- Etapa 4: Transmission Weight ≥ 0,9, Metallic ≤ 0,1, Roughness ≤ 0,1, IOR entre 1,4 i 1,6
+- Etapa 5: la bombeta emet una luminància × Strength ≥ 1 (amb el panell Emission del Principled BSDF o un node Emission a Surface)
+- Etapa 6: Noise Texture → Color Ramp (Factor) i Color Ramp (Color) → Base Color
+- Etapa 7: Texture Coordinate → Mapping (Vector) → Noise Texture (Vector), i alguna component de Scale del Mapping a 0,1 o més d'1
+- Etapa 8: Bump → Normal del Principled BSDF, amb una Noise Texture a l'entrada Height (directament o més amunt) i Strength > 0
+- Etapa 9: un Mix de tipus Color al Base Color amb una Noise Texture al Factor, i la Roughness controlada per la mateixa Noise Texture
+- Etapa 10: seient i potes amb materials diferents. Seient: una Wave Texture o Noise Texture fins al Base Color i algun color marró en el camí (to 10°–50°, saturació ≥ 0,3, valor ≤ 0,9: parades de Color Ramp, A/B d'un Mix o un node Color). Potes: Metallic ≥ 0,9 i Roughness entre 0,15 i 0,6
+
+### Decisions del lab (revisa-les)
+
+- Totes les etapes comencen en Material Preview amb la pestanya Material oberta
+- Les esferes són UV Spheres amb Shade Smooth, perquè els reflexos es llegeixin bé
+- Etapa 2: les esferes de referència són a l'escena (al fons), amb els seus materials; l'alumne en fa uns de propis
+- Etapa 4: hi ha un cub darrere l'esfera perquè es vegi la refracció
+- Etapa 10: el tamboret està fet de dues peces (Seient i Potes) perquè cada una tingui el seu material; al Blender real es faria amb dues ranures i Assign al Mode Edició. Es comprova amb paràmetres i no amb una imatge de referència, perquè hi ha moltes fustes i metalls bons
+- Les etapes no fan servir Image Texture (no cal desplegar UV): les textures CC0 queden per més endavant
+
 # Lab 11 — Look neó (especificació, encara sense codi)
 
 Especificació a `specs/blender/11-neon-look.md`. Les dades marcades «codi 5.2.1» s'han llegit al codi font de Blender (`v5.2.1`); les marcades «5.1.2» s'han obtingut executant Blender 5.1.2 en segon pla i cal confirmar-les a la 5.2.

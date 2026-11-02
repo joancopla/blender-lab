@@ -20,7 +20,126 @@
       "shading": "El workspace Shading (pestanya de dalt) posa el viewport en Material Preview i l'editor de nodes a sota.",
       "material": "La pestanya Material del Properties Editor mostra els material slots, el botó New i les entrades del Principled BSDF.",
       "addMenu": "El menú Shift + A de Blender 5.2 agrupa els nodes a Input, Output, Shader, Displacement, Color, Texture i Utilities. Al lab només funcionen els que fan servir les etapes; la resta surten en gris.",
-      "uv": "UV: per posar una imatge sobre un objecte cal desplegar-lo (UV unwrapping). Es veurà més endavant; en aquest lab les textures fan servir coordenades Generated i Object."
+      "uv": "UV: per posar una imatge sobre un objecte cal desplegar-lo (UV unwrapping). Es veurà més endavant; en aquest lab les textures fan servir coordenades Generated i Object.",
+      "preview": "Material Preview fa servir una imatge d'entorn per il·luminar l'escena i ignora les llums. Per veure el material amb les teves llums, passa a Rendered."
+    },
+    "s1": {
+      "title": "Primer material",
+      "instruction": "Aquesta esfera encara no té cap material. A la pestanya Material del Properties Editor (la bola vermella), prem New i canvia el Base Color. Fixa't que l'editor de nodes de sota mostra el mateix material: un Principled BSDF connectat al Material Output.",
+      "hint1": "La pestanya Material és l'última de la columna d'icones del Properties Editor. New crea un material anomenat «Material».",
+      "hint2": "Clica la barra de color al costat de Base Color per triar-ne un. Pots fer el mateix des del node, a l'editor de sota.",
+      "new": "Prem New a la pestanya Material per crear un material.",
+      "principled": "El material ha de tenir un Principled BSDF connectat a Surface del Material Output.",
+      "color": "Ara canvia el Base Color: tria un color que es vegi clarament diferent del gris.",
+      "success": "El teu primer material. Base Color és el color de la superfície; la resta d'entrades diuen com reflecteix la llum."
+    },
+    "s2": {
+      "title": "Metall o plàstic",
+      "instruction": "Al fons hi ha dues esferes de referència: or i plàstic vermell. Fes un material nou per a cada esfera del davant perquè s'hi assemblin. La diferència principal és Metallic: un metall reflecteix el seu entorn tenyit del seu color; un plàstic té el color a sota i un reflex blanc a sobre.",
+      "hint1": "Or: Metallic 1, un Base Color groc ataronjat i poca rugositat (Roughness al voltant de 0,2).",
+      "hint2": "Plàstic: Metallic 0, un vermell intens i Roughness al voltant de 0,4. Selecciona cada esfera abans de crear-li el material.",
+      "new": "L'esfera «{name}» encara no té material. Selecciona-la i prem New.",
+      "ownMaterial": "L'esfera «{name}» fa servir el material de la referència. Fes-ne un de propi amb New.",
+      "principled": "El material de «{name}» ha de tenir un Principled BSDF connectat a Surface.",
+      "goldMetallic": "L'or és un metall: puja Metallic fins a 1.",
+      "goldColor": "El color de l'or és un groc ataronjat: molt de vermell, una mica menys de verd i poc blau.",
+      "goldRoughness": "L'or de la referència és força polit: baixa Roughness per sota de 0,35.",
+      "plasticMetallic": "El plàstic no és un metall: deixa Metallic a 0.",
+      "plasticColor": "Fes el plàstic d'un vermell intens: molt més vermell que verd i blau.",
+      "plasticRoughness": "El plàstic de la referència té un reflex suau: Roughness entre 0,25 i 0,6.",
+      "success": "Exacte. Amb Metallic i Roughness ja pots fer la majoria de materials del món real."
+    },
+    "s3": {
+      "title": "Rugositat",
+      "instruction": "Les dues esferes són del mateix metall, però la de l'esquerra és més mat. Canvia-li Roughness fins que el reflex de l'entorn es vegi igual de nítid que a la referència de la dreta.",
+      "hint1": "Roughness 0 és un mirall perfecte; Roughness 1, un reflex totalment difuminat.",
+      "hint2": "Arrossega el valor a poc a poc i compara les vores del reflex de les dues esferes.",
+      "ownMaterial": "L'esfera de l'esquerra ha de fer servir el seu propi material, «Metall».",
+      "principled": "El material ha de tenir un Principled BSDF connectat a Surface.",
+      "lower": "Encara és massa mat: baixa Roughness.",
+      "higher": "Ara és més polit que la referència: puja una mica Roughness.",
+      "success": "Molt bé. La rugositat és el que diferencia una cullera nova d'una de gastada."
+    },
+    "s4": {
+      "title": "Vidre",
+      "instruction": "Converteix l'esfera en vidre: obre el panell Transmission del Principled BSDF, posa Weight a 1 i deixa Roughness a prop de 0. L'IOR (índex de refracció) del vidre és d'uns 1,5: és el que fa que es vegi el cub de darrere deformat.",
+      "hint1": "Transmission és un dels panells plegats del Principled BSDF, a la pestanya Material o al node.",
+      "hint2": "L'aigua té un IOR d'1,33 i el vidre, d'uns 1,5. El vidre no és metàl·lic: Metallic a 0.",
+      "principled": "El material ha de tenir un Principled BSDF connectat a Surface.",
+      "transmission": "Obre el panell Transmission i posa Weight a 1.",
+      "metallic": "El vidre no és un metall: deixa Metallic a 0.",
+      "roughness": "Un vidre net és molt polit: baixa Roughness per sota de 0,1.",
+      "ior": "L'IOR és {ior}. El del vidre és d'uns 1,5 (entre 1,4 i 1,6).",
+      "success": "Vidre fet. Al Blender real, la refracció es veu millor a Cycles, que segueix la llum a través de l'objecte."
+    },
+    "s5": {
+      "title": "Emissió",
+      "instruction": "Fes que la bombeta faci llum: al Principled BSDF de la bombeta, obre el panell Emission, tria un color i puja Strength. Una emissió no és una llum de l'escena: és una superfície que brilla.",
+      "hint1": "Selecciona l'esfera de dalt (la Bombeta). Emission és un dels panells plegats del Principled BSDF.",
+      "hint2": "Amb Strength 1 el color ja brilla; amb més, encara més. També pots connectar un node Emission directament a Surface.",
+      "emit": "La bombeta encara no emet: obre el panell Emission i puja Strength.",
+      "stronger": "Ja brilla una mica. Puja Strength o fes el color més clar.",
+      "wrongObject": "Has fet brillar el peu! L'emissió va a la bombeta, l'esfera de dalt.",
+      "success": "Encesa. A EEVEE real, una emissió forta també il·lumina el que té a prop; al lab, només brilla."
+    },
+    "s6": {
+      "title": "Primer graf",
+      "instruction": "Fes una superfície tacada amb nodes: afegeix una Noise Texture i una Color Ramp amb Shift + A a l'editor de nodes, i connecta Noise Texture (Factor) → Color Ramp (Factor) → Base Color del Principled BSDF.",
+      "hint1": "Shift + A > Texture > Noise Texture i Shift + A > Color > Color Ramp. Per connectar, arrossega d'un socket de sortida (a la dreta d'un node) a un d'entrada (a l'esquerra).",
+      "hint2": "La Color Ramp converteix el gris del soroll en dos colors: mou les parades per fer les taques més o menys marcades.",
+      "principled": "El material ha de tenir un Principled BSDF connectat a Surface.",
+      "addNoise": "Afegeix una Noise Texture: Shift + A > Texture > Noise Texture.",
+      "addRamp": "Ara afegeix una Color Ramp: Shift + A > Color > Color Ramp.",
+      "noiseToRamp": "Connecta la sortida Factor de la Noise Texture a l'entrada Factor de la Color Ramp.",
+      "rampToBase": "Connecta la sortida Color de la Color Ramp al Base Color del Principled BSDF.",
+      "success": "El teu primer graf de nodes: una textura procedural, sense cap imatge."
+    },
+    "s7": {
+      "title": "Escala i coordenades",
+      "instruction": "Fes les taques més petites amb un node Mapping. Afegeix un Texture Coordinate i un Mapping i connecta Texture Coordinate (Generated o Object) → Mapping (Vector) → Noise Texture (Vector). Després canvia l'escala (Scale) del Mapping.",
+      "hint1": "Shift + A > Input > Texture Coordinate i Shift + A > Utilities > Vector > Mapping.",
+      "hint2": "Amb Scale 3, el patró es repeteix tres vegades més: les taques es fan més petites. Si només canvies una component, s'estiren.",
+      "noise": "Aquest material ha de tenir la Noise Texture de l'etapa anterior.",
+      "mapping": "Connecta un Mapping a l'entrada Vector de la Noise Texture.",
+      "coordinates": "Connecta una sortida del Texture Coordinate (Generated o Object) a l'entrada Vector del Mapping.",
+      "scale": "Ara canvia Scale del Mapping per fer les taques més petites o estirar-les.",
+      "success": "Molt bé. Texture Coordinate diu on és cada punt de la superfície; Mapping el mou, el gira i l'escala."
+    },
+    "s8": {
+      "title": "Relleu",
+      "instruction": "Fes que el soroll també faci relleu: afegeix un node Bump, connecta la Noise Texture a Height i la sortida Normal del Bump a l'entrada Normal del Principled BSDF. La forma de l'objecte no canvia: només la llum que hi rebota.",
+      "hint1": "Shift + A > Displacement > Bump. Pots connectar la mateixa sortida de la Noise Texture a dos llocs alhora.",
+      "hint2": "Strength i Distance controlen la força del relleu. Mira les vores del cub: continuen sent rectes.",
+      "principled": "El material ha de tenir un Principled BSDF connectat a Surface.",
+      "bumpToNormal": "Afegeix un Bump i connecta la seva sortida Normal a l'entrada Normal del Principled BSDF.",
+      "height": "Connecta la Noise Texture a l'entrada Height del Bump.",
+      "strength": "Puja Strength del Bump per sobre de 0.",
+      "success": "Relleu fet. El Bump enganya la llum: és barat i no canvia la geometria."
+    },
+    "s9": {
+      "title": "Barrejar",
+      "instruction": "Posa rovell sobre aquest metall. Fes servir una Noise Texture com a màscara: amb un Mix (Color) barreja el gris del metall i un marró de rovell cap al Base Color, i fes que la mateixa màscara canviï també la Roughness (el rovell és més mat).",
+      "hint1": "Shift + A > Color > Mix Color. Connecta la Noise Texture al Factor del Mix, posa el gris a A i el marró a B, i el Result al Base Color.",
+      "hint2": "Per a la Roughness, un altre Mix (amb Shift + D el dupliques i a dalt pots canviar-ne el tipus a Float) amb la mateixa Noise Texture al Factor.",
+      "hint3": "Si vols que el rovell també deixi de ser metàl·lic, la mateixa màscara pot anar a Metallic.",
+      "principled": "El material ha de tenir un Principled BSDF connectat a Surface.",
+      "mixColor": "Connecta un Mix de tipus Color al Base Color del Principled BSDF.",
+      "mask": "Connecta una Noise Texture al Factor del Mix: és la màscara que decideix on hi ha rovell.",
+      "roughness": "Ara fes que el soroll canviï també la Roughness (per exemple, amb un altre Mix de tipus Float).",
+      "sameMask": "Color i Roughness han de fer servir la mateixa Noise Texture, perquè el rovell mat coincideixi amb el marró.",
+      "success": "Perfecte. Una màscara que controla diverses entrades alhora és la base de gairebé tots els materials realistes."
+    },
+    "s10": {
+      "title": "Repte final",
+      "instruction": "Fes els materials del tamboret: el seient, de fusta procedural (una textura com Wave o Noise amb colors marrons al Base Color), i les potes, de metall (Metallic 1 i una rugositat entre 0,15 i 0,6). Cada part ha de tenir el seu material.",
+      "materials": "Les dues parts necessiten un material: selecciona el seient i les potes i prem New a cada una.",
+      "different": "El seient i les potes fan servir el mateix material. Cada part ha de tenir el seu.",
+      "principled": "El material de «{name}» ha de tenir un Principled BSDF connectat a Surface.",
+      "woodTexture": "La fusta del seient necessita una textura (Wave Texture o Noise Texture) que arribi al Base Color.",
+      "woodColor": "Fes servir colors marrons per a la fusta (per exemple, a les parades d'una Color Ramp).",
+      "metal": "Les potes són de metall: Metallic a 1.",
+      "metalRoughness": "La rugositat de les potes és {r}. Posa-la entre 0,15 i 0,6.",
+      "success": "Repte superat! El tamboret ja té fusta i metall."
     }
   }
 }
