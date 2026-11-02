@@ -784,6 +784,15 @@ Parteix del Lighting Lab de cifog-lab (xavikai), amb permís del seu autor. Tot 
 
 # Lab 05 — Materials i nodes
 
+## Pendent de revisar (resum)
+
+- [ ] Fer les 10 etapes al navegador (producció)
+- [ ] Etapa 2: si les forquilles d'or i plàstic (fase 5) són raonables
+- [ ] Etapa 10: si «una textura i algun color marró» és prou per dir que és fusta
+- [ ] HDRI de Material Preview: l'estudi generat del Lab 04 o un HDRI CC0 de Poly Haven (cal descarregar-lo i afegir-lo al projecte)
+- [ ] Tots els ❓ de les fases 3 i 4
+- [ ] Rendiment a l'aula amb `?perf` (vegeu la fase 6)
+
 ## Fase 1 — Model de l'editor de nodes
 
 Verificat al codi font de Blender 5.2.1 (`v5.2.1`): no cal comprovar-ho a mà.
@@ -905,6 +914,16 @@ Les comprovacions llegeixen els arbres de nodes a través del contracte (mai la 
 - Etapa 4: hi ha un cub darrere l'esfera perquè es vegi la refracció
 - Etapa 10: el tamboret està fet de dues peces (Seient i Potes) perquè cada una tingui el seu material; al Blender real es faria amb dues ranures i Assign al Mode Edició. Es comprova amb paràmetres i no amb una imatge de referència, perquè hi ha moltes fustes i metalls bons
 - Les etapes no fan servir Image Texture (no cal desplegar UV): les textures CC0 queden per més endavant
+
+## Fase 6 — Poliment
+
+### Rendiment (decisions del lab, no de Blender)
+
+- Canviar un valor (arrossegar, escriure) no recompila el shader: només n'actualitza els uniforms
+- Connectar o desconnectar un node, o canviar una opció d'un desplegable, sí que recompila. En aquest ordinador triga entre 0,1 i 0,25 s (Blender també recompila i mostra «Compiling shaders»)
+- El soroll s'escriu amb bucles que el controlador de la GPU no pot desenrotllar: una Noise 4D amb Color ha passat de 7 s a 0,23 s de compilació a Windows (ANGLE)
+- Transmission activa la passada de transmissió de three.js (dibuixa l'escena una vegada més), només als materials que la fan servir
+- [ ] Mesurar-ho en un ordinador de l'aula: obre el lab amb `?perf` al final de l'adreça, fes l'etapa 9 (rovell) i orbita en Material Preview; apunta els fps. Després, connecta i desconnecta un node i mira si l'aturada es nota massa
 
 # Lab 11 — Look neó (especificació, encara sense codi)
 
