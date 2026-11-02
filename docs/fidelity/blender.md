@@ -833,3 +833,47 @@ Diferències conegudes (decisions del lab o pendents):
 - [ ] ❓ Image Texture: el botó Open encara no fa res (les textures arriben amb les etapes)
 - [ ] ❓ Els enllaços es pinten amb el color del socket de sortida; Blender pot fer un degradat entre els dos sockets
 - [ ] ❓ Mida i espaiat de les files dels nodes (20 px de capçalera, 22 px per fila) aproximats
+
+# Lab 11 — Look neó (especificació, encara sense codi)
+
+Especificació a `specs/blender/11-neon-look.md`. Les dades marcades «codi 5.2.1» s'han llegit al codi font de Blender (`v5.2.1`); les marcades «5.1.2» s'han obtingut executant Blender 5.1.2 en segon pla i cal confirmar-les a la 5.2.
+
+## Verificat
+
+- [x] Viewport Shading > Compositor: Disabled | Camera | Always, per defecte Disabled; només en Material Preview i Rendered (codi 5.2.1, `VIEW3D_PT_shading_compositor`)
+- [x] Glare: sortides Image, Glare, Highlights; Type (Bloom, Ghosts, Streaks, Fog Glow, Simple Star, Sun Beams, Kernel; per defecte Streaks) i Quality (High, Medium, Low; per defecte Medium) són entrades de menú (codi 5.2.1, `node_composite_glare.cc`)
+- [x] Glare: panell Highlights plegat (Threshold 1, Smoothness 0,1, subpanell Clamp plegat amb Clamp i Maximum 10); panell Adjust (Strength 1 de 0 a 1, Saturation 1, Tint blanc); panell Glare (Size 0,5 de 0 a 1, només per a Bloom, Fog Glow i Sun Beams) (codi 5.2.1)
+- [x] Algorisme del Bloom: highlights en HSV amb retall suau; cadena de llargada floor(log2(costat curt × Size)); primera reducció amb mitjana de Karis, ampliació amb tent 3 × 3; barreja imatge + glare × Tint × Strength / llargada; Quality divideix la mida per 1, 2 o 4 (codi 5.2.1)
+- [x] Glare és a Shift+A > Filter, amb entrades per a cada tipus (codi 5.2.1, `node_add_menu_compositor.py`)
+- [x] Capçalera del Compositor: botó New, que crida `node.new_compositing_node_group`, amb el nom «Compositor Nodes» (codi 5.2.1, `space_node.py`, `node_add.cc`)
+- [x] Panell Wireframe: Thickness, Offset, Boundary, Replace Original, columna Thickness amb Even i Relative, Crease Edges amb pes, Material Offset, i subpanell Vertex Group amb Factor (codi 5.2.1, `MOD_wireframe.cc`)
+- [x] EEVEE no té cap opció de bloom (5.1.2)
+- [x] Principled BSDF nou: Emission Color blanc i Emission Strength 0 (vegeu el Lab 05, fase 1)
+
+## Pendent de confirmar a la 5.2
+
+- [ ] New al Compositor crea Render Layers → Reroute → Group Output, i el Reroute també cap a Viewer; no hi ha node Composite (5.1.2)
+- [ ] Wireframe per defecte: Thickness 0,02 m, Offset 0, Replace Original activat, Boundary desactivat, Even activat, Relative desactivat, Crease Edges desactivat, Material Offset 0 (5.1.2)
+- [ ] Grid nova: X i Y Subdivisions 10, Size 2 m, 11 × 11 vèrtexs i 10 × 10 cares, nom «Grid» (5.1.2)
+- [ ] View Transform: Standard, Khronos PBR Neutral, AgX, Filmic, Filmic Log, False Color, Raw; per defecte AgX; Display Device sRGB; Looks d'AgX amb el prefix «AgX - » (5.1.2)
+- [ ] World per defecte: gris 0,0509 lineal i Strength 1 (5.1.2; també al Lab 04)
+- [ ] Frame Rate per defecte 24 fps i resolució 1920 × 1080 (5.1.2)
+
+## Preguntes obertes
+
+- [ ] ❓ El viewport amb el compositor activat mostra el Group Output o el Viewer actiu? (la consigna de l'etapa 4 insereix el Glare abans del Reroute perquè funcioni en tots dos casos)
+- [ ] ❓ Els camps del Glare que no es fan servir amb el tipus triat s'amaguen o només s'enfosqueixen?
+- [ ] ❓ Com es mostra «Glare ▸ Bloom» al menú Shift+A i a la cerca (submenú, entrada directa o només a la cerca)
+- [ ] ❓ Nom del pas de desfer de New al Compositor
+- [ ] ❓ Camps i ordre de l'Adjust Last Operation d'Add Grid (X Subdivisions, Y Subdivisions, Size, Generate UVs, Align, Location, Rotation)
+- [ ] ❓ Ordre del desplegable View Transform a la interfície
+- [ ] ❓ Una superfície emissiva il·lumina els objectes del costat a EEVEE 5.2? (al lab, no)
+- [ ] ❓ El workspace Compositing de la 5.2 no té viewport 3D? (el lab posa el Compositor sota el viewport, canviant l'Editor Type)
+- [ ] ❓ Diferència del tone mapping AgX de three.js amb el de Blender, sobretot amb emissions molt fortes (és el que es veu a l'etapa 5)
+
+## Decisions del lab (revisa-les)
+
+- L'escena inicial té el cub a Z = 1 m perquè quedi sobre la graella
+- Del desplegable de Viewport Shading només es replica el subpanell Compositor
+- Al Glare només funciona el tipus Bloom; els altres passen la imatge tal qual amb un avís
+- Prova de projector: element del lab, no de Blender (negres a 0,10, menys contrast, suavitzat de 2 px, caiguda a les vores)
