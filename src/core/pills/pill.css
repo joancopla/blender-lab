@@ -1,0 +1,186 @@
+/* Pill viewer (DESIGN.md, "Píndoles"). Sizes are in stage pixels (1920×1080, scaled). */
+
+.pill-viewer {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--surface-low);
+}
+.pill-viewer:fullscreen {
+  background: #000;
+}
+
+.pill-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  display: flex;
+  transform-origin: center;
+  background: var(--bg);
+}
+
+.pill-art {
+  position: relative;
+  flex: none;
+  height: 1080px;
+  overflow: hidden;
+}
+
+.pill-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 56px 64px 44px;
+  border-left: 1px solid var(--line);
+  /* The soft accent tint of the heros (DESIGN.md, "Detalls de qualitat"). */
+  background:
+    radial-gradient(120% 60% at 0% 0%, var(--accent-tint), transparent 60%),
+    var(--bg);
+}
+.pill-panel .pill-eyebrow {
+  font-size: 15px;
+}
+.pill-counter {
+  margin: 40px 0 0;
+  font: 600 18px/1.4 var(--mono);
+  color: var(--accent);
+}
+.pill-title {
+  margin: 14px 0 0;
+  font: 800 60px/0.98 var(--font);
+  letter-spacing: -0.045em;
+  color: var(--text);
+}
+.pill-accent {
+  color: var(--accent);
+}
+.pill-lead {
+  margin: 26px 0 0;
+  font: 400 22px/1.5 var(--font);
+  color: var(--text-muted);
+}
+.pill-keys {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.lab-kbd.pill-kbd {
+  min-width: 1.6em;
+  padding: 4px 14px;
+  border-bottom-width: 3px;
+  border-radius: var(--radius-button);
+  font-size: 24px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.pill-plus {
+  font-size: 20px;
+  color: var(--text-faint);
+}
+.pill-note {
+  font-size: 20px;
+  color: var(--text-muted);
+}
+.pill-hint {
+  margin: 34px 0 0;
+  padding: 4px 0 4px 20px;
+  border-left: 3px solid var(--line-strong);
+  font: 400 20px/1.5 var(--font);
+  color: var(--text-muted);
+}
+.pill-hint strong {
+  font-weight: 600;
+  color: var(--text);
+}
+.pill-op {
+  margin: 24px 0 0;
+  font: 500 16px/1.4 var(--mono);
+  color: var(--text-faint);
+}
+.pill-op span {
+  color: var(--text-muted);
+}
+
+.pill-foot {
+  margin-top: auto;
+}
+.shell-progress.pill-progress {
+  height: 4px;
+}
+.pill-foot-row {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font: 500 15px/1.4 var(--mono);
+  color: var(--text-faint);
+}
+.pill-next {
+  flex: 1;
+}
+.pill-nav {
+  display: flex;
+  gap: 8px;
+}
+.pill-nav-button {
+  padding: 2px 12px;
+  font: 500 18px/1.4 var(--font);
+  color: var(--text);
+  background: var(--surface-high);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-button);
+  cursor: pointer;
+}
+.pill-nav-button:hover:not(:disabled) {
+  border-color: var(--line-strong);
+}
+.pill-nav-button:disabled {
+  color: var(--text-faint);
+  cursor: default;
+}
+.pill-nav-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pill-progress > div {
+    transition: width 0.2s;
+  }
+}
+
+/* Page: top bar, viewer filling the window, footer line. */
+.pill-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+.pill-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.pill-footer {
+  padding: 10px clamp(16px, 4vw, 48px);
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--text-faint);
+}
+.pill-help {
+  margin: 6px 0 0;
+  font: 500 13px/1.4 var(--mono);
+  color: var(--text-faint);
+}

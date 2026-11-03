@@ -39,7 +39,13 @@
     "cardOpen": "Obre el lab",
     "cardStages": "{total} etapes",
     "programsTabs": "Programari",
-    "tabLabs": "{n} labs"
+    "tabLabs": "{n} labs",
+    "pillsTitle": "Píndoles",
+    "pillsEyebrow": "Pas a pas, per mirar i projectar",
+    "pillsLead": "Tutorials curts amb imatges del programa i les tecles de cada pas. No tenen comprovacions: avances amb les fletxes, al teu ritme o a classe.",
+    "pillKind": "Píndola",
+    "pillSteps": "{n} passos",
+    "pillOpen": "Mira la píndola"
   },
   "ui": {
     "stageOf": "Etapa {n} de {total}",
@@ -104,5 +110,15 @@
     "light": "clar",
     "dark": "fosc",
     "help": "Canvia entre el mode fosc i el clar"
+  },
+  "pills": {
+    "counter": "Pas {n} de {total}",
+    "next": "Següent: {name}",
+    "last": "Final",
+    "prev": "Pas anterior",
+    "nextStep": "Pas següent",
+    "operator": "Operador a {program}:",
+    "help": "← → canvia de pas · F pantalla completa",
+    "all": "Totes les píndoles"
   }
 }

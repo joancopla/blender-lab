@@ -1,7 +1,8 @@
 /**
- * Architecture guard: labs -> apps -> core, never the other way.
- * - src/core may not import src/apps, src/labs or three.js.
- * - src/apps may not import src/labs.
+ * Architecture guard: labs -> apps -> core and pills -> apps -> core, never the other way.
+ * - src/core may not import src/apps, src/labs, src/pills or three.js.
+ * - src/apps may not import src/labs or src/pills.
+ * - labs and pills do not import each other.
  * Files are read through Vite's import.meta.glob (no Node APIs needed).
  */
 import { describe, expect, it } from 'vitest';
@@ -56,11 +57,16 @@ describe('layers', () => {
     expect(Object.keys(sources).some((f) => f.startsWith('apps/blender/'))).toBe(true);
   });
 
-  it('core does not import apps, labs or three.js', () => {
-    expect(violations('core', ['apps', 'labs', 'three'])).toEqual([]);
+  it('core does not import apps, labs, pills or three.js', () => {
+    expect(violations('core', ['apps', 'labs', 'pills', 'three'])).toEqual([]);
   });
 
-  it('apps do not import labs', () => {
-    expect(violations('apps', ['labs'])).toEqual([]);
+  it('apps do not import labs or pills', () => {
+    expect(violations('apps', ['labs', 'pills'])).toEqual([]);
+  });
+
+  it('labs and pills do not import each other', () => {
+    expect(violations('labs', ['pills'])).toEqual([]);
+    expect(violations('pills', ['labs'])).toEqual([]);
   });
 });
