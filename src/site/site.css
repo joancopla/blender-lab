@@ -246,6 +246,23 @@
   aspect-ratio: 16 / 8;
   border-bottom: 1px solid var(--line);
 }
+/* Pill cards: the finished render of the pill as the illustration. */
+.site-page a.site-pill-art {
+  display: block;
+  overflow: hidden;
+  background: #000;
+}
+.site-pill-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% 55%;
+}
+.site-pills {
+  scroll-margin-top: 24px;
+}
+
 .site-card-body {
   display: flex;
   flex: 1;

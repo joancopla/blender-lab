@@ -15,7 +15,7 @@ import { BLUEPRINT_VIEWS, earnedLineIds, highlightLab, renderBlueprintView } fro
 import { labArt } from '../core/shell/lab-art';
 import { progressOf } from '../core/shell/lab-progress';
 import { topBar } from '../core/shell/top-bar';
-import { type CatalogEntry, PROGRAMS, type ProgramGroup } from './catalog';
+import { type CatalogEntry, type PillEntry, PROGRAMS, type ProgramGroup } from './catalog';
 import '../core/shell/shell.css';
 import './site.css';
 
@@ -278,6 +278,53 @@ function program(group: ProgramGroup, figure: HTMLElement): HTMLElement {
   return section;
 }
 
+function pillCard(entry: PillEntry): HTMLLIElement {
+  const { pill } = entry;
+  const li = el('li', 'site-card site-pill-card');
+  const art = el('a', 'site-card-art site-pill-art');
+  art.href = entry.path;
+  art.tabIndex = -1;
+  const img = el('img');
+  img.src = pill.cover;
+  img.alt = '';
+  img.loading = 'lazy';
+  art.append(img);
+
+  const body = el('div', 'site-card-body');
+  const meta = el('div', 'site-card-meta');
+  meta.append(el('span', 'site-card-n', t('site.pillKind')), el('span', 'site-card-count', t('site.pillSteps', { n: pill.stepCount })));
+  const title = el('h3', 'site-card-title');
+  const link = el('a', undefined, t(pill.nameKey));
+  link.href = entry.path;
+  title.append(link);
+  const row = el('div', 'site-card-foot-row');
+  const go = el('a', 'site-card-go', t('site.pillOpen'));
+  go.href = entry.path;
+  go.setAttribute('aria-label', `${t('site.pillOpen')}: ${t(pill.nameKey)}`);
+  row.append(go);
+  const foot = el('div', 'site-card-foot');
+  foot.append(row);
+  body.append(meta, title, el('p', 'site-card-desc', t(pill.descKey)), foot);
+  li.append(art, body);
+  return li;
+}
+
+function pills(entries: readonly PillEntry[]): HTMLElement {
+  const section = el('section', 'site-program site-pills');
+  section.id = 'pills';
+  section.setAttribute('aria-labelledby', 'site-pills-title');
+  const head = el('div', 'site-program-head');
+  const titles = el('div');
+  const h = el('h2', 'site-program-title', t('site.pillsTitle'));
+  h.id = 'site-pills-title';
+  titles.append(el('p', 'shell-eyebrow', t('site.pillsEyebrow')), h);
+  head.append(titles, el('p', 'site-program-lead', t('site.pillsLead')));
+  const list = el('ul', 'site-cards');
+  for (const entry of entries) list.append(pillCard(entry));
+  section.append(head, list);
+  return section;
+}
+
 function shortcuts(group: ProgramGroup): HTMLElement {
   const section = el('section', 'site-shortcuts');
   const head = el('div', 'site-shortcuts-head');
@@ -307,7 +354,12 @@ function render(): void {
   main.id = 'site-panel';
   main.setAttribute('role', 'tabpanel');
   main.setAttribute('aria-labelledby', `site-tab-${g.id}`);
-  main.append(hero(g, figure), program(g, figure), ...(g.shortcuts.length > 0 ? [shortcuts(g)] : []));
+  main.append(
+    hero(g, figure),
+    program(g, figure),
+    ...(g.pills?.length ? [pills(g.pills)] : []),
+    ...(g.shortcuts.length > 0 ? [shortcuts(g)] : []),
+  );
   root.replaceChildren(siteTopBar(), tabs(), main, el('footer', 'site-footer', t('site.footer')));
 }
 

@@ -15,10 +15,18 @@ import { lab05 } from '../labs/blender/05-materials';
 import { ma3Lab01 } from '../labs/grandma3/01-dmx';
 import { ma3Lab02 } from '../labs/grandma3/02-addresses';
 import { ma3Lab03 } from '../labs/grandma3/03-command-line';
+import type { PillInfo } from '../core/pills/pill';
+import { minijackInfo } from '../pills/blender/minijack/info';
 
 export interface CatalogEntry {
   readonly lab: LabDefinition;
   /** Page path from the site root, e.g. "labs/01-viewport/". */
+  readonly path: string;
+}
+
+export interface PillEntry {
+  readonly pill: PillInfo;
+  /** Page path from the site root, e.g. "pills/minijack/". */
   readonly path: string;
 }
 
@@ -44,6 +52,8 @@ export interface ProgramGroup {
   /** Small-screen notice on its lab pages (default: the keyboard-and-mouse one). */
   readonly deviceWarning?: { readonly titleKey: string; readonly textKey: string };
   readonly labs: readonly CatalogEntry[];
+  /** Step-by-step pills of this program, shown after its labs (DESIGN.md, "Píndoles"). */
+  readonly pills?: readonly PillEntry[];
   /** Title and sentence of the shortcuts strip (default: the keyboard ones). */
   readonly shortcutsTitleKey?: string;
   readonly shortcutsLeadKey?: string;
@@ -65,6 +75,7 @@ export const PROGRAMS: readonly ProgramGroup[] = [
       { lab: lab04, path: 'labs/04-lights/' },
       { lab: lab05, path: 'labs/05-materials/' },
     ],
+    pills: [{ pill: minijackInfo, path: 'pills/minijack/' }],
     shortcuts: [
       { labelKey: 'shortcuts.grab', keys: ['g'] },
       { labelKey: 'shortcuts.rotate', keys: ['r'] },
