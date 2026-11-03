@@ -3,7 +3,8 @@
  * (Workbench render with a transparent background) is drawn over the viewport background
  * and the grid, with the header (mode and select mode) and the view name and
  * "(1) Collection | Object" text in the corner. A view through the camera sits in the
- * camera frame with the passepartout around it. A beauty render is shown on its own,
+ * camera frame with the passepartout around it. An overlay (a curve with its points and
+ * handles) can be drawn on top of the image. A beauty render is shown on its own,
  * like Blender's render window (F12).
  * FIDELITY? The header is simplified: only the mode menu and the select mode buttons.
  */
@@ -12,6 +13,13 @@ import { THEME } from '../viewport/theme';
 import './pill-viewport.css';
 
 export type GridKind = 'major' | 'minor' | 'floor' | 'x' | 'y';
+
+/**
+ * Overlay drawn over the image, in image pixels: a polyline ("l", points "x,y x,y ...") or a
+ * dot ("d", centre "x,y"), with its colour and its width or radius. Used for what Blender
+ * draws on top in the viewport, such as a curve with its control points and handles.
+ */
+export type OverlayItem = readonly [kind: 'l' | 'd', color: string, size: number, data: string];
 
 export interface BlenderPillView {
   /** Viewport name, e.g. "User Perspective". */
@@ -30,6 +38,8 @@ export interface BlenderPillView {
    * and the rest of the viewport is darkened by the passepartout.
    */
   readonly camera?: boolean;
+  /** Overlay drawn over the image (Edit Mode curve, points and handles; a curve wire). */
+  readonly overlay?: readonly OverlayItem[];
 }
 
 /** Camera frame inside the 1200 × 1080 viewport image. FIDELITY? Blender fits the frame with a small margin. */
@@ -105,6 +115,8 @@ export function renderBlenderPillArt(host: HTMLElement, step: PillStep<BlenderPi
   text.append(div('', v.header), div('', `(1) Collection | ${v.active}`));
   text.style.color = THEME.viewportText;
 
+  const overlay = v.overlay?.length ? overlaySvg(v.overlay) : null;
+
   if (v.camera) {
     const frame = div('bl-pill-camera');
     const top = Math.round((1080 - FRAME.h) / 2);
@@ -112,8 +124,34 @@ export function renderBlenderPillArt(host: HTMLElement, step: PillStep<BlenderPi
     frame.style.boxShadow = `0 0 0 2000px rgba(0, 0, 0, ${PASSEPARTOUT})`;
     img.classList.add('is-camera');
     frame.append(img);
-    host.replaceChildren(svg, frame, header, text);
+    host.replaceChildren(...[svg, frame, overlay, header, text].filter((n) => n !== null));
     return;
   }
-  host.replaceChildren(svg, img, header, text);
+  host.replaceChildren(...[svg, img, overlay, header, text].filter((n) => n !== null));
+}
+
+function overlaySvg(items: readonly OverlayItem[]): SVGSVGElement {
+  const svg = document.createElementNS(SVG, 'svg');
+  svg.setAttribute('class', 'bl-pill-overlay');
+  svg.setAttribute('viewBox', '0 0 1200 1080');
+  for (const [kind, color, size, data] of items) {
+    if (kind === 'l') {
+      const line = document.createElementNS(SVG, 'polyline');
+      line.setAttribute('points', data);
+      line.setAttribute('fill', 'none');
+      line.setAttribute('stroke', color);
+      line.setAttribute('stroke-width', String(size));
+      line.setAttribute('stroke-linejoin', 'round');
+      svg.append(line);
+    } else {
+      const [x, y] = data.split(',');
+      const dot = document.createElementNS(SVG, 'circle');
+      dot.setAttribute('cx', x ?? '0');
+      dot.setAttribute('cy', y ?? '0');
+      dot.setAttribute('r', String(size));
+      dot.setAttribute('fill', color);
+      svg.append(dot);
+    }
+  }
+  return svg;
 }

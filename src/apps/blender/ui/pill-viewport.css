@@ -3,6 +3,7 @@
   font-family: 'Segoe UI', Arial, sans-serif;
 }
 .bl-pill-grid,
+.bl-pill-overlay,
 .bl-pill-image {
   position: absolute;
   inset: 0;
