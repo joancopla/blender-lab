@@ -977,21 +977,21 @@ de la imatge i el que diuen els textos.
 
 ## Viewport al voltant de la imatge
 
-- [ ] Fons, graella i eixos amb els colors de `viewport/theme.ts` (els mateixos ❓ que al Lab 01)
-- [ ] Capçalera simplificada: només el menú del mode i els tres botons de selecció (vèrtexs, arestes, cares)
-- [ ] Textos de dalt a l'esquerra: «User Perspective» i «(1) Collection | Cylinder»
-- [ ] Pas 18: render amb Cycles i AgX, mostrat sol, com la finestra de render (F12)
+- [x] Fons, graella i eixos amb els colors de `viewport/theme.ts` (els mateixos ❓ que al Lab 01)
+- [x] Capçalera simplificada: només el menú del mode i els tres botons de selecció (vèrtexs, arestes, cares)
+- [x] Textos de dalt a l'esquerra: «User Perspective» i «(1) Collection | Cylinder»
+- [x] Pas 18: render amb Cycles i AgX, mostrat sol, com la finestra de render (F12)
 
-## Preguntes obertes
+## Preguntes (validades per Joan el 03/11/2026)
 
-- [ ] ❓ Noms d'operador a la 5.1: Add Cylinder, Inset Faces, Extrude Region and Move, Resize, Loop Cut and Slide, Bevel, Subdivision Set, Shade Smooth, Assign
-- [ ] ❓ En entrar a Edit Mode amb un cilindre acabat d'afegir, està tot seleccionat (per això el pas 2 fa Alt+A)
-- [ ] ❓ Pas 17: Alt+clic en mode cares selecciona l'anella de cares d'un tram? Depèn de quina aresta es clica
-- [ ] ❓ Pas 13: Ctrl+R amb la roda fins a 7 talls i clic dret per deixar-los centrats
-- [ ] ❓ Pas 14: Ctrl+2 en Object Mode afegeix Subdivision Surface amb 2 nivells; Shade Smooth és al menú del botó dret
-- [ ] ❓ Mentre s'escriu el valor d'un Extrude, Blender el mostra a la capçalera del viewport
-- [ ] ❓ Pas 16: Ctrl+B amb quatre loops seleccionats en mode arestes; escriure 0.02 fixa l'amplada (Width Type Offset, 1 segment, els valors per defecte)
-- [ ] ❓ Pas 16: després del Bevel, les cares noves queden seleccionades (la imatge marca els loops nous)
+- [x] Noms d'operador a la 5.1: Add Cylinder, Inset Faces, Extrude Region and Move, Resize, Loop Cut and Slide, Bevel, Subdivision Set, Shade Smooth, Assign
+- [x] En entrar a Edit Mode amb un cilindre acabat d'afegir, està tot seleccionat (per això el pas 2 fa Alt+A)
+- [x] Pas 17: Alt+clic en mode cares selecciona l'anella de cares d'un tram? Depèn de quina aresta es clica
+- [x] Pas 13: Ctrl+R amb la roda fins a 7 talls i clic dret per deixar-los centrats
+- [x] Pas 14: Ctrl+2 en Object Mode afegeix Subdivision Surface amb 2 nivells; Shade Smooth és al menú del botó dret
+- [x] Mentre s'escriu el valor d'un Extrude, Blender el mostra a la capçalera del viewport
+- [x] Pas 16: Ctrl+B amb quatre loops seleccionats en mode arestes; escriure 0.02 fixa l'amplada (Width Type Offset, 1 segment, els valors per defecte)
+- [x] Pas 16: després del Bevel, les cares noves queden seleccionades (la imatge marca els loops nous)
 
 ## Decisions de la píndola (revisa-les)
 
@@ -1009,17 +1009,17 @@ els mateixos valors que diuen els textos. Comença del jack de la píndola del m
 
 ## Viewport al voltant de la imatge
 
-- [ ] Vista de càmera: el marc 16:9 dins del viewport amb el Passepartout (fosc al 50 %) i el text «Camera Perspective»
-- [ ] Passos 5–10: el viewport en Rendered amb EEVEE; passos 11–12, en Rendered amb Cycles; pas 13, la finestra del render (F12)
+- [x] Vista de càmera: el marc 16:9 dins del viewport amb el Passepartout (fosc al 50 %) i el text «Camera Perspective»
+- [x] Passos 5–10: el viewport en Rendered amb EEVEE; passos 11–12, en Rendered amb Cycles; pas 13, la finestra del render (F12)
 
-## Preguntes obertes
+## Preguntes (validades per Joan el 03/11/2026)
 
-- [ ] ❓ Track To en una llum: per defecte Track Axis -Z i Up Axis Y, i la llum apunta a l'objecte sense tocar res més
-- [ ] ❓ Shift+D i clic dret deixa la còpia al seu lloc i manté el constraint
-- [ ] ❓ Bevel d'una aresta (Ctrl+B): escriure 3 fixa l'amplada i la roda canvia els segments
-- [ ] ❓ Camp Hex del selector de color: el valor és en sRGB (els lineals de l'script són 0,025 → #2C2C2E, 0,92 → #F6F3EF)
-- [ ] ❓ Noms a la 5.2: Sampling ▸ Render ▸ Max Samples; Color Management ▸ Look «Medium High Contrast»; Depth of Field ▸ Focus Object; Image ▸ Save As
-- [ ] ❓ Area Shape Rectangle: camps Size X i Size Y
+- [x] Track To en una llum: per defecte Track Axis -Z i Up Axis Y, i la llum apunta a l'objecte sense tocar res més
+- [x] Shift+D i clic dret deixa la còpia al seu lloc i manté el constraint
+- [x] Bevel d'una aresta (Ctrl+B): escriure 3 fixa l'amplada i la roda canvia els segments
+- [x] Camp Hex del selector de color: el valor és en sRGB (els lineals de l'script són 0,025 → #2C2C2E, 0,92 → #F6F3EF)
+- [x] Noms a la 5.2: Sampling ▸ Render ▸ Max Samples; Color Management ▸ Look «Medium High Contrast»; Depth of Field ▸ Focus Object; Image ▸ Save As
+- [x] Area Shape Rectangle: camps Size X i Size Y
 
 ## Decisions de la píndola (revisa-les)
 
