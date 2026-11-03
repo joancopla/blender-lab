@@ -2,7 +2,8 @@
  * Blender image of a pill step: the 3D viewport as the student sees it. The step image
  * (Workbench render with a transparent background) is drawn over the viewport background
  * and the grid, with the header (mode and select mode) and the view name and
- * "(1) Collection | Object" text in the corner. A beauty render is shown on its own,
+ * "(1) Collection | Object" text in the corner. A view through the camera sits in the
+ * camera frame with the passepartout around it. A beauty render is shown on its own,
  * like Blender's render window (F12).
  * FIDELITY? The header is simplified: only the mode menu and the select mode buttons.
  */
@@ -24,7 +25,16 @@ export interface BlenderPillView {
   readonly grid: readonly (readonly [GridKind, string])[];
   /** True for a finished render shown without the viewport around it. */
   readonly render?: boolean;
+  /**
+   * True for a view through the camera (Numpad 0): the 16:9 image sits in the camera frame
+   * and the rest of the viewport is darkened by the passepartout.
+   */
+  readonly camera?: boolean;
 }
+
+/** Camera frame inside the 1200 × 1080 viewport image. FIDELITY? Blender fits the frame with a small margin. */
+const FRAME = { x: 50, w: 1100, h: Math.round((1100 * 9) / 16) };
+const PASSEPARTOUT = 0.5; // Blender's default Passepartout alpha
 
 const GRID_STYLE: Record<GridKind, { color: string; width: number; opacity: number }> = {
   major: { color: THEME.gridLine, width: 1, opacity: 1 },
@@ -60,6 +70,7 @@ export function renderBlenderPillArt(host: HTMLElement, step: PillStep<BlenderPi
   img.alt = '';
 
   if (v.render) {
+    img.classList.add('is-render');
     host.replaceChildren(img);
     return;
   }
@@ -94,5 +105,15 @@ export function renderBlenderPillArt(host: HTMLElement, step: PillStep<BlenderPi
   text.append(div('', v.header), div('', `(1) Collection | ${v.active}`));
   text.style.color = THEME.viewportText;
 
+  if (v.camera) {
+    const frame = div('bl-pill-camera');
+    const top = Math.round((1080 - FRAME.h) / 2);
+    Object.assign(frame.style, { left: `${FRAME.x}px`, top: `${top}px`, width: `${FRAME.w}px`, height: `${FRAME.h}px` });
+    frame.style.boxShadow = `0 0 0 2000px rgba(0, 0, 0, ${PASSEPARTOUT})`;
+    img.classList.add('is-camera');
+    frame.append(img);
+    host.replaceChildren(svg, frame, header, text);
+    return;
+  }
   host.replaceChildren(svg, img, header, text);
 }
