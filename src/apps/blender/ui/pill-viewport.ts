@@ -1,0 +1,98 @@
+/**
+ * Blender image of a pill step: the 3D viewport as the student sees it. The step image
+ * (Workbench render with a transparent background) is drawn over the viewport background
+ * and the grid, with the header (mode and select mode) and the view name and
+ * "(1) Collection | Object" text in the corner. A beauty render is shown on its own,
+ * like Blender's render window (F12).
+ * FIDELITY? The header is simplified: only the mode menu and the select mode buttons.
+ */
+import type { PillStep } from '../../../core/pills/pill';
+import { THEME } from '../viewport/theme';
+import './pill-viewport.css';
+
+export type GridKind = 'major' | 'minor' | 'floor' | 'x' | 'y';
+
+export interface BlenderPillView {
+  /** Viewport name, e.g. "User Perspective". */
+  readonly header: string;
+  readonly mode: 'Object Mode' | 'Edit Mode';
+  /** Edit Mode select mode: 1 vertex, 2 edge, 3 face. */
+  readonly selectMode?: 1 | 2 | 3;
+  /** Active object name for the "(1) Collection | <name>" line. */
+  readonly active: string;
+  /** Grid polylines in image pixels ("x,y x,y ..."). */
+  readonly grid: readonly (readonly [GridKind, string])[];
+  /** True for a finished render shown without the viewport around it. */
+  readonly render?: boolean;
+}
+
+const GRID_STYLE: Record<GridKind, { color: string; width: number; opacity: number }> = {
+  major: { color: THEME.gridLine, width: 1, opacity: 1 },
+  floor: { color: THEME.gridLine, width: 1, opacity: 1 },
+  minor: { color: THEME.gridLine, width: 1, opacity: 0.55 },
+  x: { color: THEME.axisX, width: 1.6, opacity: 1 },
+  y: { color: THEME.axisY, width: 1.6, opacity: 1 },
+};
+
+const SVG = 'http://www.w3.org/2000/svg';
+
+const SELECT_ICONS = [
+  '<rect x="10" y="8" width="6" height="6"/>',
+  '<line x1="7" y1="15" x2="19" y2="7" stroke-width="2"/>',
+  '<rect x="7" y="6" width="12" height="10"/>',
+];
+
+function div(cls: string, text?: string): HTMLDivElement {
+  const d = document.createElement('div');
+  d.className = cls;
+  if (text !== undefined) d.textContent = text;
+  return d;
+}
+
+export function renderBlenderPillArt(host: HTMLElement, step: PillStep<BlenderPillView>): void {
+  const v = step.view;
+  host.classList.add('bl-pill-art');
+  host.style.background = v.render ? '#000' : THEME.viewportBackground;
+
+  const img = document.createElement('img');
+  img.className = 'bl-pill-image';
+  img.src = step.image;
+  img.alt = '';
+
+  if (v.render) {
+    host.replaceChildren(img);
+    return;
+  }
+
+  const svg = document.createElementNS(SVG, 'svg');
+  svg.setAttribute('class', 'bl-pill-grid');
+  svg.setAttribute('viewBox', '0 0 1200 1080');
+  for (const [kind, points] of v.grid) {
+    const s = GRID_STYLE[kind];
+    const line = document.createElementNS(SVG, 'polyline');
+    line.setAttribute('points', points);
+    line.setAttribute('fill', 'none');
+    line.setAttribute('stroke', s.color);
+    line.setAttribute('stroke-width', String(s.width));
+    if (s.opacity < 1) line.setAttribute('stroke-opacity', String(s.opacity));
+    svg.append(line);
+  }
+
+  const header = div('bl-pill-header');
+  header.append(div('bl-pill-mode', `${v.mode} ▾`));
+  if (v.mode === 'Edit Mode') {
+    const seg = div('bl-pill-select');
+    SELECT_ICONS.forEach((icon, i) => {
+      const b = div(`bl-pill-select-mode${v.selectMode === i + 1 ? ' is-on' : ''}`);
+      b.innerHTML = `<svg viewBox="0 0 26 22" fill="#e6e6e6" stroke="#e6e6e6">${icon}</svg>`;
+      seg.append(b);
+    });
+    header.append(seg);
+  }
+
+  const text = div('bl-pill-text');
+  text.append(div('', v.header), div('', `(1) Collection | ${v.active}`));
+  text.style.color = THEME.viewportText;
+
+  host.replaceChildren(svg, img, header, text);
+}
