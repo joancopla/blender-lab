@@ -1,0 +1,123 @@
+{
+  "pillSpeaker": {
+    "name": "Modela un altaveu",
+    "desc": "Dos altaveus de neó per al visual: una caixa amb Inset i Extrude, cons fets amb un cilindre, Shift+D, Parent i el panell N. Continua la píndola Look neó.",
+    "steps": {
+      "prepare": {
+        "title": "Prepara",
+        "titleAccent": "l'escena",
+        "lead": "Obre el fitxer de la píndola Look neó. Passa a Solid, que per modelar s'hi veu millor, i esborra el tor: els altaveus faran la seva feina.",
+        "hintStrong": "El material del tor no s'esborra:",
+        "hint": "«Neó taronja» es queda al fitxer i el faràs servir als cons.",
+        "short": "l'escena",
+        "notes": { "solid": "Solid", "torus": "al tor", "delete": "Delete" }
+      },
+      "box": {
+        "title": "La caixa",
+        "titleAccent": "de l'altaveu",
+        "lead": "Afegeix un cub, porta'l a un costat i puja'l a terra. Després, dins d'Edit Mode, fes-lo més estret i menys fondo.",
+        "hintStrong": "Escala'l en Edit Mode, no en Object Mode.",
+        "hint": "Així l'objecte manté l'escala a 1 i l'Inset del pas següent fa la vora igual a tot arreu.",
+        "short": "la caixa",
+        "notes": { "cube": "Mesh ▸ Cube" }
+      },
+      "front": {
+        "title": "Enfonsa",
+        "titleAccent": "la façana",
+        "lead": "Selecciona la cara del davant, fes-hi un inset i enfonsa-la una mica. Al voltant queda el marc de la caixa.",
+        "hintStrong": "Amb un valor negatiu, l'Extrude",
+        "hint": "porta la cara cap a dins de la caixa.",
+        "short": "la façana",
+        "notes": { "front": "a la cara del davant" }
+      },
+      "woofer": {
+        "title": "El woofer,",
+        "titleAccent": "l'altaveu gran",
+        "lead": "Torna a Object Mode i afegeix un cilindre de 32 cares. Al panell Adjust Last Operation, dona-li la mida, el lloc i el gir perquè quedi just davant de la façana.",
+        "hintStrong": "Rotation X 90° posa el cilindre dret,",
+        "hint": "mirant endavant, com un altaveu.",
+        "short": "el woofer",
+        "notes": {
+          "cylinder": "Mesh ▸ Cylinder",
+          "fields": "Vertices 32 · Radius 0.4 · Depth 0.06",
+          "place": "Location -4 · -0.49 · 0.75 · Rotation 90° · 0° · 0°"
+        }
+      },
+      "cone": {
+        "title": "Dona forma",
+        "titleAccent": "al con",
+        "lead": "Selecciona la tapa del davant i fes-hi la vora de goma, el con i el tapacon del centre. És com la punta del minijack: Inset, Extrude i Scale.",
+        "hintStrong": "Per ordre:",
+        "hint": "la vora de goma (primera fila), el con, que s'enfonsa (segona i tercera), i el tapacon, que torna a sortir (última).",
+        "short": "el con",
+        "notes": { "cap": "a la tapa del davant" }
+      },
+      "wooferNeon": {
+        "title": "Encén",
+        "titleAccent": "el woofer",
+        "lead": "Torna a Object Mode. Posa-li el material «Neó taronja», que es va quedar al fitxer quan vas esborrar el tor, i un Wireframe.",
+        "hintStrong": "Si «Neó taronja» no surt a la llista,",
+        "hint": "crea'l de nou: New, Emission #FF6A00 i Strength 9.",
+        "short": "el woofer de neó",
+        "notes": {
+          "material": "Material Properties ▸ Browse Material ▸ Neó taronja",
+          "wire": "Modifier Properties ▸ Add Modifier ▸ Generate ▸ Wireframe"
+        }
+      },
+      "tweeter": {
+        "title": "El tweeter,",
+        "titleAccent": "l'altaveu petit",
+        "lead": "Duplica el woofer, puja la còpia i fes-la més petita. El material i el Wireframe ja hi van inclosos.",
+        "hintStrong": "Shift+D copia l'objecte amb tot el que porta:",
+        "hint": "la malla, els materials i els modificadors.",
+        "short": "el tweeter"
+      },
+      "boxNeon": {
+        "title": "Encén",
+        "titleAccent": "la caixa",
+        "lead": "Selecciona la caixa i posa-li el material «Neó cian» i un Wireframe. L'altaveu ja és de neó.",
+        "hintStrong": "Dos colors, com a la píndola del neó:",
+        "hint": "cian per a les formes i taronja per al que bategarà.",
+        "short": "la caixa de neó",
+        "notes": {
+          "box": "a la caixa",
+          "material": "Browse Material ▸ Neó cian",
+          "wire": "Add Modifier ▸ Generate ▸ Wireframe"
+        }
+      },
+      "parent": {
+        "title": "Uneix-ho",
+        "titleAccent": "i col·loca'l",
+        "lead": "Fes que els dos cons siguin fills de la caixa: quan moguis la caixa, els cons la seguiran. Després porta l'altaveu a l'esquerra de la càmera, girat cap a ella.",
+        "hintStrong": "L'últim que selecciones és el pare.",
+        "hint": "Per això la caixa va al final.",
+        "short": "el primer altaveu",
+        "notes": {
+          "woofer": "al woofer",
+          "tweeter": "al tweeter",
+          "box": "a la caixa",
+          "object": "Object",
+          "fields": "Location -2 · -2 · 1 · Rotation 0° · 0° · 45°"
+        }
+      },
+      "second": {
+        "title": "El segon",
+        "titleAccent": "altaveu",
+        "lead": "Amb els tres objectes encara seleccionats, duplica'ls. Fes clic dret perquè la còpia no es mogui i escriu-ne el lloc al panell N.",
+        "hintStrong": "Només canvies el lloc de la caixa:",
+        "hint": "els cons són fills seus i la segueixen. El gir de 45° ja ve copiat.",
+        "short": "el segon altaveu",
+        "notes": { "copy": "deixa la còpia al seu lloc", "fields": "Location 2 · 2 · 1" }
+      },
+      "look": {
+        "title": "Mira-ho",
+        "titleAccent": "en neó",
+        "lead": "Torna a Rendered i mira per la càmera. Els dos altaveus brillen a banda i banda del cub, amb el bloom del compositor.",
+        "hintStrong": "A la píndola de l'animació,",
+        "hint": "els cons bategaran al ritme de la música.",
+        "short": "el neó",
+        "notes": { "rendered": "Rendered", "view": "mira per la càmera" }
+      }
+    }
+  }
+}
