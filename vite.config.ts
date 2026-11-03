@@ -23,6 +23,7 @@ export default defineConfig({
         pillCable: 'pills/cable/index.html',
         pillNeon: 'pills/neon/index.html',
         pillSpeaker: 'pills/speaker/index.html',
+        pillTurntable: 'pills/turntable/index.html',
         ma3lab02: 'labs/ma3-02-addresses/index.html',
         ma3lab03: 'labs/ma3-03-command-line/index.html',
       },

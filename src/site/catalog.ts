@@ -21,6 +21,7 @@ import { lightingInfo } from '../pills/blender/lighting/info';
 import { cableInfo } from '../pills/blender/cable/info';
 import { neonInfo } from '../pills/blender/neon/info';
 import { speakerInfo } from '../pills/blender/speaker/info';
+import { turntableInfo } from '../pills/blender/turntable/info';
 
 export interface CatalogEntry {
   readonly lab: LabDefinition;
@@ -85,6 +86,7 @@ export const PROGRAMS: readonly ProgramGroup[] = [
       { pill: cableInfo, path: 'pills/cable/' },
       { pill: neonInfo, path: 'pills/neon/' },
       { pill: speakerInfo, path: 'pills/speaker/' },
+      { pill: turntableInfo, path: 'pills/turntable/' },
     ],
     shortcuts: [
       { labelKey: 'shortcuts.grab', keys: ['g'] },
