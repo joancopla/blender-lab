@@ -1,0 +1,155 @@
+{
+  "pillMinijack": {
+    "name": "Modela un minijack",
+    "desc": "Un jack de 3,5 mm amb mànec de goma a partir d'un cilindre de 8 cares: Inset, Extrude, Scale, loop cuts, Subdivision Surface i materials.",
+    "steps": {
+      "cylinder": {
+        "title": "Afegeix",
+        "titleAccent": "un cilindre de 8 cares",
+        "lead": "Amb el ratolí sobre el viewport, afegeix un cilindre. Al panell Adjust Last Operation, a baix a l'esquerra, posa Vertices a 8 i Radius a 0.38. Deixa Depth a 2 m: serà el mànec de goma.",
+        "hintStrong": "Canvia la mida al panell, no amb S.",
+        "hint": "Així l'objecte manté l'escala a 1, i l'Inset i els modificadors fan el mateix a tots els ordinadors.",
+        "short": "el cilindre",
+        "notes": { "menu": "Mesh ▸ Cylinder", "fields": "Vertices 8 · Radius 0.38" }
+      },
+      "edit": {
+        "title": "Entra al",
+        "titleAccent": "Mode Edició",
+        "lead": "Prem Tab per passar a Edit Mode i 3 per treballar amb cares. En entrar, tot el cilindre està seleccionat: prem Alt+A per deseleccionar-ho.",
+        "hintStrong": "Fes servir el 1, el 2 i el 3 de la fila de números,",
+        "hint": "no els del teclat numèric. Serveixen per canviar entre vèrtexs, arestes i cares.",
+        "short": "el Mode Edició",
+        "notes": { "then": "→" }
+      },
+      "selectTop": {
+        "title": "Selecciona",
+        "titleAccent": "la cara de dalt",
+        "lead": "Fes clic a la tapa de dalt del cilindre. Es torna taronja: és la cara que transformaràs als passos següents.",
+        "hintStrong": "Si no la veus bé, gira la vista",
+        "hint": "amb el botó del mig del ratolí. Si t'equivoques, Alt+A ho deselecciona tot.",
+        "short": "la cara de dalt",
+        "notes": { "where": "a la tapa de dalt" }
+      },
+      "insetCollar": {
+        "title": "Fes un inset",
+        "titleAccent": "per a l'anella",
+        "lead": "L'Inset crea una cara més petita dins de la que tens seleccionada. La vora que queda entre totes dues serà la base de l'anella metàl·lica.",
+        "hintStrong": "Escriu els números amb punt, no amb coma.",
+        "hint": "Blender entén 0.1, però no 0,1.",
+        "short": "l'inset de l'anella"
+      },
+      "extrudeCollar": {
+        "title": "Extrudeix",
+        "titleAccent": "l'anella metàl·lica",
+        "lead": "Amb la cara de dalt encara seleccionada, extrudeix-la cap amunt. La cara puja i deixa a sota les parets de l'anella que separa el mànec del connector.",
+        "hintStrong": "Escriu el valor en lloc de moure el ratolí.",
+        "hint": "Així totes les peces del jack tenen la mida exacta i el model es pot repetir pas a pas.",
+        "short": "l'anella metàl·lica"
+      },
+      "insetPlug": {
+        "title": "Un altre inset:",
+        "titleAccent": "el gruix del connector",
+        "lead": "Fes un segon inset a la mateixa cara. La cara del mig ara té el diàmetre del connector, el tram metàl·lic que entra a la presa.",
+        "hintStrong": "Cada Inset i cada Extrude afegeixen una fila d'arestes.",
+        "hint": "Més endavant, aquestes files et deixaran posar un material diferent a cada tram.",
+        "short": "el gruix del connector"
+      },
+      "sleeve": {
+        "title": "Extrudeix",
+        "titleAccent": "el cos del connector",
+        "lead": "És el tram més llarg del connector, el que fa contacte amb la massa (el sleeve). Extrudeix la cara cap amunt.",
+        "hintStrong": "Mentre escrius, el valor surt a dalt del viewport.",
+        "hint": "Comprova que hi diu 0.75 abans de prémer Enter.",
+        "short": "el cos del connector"
+      },
+      "rings": {
+        "title": "Tres trams:",
+        "titleAccent": "aïllant, anella i aïllant",
+        "lead": "Un minijack estèreo té tres contactes separats per anelles de plàstic. Fes tres extrusions seguides: cada una crea un tram que després tindrà el seu material.",
+        "hintStrong": "Encara es veuen tots iguals perquè tenen el mateix gruix.",
+        "hint": "Els distingiràs al pas dels materials.",
+        "short": "els trams",
+        "notes": { "insulator": "aïllant", "ring": "anella (ring)" }
+      },
+      "tip": {
+        "title": "Dona forma",
+        "titleAccent": "a la punta",
+        "lead": "La punta té una ranura on encaixa la molla de la presa. Alterna Extrude i Scale: S fa la cara més petita o més gran sense moure-la.",
+        "hintStrong": "Si un pas no et queda bé, Ctrl+Z el desfà.",
+        "hint": "Torna-hi amb el valor correcte.",
+        "short": "la punta",
+        "notes": { "groove": "ranura", "lip": "vora", "body": "cos de la punta", "point": "punxa" }
+      },
+      "selectBottom": {
+        "title": "Gira la vista",
+        "titleAccent": "i selecciona la base",
+        "lead": "Ara treballaràs cap avall. Gira la vista per veure el cilindre des de sota i fes clic a la tapa de baix.",
+        "hintStrong": "Ctrl+Numpad 7 et posa directament en vista inferior.",
+        "hint": "Numpad 7 sol et torna a la vista de dalt.",
+        "short": "la base",
+        "notes": { "orbit": "arrossega per girar la vista", "where": "a la tapa de baix" }
+      },
+      "strainRelief": {
+        "title": "Fes el protector",
+        "titleAccent": "del cable",
+        "lead": "La goma s'estreny cap al cable per protegir-lo quan es doblega. Extrudeix la base cap avall i escala-la dues vegades.",
+        "hintStrong": "La cara de baix mira cap avall,",
+        "hint": "per això l'Extrude ja va cap avall: no cal escriure cap valor negatiu.",
+        "short": "el protector del cable"
+      },
+      "cable": {
+        "title": "Treu",
+        "titleAccent": "el cable",
+        "lead": "Un inset petit marca on comença el cable, i una extrusió llarga el fa sortir del protector.",
+        "hintStrong": "Aquí el cable és curt.",
+        "hint": "En una escena de veritat el continuaries amb una corba (Curve), no amb més extrusions.",
+        "short": "el cable"
+      },
+      "grip": {
+        "title": "Fes les estries",
+        "titleAccent": "del mànec",
+        "lead": "Talla el mànec amb 7 loop cuts. Després selecciona una anella sí i una no (la 1a, la 3a, la 5a i la 7a) i encongeix-les cap a dins.",
+        "hintStrong": "Shift+Z vol dir «tots els eixos menys el Z».",
+        "hint": "Les anelles s'encongeixen cap al centre però no es mouen amunt ni avall.",
+        "short": "les estries",
+        "notes": { "wheel": "roda fins a 7", "times": "× 3" }
+      },
+      "subsurf": {
+        "title": "Suavitza",
+        "titleAccent": "amb Subdivision Surface",
+        "lead": "Torna a Object Mode. Ctrl+2 afegeix el modificador Subdivision Surface amb 2 nivells, i Shade Smooth treu les facetes. El cilindre de 8 cares ara es veu rodó.",
+        "hintStrong": "Fixa't que les vores del connector s'han arrodonit massa.",
+        "hint": "Ho arreglaràs al pas següent.",
+        "short": "el suavitzat",
+        "notes": { "smooth": "Shade Smooth" }
+      },
+      "support": {
+        "title": "Afegeix",
+        "titleAccent": "loops de suport",
+        "lead": "Torna a Edit Mode. Posa un loop cut molt a prop de cada vora que vulguis marcada: com més a prop, més viva queda la vora.",
+        "hintStrong": "Fes-ho a les vores que han de quedar marcades:",
+        "hint": "l'anella, els trams del connector i la punta. Deixa rodó el mànec.",
+        "short": "els loops de suport",
+        "notes": { "slide": "arrossega fins a la vora" }
+      },
+      "materials": {
+        "title": "Posa",
+        "titleAccent": "els materials",
+        "lead": "A la pestanya Material, crea quatre ranures: goma, metall, plàstic i cable. En Edit Mode, selecciona les cares de cada tram i prem Assign. Torna a Object Mode per veure el resultat.",
+        "hintStrong": "Com al Lab 05:",
+        "hint": "totes les cares tenen el primer material de la llista fins que n'hi assignes un altre.",
+        "short": "els materials",
+        "notes": { "tab": "Material ▸", "new": "New", "assign": "sobre cada tram, i després el botó Assign" }
+      },
+      "final": {
+        "title": "Minijack",
+        "titleAccent": "acabat",
+        "lead": "Torna a Object Mode i mira'l per tots costats. Has fet tot el jack amb un sol cilindre i quatre operacions: Inset, Extrude, Scale i Loop Cut.",
+        "hintStrong": "Repte: ara fes el jack gran de 6,35 mm, el de les guitarres.",
+        "hint": "Té els mateixos trams, però més llargs i gruixuts.",
+        "short": "el jack acabat",
+        "notes": { "frame": "centra la vista", "orbit": "gira al voltant" }
+      }
+    }
+  }
+}
