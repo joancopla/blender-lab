@@ -1099,13 +1099,13 @@ els operadors de Blender 5.1.2 (Add Cube, Resize, Inset, Extrude, Add Cylinder, 
 Make Parent). La malla d'Edit Mode de les imatges la dibuixa `tools/pills/common/cage.py`,
 amb els mateixos colors que la píndola del minijack.
 
-## Preguntes obertes
+## Preguntes (validades per Joan el 03/11/2026)
 
-- [ ] ❓ Pas 1: el material del tor esborrat («Neó taronja») continua a la llista de Browse Material mentre no es tanca el fitxer; si es desa i es torna a obrir, Blender el descarta perquè no el fa servir ningú
-- [ ] ❓ Pas 2: en fer Tab en un cub nou, el mode de selecció és vèrtexs i està tot seleccionat
-- [ ] ❓ Pas 4: Adjust Last Operation del cilindre amb Vertices, Radius, Depth, Location i Rotation
-- [ ] ❓ Pas 9: Ctrl+P ▸ Object amb el pare seleccionat l'últim (actiu)
-- [ ] ❓ Pas 10: Shift+D i clic dret deixa la còpia al seu lloc; els fills duplicats amb el pare queden fills de la caixa nova
+- [x] Pas 1: el material del tor esborrat («Neó taronja») continua a la llista de Browse Material mentre no es tanca el fitxer; si es desa i es torna a obrir, Blender el descarta perquè no el fa servir ningú
+- [x] Pas 2: en fer Tab en un cub nou, el mode de selecció és vèrtexs i està tot seleccionat
+- [x] Pas 4: Adjust Last Operation del cilindre amb Vertices, Radius, Depth, Location i Rotation
+- [x] Pas 9: Ctrl+P ▸ Object amb el pare seleccionat l'últim (actiu)
+- [x] Pas 10: Shift+D i clic dret deixa la còpia al seu lloc; els fills duplicats amb el pare queden fills de la caixa nova
 
 ## Decisions de la píndola (revisa-les)
 
@@ -1113,3 +1113,22 @@ amb els mateixos colors que la píndola del minijack.
 - El woofer és un objecte a part (un cilindre), no part de la malla de la caixa: així es pot duplicar per fer el tweeter i animar sol a la píndola de l'animació
 - Els altaveus queden a (-2, -2) i (2, 2), girats 45° cap a la càmera per defecte, a banda i banda del cub
 - Pas 4: la imatge no mostra el contorn taronja de l'objecte seleccionat (Workbench no el fa per objecte)
+
+# Píndola: Modela un plat de vinil
+
+Pàgina `pills/turntable/`. Per a Blender 5.1. Continua l'escena de la píndola de l'altaveu:
+`tools/pills/turntable/render_all.py` la reconstrueix (altaveu i neó) sense imatges i hi
+modela el plat amb els operadors de Blender 5.1.2.
+
+## Preguntes obertes
+
+- [ ] ❓ Pas 2: el cub nou es diu «Cube», perquè el cub del neó s'acaba d'esborrar i el nom queda lliure
+- [ ] ❓ Passos 6 i 9: Ctrl+L obre el menú Link/Transfer Data, amb Link Materials i Copy Modifiers, i copia de l'objecte actiu als altres seleccionats
+- [ ] ❓ Pas 8: Adjust Last Operation del cilindre amb Rotation 90° · 0° · -35° deixa el braç ajagut i girat cap al disc
+
+## Decisions de la píndola (revisa-les)
+
+- El disc té 32 cares i no té eix al centre: amb 64 cares o amb l'eix, el Wireframe del centre es converteix en una taca al render de neó
+- Els solcs són insets (la vora de 0.06, tres de 0.15 i l'etiqueta de 0.2): amb el Wireframe, cada un és un anell de llum
+- Base de 3 × 2,2 × 0,3 m, perquè des de la càmera per defecte el plat es llegeixi entre els dos altaveus
+- Les eines esborren els materials «Neó …» que han quedat de proves anteriors abans de reconstruir l'escena, perquè Browse Material trobi els de l'escena

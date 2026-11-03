@@ -216,6 +216,7 @@ A pill (DESIGN.md, «Píndoles») is a step-by-step tutorial with no checks and 
 - `pills/blender/speaker/`: continues the neon scene; `tools/pills/speaker/render_all.py` rebuilds it with
   the neon tool and models with Blender's operators. `tools/pills/common/cage.py` draws the Edit
   Mode cage of any mesh (black edges, orange selection) for the Workbench images.
+- `pills/blender/turntable/`: continues the speaker scene the same way (`tools/pills/turntable/`).
 - Page entry: `pills/<name>/index.html` → `src/site/pill-<name>-page.ts`; the program's
   `ProgramGroup.pills` in `site/catalog.ts` lists it on the index.
 
