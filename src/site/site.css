@@ -224,8 +224,14 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
+}
+/* Two cards per row on medium screens (one below 900 px, see "Small screens"). */
+@media (max-width: 1200px) {
+  .site-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .site-card {
   display: flex;

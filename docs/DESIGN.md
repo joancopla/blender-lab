@@ -131,7 +131,8 @@ capçalera de l'índex i al caixetí del lab); la tria es recorda.
 - Al plànol, les línies de les etapes superades es dibuixen en turquesa; les pendents, en
   línia discontínua de color text tènue. La primera vegada, el plànol està gairebé buit i
   la nota explica que es completarà a mesura que avancin.
-- Els labs de cada programa són **targetes amb il·lustració**, dues per fila (una en
+- Els labs de cada programa són **targetes amb il·lustració**, tres per fila (dues en
+  pantalles mitjanes, de menys de 1200 px, i una en
   pantalles estretes), en l'ordre real de la seqüència. Cada targeta té:
   - una il·lustració isomètrica pròpia sobre un fons fosc tipus viewport (també en mode
     clar), dibuixada amb el llenguatge visual de Blender (objectes grisos, contorn taronja
