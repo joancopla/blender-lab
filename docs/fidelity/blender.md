@@ -1090,3 +1090,26 @@ EEVEE a través de la càmera per defecte i el compositor de l'escena (Glare Blo
 - Pas 3: el cub també porta Wireframe; amb el cub ple, el cian el converteix en una taca blanca
 - Strength: cian 5 i taronja 9, perquè la luminància dels dos colors × Strength quedi igual (0,56 × 5 ≈ 0,32 × 9)
 - A EEVEE, l'Emission també il·lumina una mica el que té a prop (es veu a les imatges, que són del Blender real)
+
+# Píndola: Modela un altaveu
+
+Pàgina `pills/speaker/`. Per a Blender 5.1. Continua l'escena de la píndola Look neó:
+`tools/pills/speaker/render_all.py` la reconstrueix sense imatges i hi modela els altaveus amb
+els operadors de Blender 5.1.2 (Add Cube, Resize, Inset, Extrude, Add Cylinder, Duplicate,
+Make Parent). La malla d'Edit Mode de les imatges la dibuixa `tools/pills/common/cage.py`,
+amb els mateixos colors que la píndola del minijack.
+
+## Preguntes obertes
+
+- [ ] ❓ Pas 1: el material del tor esborrat («Neó taronja») continua a la llista de Browse Material mentre no es tanca el fitxer; si es desa i es torna a obrir, Blender el descarta perquè no el fa servir ningú
+- [ ] ❓ Pas 2: en fer Tab en un cub nou, el mode de selecció és vèrtexs i està tot seleccionat
+- [ ] ❓ Pas 4: Adjust Last Operation del cilindre amb Vertices, Radius, Depth, Location i Rotation
+- [ ] ❓ Pas 9: Ctrl+P ▸ Object amb el pare seleccionat l'últim (actiu)
+- [ ] ❓ Pas 10: Shift+D i clic dret deixa la còpia al seu lloc; els fills duplicats amb el pare queden fills de la caixa nova
+
+## Decisions de la píndola (revisa-les)
+
+- La caixa s'escala en Edit Mode perquè l'escala de l'objecte quedi a 1 (com al pla de la píndola d'il·luminació)
+- El woofer és un objecte a part (un cilindre), no part de la malla de la caixa: així es pot duplicar per fer el tweeter i animar sol a la píndola de l'animació
+- Els altaveus queden a (-2, -2) i (2, 2), girats 45° cap a la càmera per defecte, a banda i banda del cub
+- Pas 4: la imatge no mostra el contorn taronja de l'objecte seleccionat (Workbench no el fa per objecte)

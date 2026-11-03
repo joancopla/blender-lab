@@ -213,6 +213,9 @@ A pill (DESIGN.md, «Píndoles») is a step-by-step tutorial with no checks and 
   Blender's own operators and writes the Edit Mode overlay of each step to `frames.json`.
 - `pills/blender/neon/`: Lab 11's neon recipe as a pill; `tools/pills/neon/render_all.py` renders
   each step with EEVEE through the factory camera and the scene's compositor (no `frames.json`).
+- `pills/blender/speaker/`: continues the neon scene; `tools/pills/speaker/render_all.py` rebuilds it with
+  the neon tool and models with Blender's operators. `tools/pills/common/cage.py` draws the Edit
+  Mode cage of any mesh (black edges, orange selection) for the Workbench images.
 - Page entry: `pills/<name>/index.html` → `src/site/pill-<name>-page.ts`; the program's
   `ProgramGroup.pills` in `site/catalog.ts` lists it on the index.
 
