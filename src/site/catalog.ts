@@ -18,6 +18,7 @@ import { ma3Lab03 } from '../labs/grandma3/03-command-line';
 import type { PillInfo } from '../core/pills/pill';
 import { minijackInfo } from '../pills/blender/minijack/info';
 import { lightingInfo } from '../pills/blender/lighting/info';
+import { cableInfo } from '../pills/blender/cable/info';
 
 export interface CatalogEntry {
   readonly lab: LabDefinition;
@@ -79,6 +80,7 @@ export const PROGRAMS: readonly ProgramGroup[] = [
     pills: [
       { pill: minijackInfo, path: 'pills/minijack/' },
       { pill: lightingInfo, path: 'pills/lighting/' },
+      { pill: cableInfo, path: 'pills/cable/' },
     ],
     shortcuts: [
       { labelKey: 'shortcuts.grab', keys: ['g'] },
