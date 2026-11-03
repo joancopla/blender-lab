@@ -997,3 +997,28 @@ de la imatge i el que diuen els textos.
 - El radi del cilindre es posa al panell Adjust Last Operation (Radius 0.38), no amb S, perquè l'escala quedi a 1
 - Els números escrits durant un operador es mostren en una sola tecla («0.2»), no xifra per xifra
 - Noms del ratolí: els de l'overlay de tecles dels labs («Clic esquerre», «Botó del mig», «Clic dret»)
+
+# Píndola: Il·lumina i renderitza el minijack
+
+Pàgina `pills/lighting/`. Imatges de `tools/pills/lighting/render_all.py` (Blender 5.1.2), amb
+els mateixos valors que diuen els textos. Comença del jack de la píndola del minijack.
+
+## Viewport al voltant de la imatge
+
+- [ ] Vista de càmera: el marc 16:9 dins del viewport amb el Passepartout (fosc al 50 %) i el text «Camera Perspective»
+- [ ] Passos 5–10: el viewport en Rendered amb EEVEE; passos 11–12, en Rendered amb Cycles; pas 13, la finestra del render (F12)
+
+## Preguntes obertes
+
+- [ ] ❓ Track To en una llum: per defecte Track Axis -Z i Up Axis Y, i la llum apunta a l'objecte sense tocar res més
+- [ ] ❓ Shift+D i clic dret deixa la còpia al seu lloc i manté el constraint
+- [ ] ❓ Bevel d'una aresta (Ctrl+B): escriure 3 fixa l'amplada i la roda canvia els segments
+- [ ] ❓ Camp Hex del selector de color: el valor és en sRGB (els lineals de l'script són 0,025 → #2C2C2E, 0,92 → #F6F3EF)
+- [ ] ❓ Noms a la 5.2: Sampling ▸ Render ▸ Max Samples; Color Management ▸ Look «Medium High Contrast»; Depth of Field ▸ Focus Object; Image ▸ Save As
+- [ ] ❓ Area Shape Rectangle: camps Size X i Size Y
+
+## Decisions de la píndola (revisa-les)
+
+- Les llums s'orienten amb Track To cap al jack, i les posicions s'escriuen al panell N amb valors rodons
+- El terra no té material fins al pas 9 (blanc per defecte als passos de les llums)
+- Les imatges de càmera es renderitzen al 60 % de 1920 × 1080 per pes; el render final, igual

@@ -201,10 +201,13 @@ A pill (DESIGN.md, «Píndoles») is a step-by-step tutorial with no checks and 
   panel and the page. The program image is drawn by a `PillArtRenderer<View>` the program
   provides, so the core never knows what is in it.
 - `apps/blender/ui/pill-viewport.ts`: the Blender renderer (viewport background, grid, header,
-  view text) around a transparent Workbench image; a beauty render is shown alone.
+  view text) around a transparent Workbench image, a camera view (16:9 image in the camera
+  frame with the passepartout) or a final render shown alone.
 - `pills/blender/minijack/`: `info.ts` (index card, light), `index.ts` (steps), `ca.json`,
   `frames.json` and `img/`. The images and `frames.json` are generated in Blender by
   `tools/pills/minijack/render_all.py` (Workbench steps, Cycles final shot, WebP).
+- `pills/blender/lighting/`: same layout; `tools/pills/lighting/render_all.py` rebuilds the
+  minijack scene, adds one thing per step and renders it (Workbench, EEVEE, Cycles).
 - Page entry: `pills/<name>/index.html` → `src/site/pill-<name>-page.ts`; the program's
   `ProgramGroup.pills` in `site/catalog.ts` lists it on the index.
 
