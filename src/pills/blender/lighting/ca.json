@@ -1,0 +1,177 @@
+{
+  "pillLighting": {
+    "name": "Il·lumina i renderitza el minijack",
+    "desc": "Un estudi fotogràfic per al jack de la píndola anterior: fons corbat, càmera, quatre llums Area, materials, World i un render amb Cycles.",
+    "steps": {
+      "wall": {
+        "title": "Fes el terra",
+        "titleAccent": "i la paret",
+        "lead": "Comença amb el fitxer del minijack. Afegeix un pla i fes-lo gran dins d'Edit Mode. Després selecciona l'aresta del darrere i extrudeix-la cap amunt per fer la paret.",
+        "hintStrong": "Fes S 10 dins d'Edit Mode, no en Object Mode.",
+        "hint": "Així l'escala de l'objecte es queda a 1 i el Bevel del pas següent mesura en metres de veritat.",
+        "short": "el terra i la paret",
+        "notes": {
+          "plane": "Mesh ▸ Plane",
+          "backEdge": "a l'aresta del darrere"
+        }
+      },
+      "curve": {
+        "title": "Corba",
+        "titleAccent": "la cantonada",
+        "lead": "Selecciona l'aresta on es troben el terra i la paret i fes-hi un Bevel ample i amb molts segments. Amb la corba, a la imatge no es veu on s'acaba el terra: és el fons infinit dels estudis de fotografia.",
+        "hintStrong": "Mentre fas el Bevel, la roda del ratolí canvia els segments.",
+        "hint": "Amb 8 segments i Shade Smooth, la corba es veu llisa.",
+        "short": "la cantonada corba",
+        "notes": {
+          "corner": "a l'aresta de la cantonada",
+          "segments": "roda fins a 8 segments",
+          "smooth": "Shade Smooth"
+        }
+      },
+      "lay": {
+        "title": "Estira el jack",
+        "titleAccent": "sobre el terra",
+        "lead": "Selecciona el jack, gira'l perquè quedi estirat i una mica de biaix, i puja'l fins que el mànec toqui el terra.",
+        "hintStrong": "0.38 és el radi del mànec.",
+        "hint": "Si puges el jack exactament aquesta distància, queda recolzat a terra sense surar ni travessar-lo.",
+        "short": "el jack a terra",
+        "notes": {
+          "jack": "al jack"
+        }
+      },
+      "camera": {
+        "title": "Posa",
+        "titleAccent": "la càmera",
+        "lead": "Afegeix una càmera i escriu-ne la posició i la rotació al panell N. Posa-li un objectiu de 60 mm, una mica més llarg que el de 50 mm per defecte: deforma menys el jack.",
+        "hintStrong": "També pots fer-ho a ull:",
+        "hint": "orienta la vista com t'agradi i prem Ctrl+Alt+Numpad 0. La càmera es col·loca on mires.",
+        "short": "la càmera",
+        "notes": {
+          "camera": "Camera",
+          "fields": "Location 2.6 · -9.6 · 4.4 · Rotation 68° · 0° · 15°",
+          "lens": "Camera Properties ▸ Focal Length 60 mm",
+          "view": "mira per la càmera"
+        }
+      },
+      "key": {
+        "title": "Llum",
+        "titleAccent": "principal",
+        "lead": "Passa el viewport a Rendered per veure la llum de veritat. Afegeix una llum Area amunt a l'esquerra i fes que apunti al jack amb un Track To.",
+        "hintStrong": "El Track To fa que la llum apunti sempre al jack,",
+        "hint": "encara que la moguis. Per això les llums següents seran còpies d'aquesta.",
+        "short": "la llum principal",
+        "notes": {
+          "rendered": "Rendered",
+          "area": "Light ▸ Area",
+          "fields": "Location -5 · -5 · 6",
+          "light": "Light Properties ▸ Power 300 W · Rectangle · Size X 5 m · Y 3 m",
+          "track": "Object Constraint ▸ Add ▸ Track To ▸ Target: Cylinder"
+        }
+      },
+      "rim": {
+        "title": "Contrallum",
+        "titleAccent": "per dibuixar el contorn",
+        "lead": "Duplica la llum principal i porta-la darrere del jack, a l'altre costat. Fes-la més forta i molt estreta: és la que retalla el jack sobre el fons.",
+        "hintStrong": "Mira la vora de dalt del jack:",
+        "hint": "ara té una línia brillant que el separa del fons. Sense contrallum, el jack es confondria amb el fons.",
+        "short": "el contrallum",
+        "notes": {
+          "copy": "deixa la còpia al seu lloc",
+          "fields": "Location 2 · 5 · 5",
+          "light": "Power 700 W · Size X 5 m · Y 0.6 m"
+        }
+      },
+      "fill": {
+        "title": "Llum de farciment",
+        "titleAccent": "per obrir les ombres",
+        "lead": "Una tercera llum a la dreta, suau i una mica blavosa, aclareix les ombres que deixa la principal.",
+        "hintStrong": "Ha de ser molt més fluixa que la principal.",
+        "hint": "Si l'apuges massa, les ombres desapareixen i la imatge queda plana.",
+        "short": "la llum de farciment",
+        "notes": {
+          "copy": "deixa la còpia al seu lloc",
+          "fields": "Location 6 · -5 · 3",
+          "light": "Power 70 W · Shape Square · Size 4 m · Color #EDF3FF"
+        }
+      },
+      "strip": {
+        "title": "Una franja de llum",
+        "titleAccent": "per al reflex del metall",
+        "lead": "L'última llum va just a sobre, llarga i molt estreta. Torna-li el color blanc, que la còpia ve blavosa.",
+        "hintStrong": "El metall no té color propi: només es veu el que reflecteix.",
+        "hint": "Aquesta franja li dona un reflex llarg. Encara no la notaràs: el connector serà de metall al pas següent.",
+        "short": "la franja de llum",
+        "notes": {
+          "copy": "deixa la còpia al seu lloc",
+          "fields": "Location 0 · -2 · 6",
+          "light": "Power 160 W · Size X 8 m · Y 0.4 m · Color #FFFFFF"
+        }
+      },
+      "materials": {
+        "title": "Ajusta",
+        "titleAccent": "els materials",
+        "lead": "Ara que hi ha llum, dona a cada material el seu aspecte. Cada material del jack ja té la seva ranura des de la píndola del minijack. El terra encara no en té cap: crea-n'hi un de nou.",
+        "hintStrong": "Escriu els colors al camp Hex del selector de color.",
+        "hint": "Així tothom té exactament els mateixos valors.",
+        "short": "els materials",
+        "notes": {
+          "where": "Material Properties ▸ Surface (Principled BSDF)",
+          "metal": "Metall: Base Color #F6F3EF · Metallic 1 · Roughness 0.18",
+          "rubber": "Goma: Base Color #2C2C2E · Roughness 0.55",
+          "plastic": "Plàstic: #191919 · Roughness 0.3 · Cable: #272729 · Roughness 0.45",
+          "floor": "Plane: New · Base Color #35363A · Roughness 0.8"
+        }
+      },
+      "world": {
+        "title": "Enfosqueix",
+        "titleAccent": "el World",
+        "lead": "El World és la llum que ve de tot arreu. Amb el gris per defecte, les ombres no arriben mai a ser fosques. Posa'l gairebé negre.",
+        "hintStrong": "Ara només manen les teves quatre llums.",
+        "hint": "Compara-ho amb el pas anterior: les ombres i el fons s'han enfosquit.",
+        "short": "el World",
+        "notes": {
+          "where": "World Properties ▸ Surface",
+          "color": "Color #1D1E21 · Strength 1"
+        }
+      },
+      "cycles": {
+        "title": "Canvia",
+        "titleAccent": "a Cycles",
+        "lead": "Fins ara has vist EEVEE, que és ràpid. Cycles segueix la llum rebot a rebot: els reflexos del metall i les ombres de sota el jack són més fidels.",
+        "hintStrong": "Cycles tarda més.",
+        "hint": "En Rendered, el viewport es va aclarint a poc a poc. El Denoise neteja el soroll que queda.",
+        "short": "Cycles",
+        "notes": {
+          "engine": "Render Properties ▸ Render Engine ▸ Cycles",
+          "samples": "Sampling ▸ Render ▸ Max Samples 96",
+          "denoise": "Denoise activat"
+        }
+      },
+      "color": {
+        "title": "Dona-li",
+        "titleAccent": "més contrast",
+        "lead": "A Color Management, deixa View Transform a AgX i tria el Look Medium High Contrast. Els negres de la goma es fan més profunds i el metall brilla més.",
+        "hintStrong": "AgX ja és la transformació per defecte.",
+        "hint": "El Look només canvia el contrast, com quan tries una corba en un editor de fotos.",
+        "short": "el contrast",
+        "notes": {
+          "where": "Render Properties ▸ Color Management",
+          "look": "View Transform AgX · Look Medium High Contrast"
+        }
+      },
+      "render": {
+        "title": "Desenfoca el fons",
+        "titleAccent": "i fes el render",
+        "lead": "Activa la profunditat de camp de la càmera i enfoca-la al jack. Després prem F12 i desa la imatge des de la finestra del render.",
+        "hintStrong": "Com més petit és l'F-Stop, més es desenfoca el que no és el jack.",
+        "hint": "El render no es desa sol: si tanques la finestra sense desar-lo, l'has de tornar a fer.",
+        "short": "el render",
+        "notes": {
+          "dof": "Camera Properties ▸ Depth of Field ▸ Focus Object: Cylinder · F-Stop 5.6",
+          "render": "fes el render",
+          "save": "Image ▸ Save As ▸ PNG"
+        }
+      }
+    }
+  }
+}
