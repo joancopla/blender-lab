@@ -225,6 +225,31 @@ La pàgina de lab segueix el mateix llenguatge que la pàgina índex. De dalt a 
   el títol, la descripció i "Comença el Lab 03 →". L'últim lab d'un programa no en té.
 - L'overlay de tecles i les preferències segueixen aquest mateix estil, no el de Blender.
 
+## Píndoles
+
+Una píndola és un tutorial curt pas a pas per mirar i projectar a classe (decisió de Joan,
+03/11/2026). No té comprovacions ni desa el progrés: l'alumne o el professor avancen amb les
+fletxes.
+
+- **A l'índex**, dins la pestanya del programa i sota les targetes dels labs: una secció
+  «Píndoles» amb el mateix capçal que la dels labs (etiqueta petita, títol gran i frase) i
+  targetes amb la mateixa estructura. La il·lustració és la imatge final de la píndola; a la
+  línia de dalt, «Píndola» en mono i color d'accent i el nombre de passos; al peu, només
+  l'acció «Mira la píndola». Sense barra de progrés ni estat.
+- **La pàgina** té la barra superior del web («Totes les píndoles» i «Mode»), el visor a sota
+  ocupant tota la resta de la finestra i la frase del projecte independent al peu.
+- **El visor** és un escenari fix de 1920 × 1080 escalat per encabir-se a l'espai, perquè es
+  vegi igual a l'ordinador i al projector:
+  - a l'esquerra (1200 px), la imatge del programa amb el tema del programa, no el del web;
+  - a la dreta, el panell del pas: etiqueta «Nom de la píndola · Programa» amb punt d'accent,
+    «Pas 5 de 17» en mono i turquesa, títol gran en dues línies (la segona en turquesa), la
+    consigna, les tecles dibuixades en files (una operació per fila, els números escrits en
+    una sola tecla), la pista amb vora a l'esquerra, el nom de l'operador al programa en mono
+    i, a baix, la barra de progrés, «Següent: …», els botons ← → i l'ajuda de teclat.
+- Teclat: ← i → (també Espai, Re Pàg i Av Pàg) canvien de pas, Inici i Fi van al primer i
+  a l'últim, F posa el visor a pantalla completa. L'adreça guarda el pas (`#5`).
+- Sense animacions; només la barra de progrés es mou, i amb `prefers-reduced-motion` salta.
+
 ## Retroalimentació
 
 - **Comprovant:** text discret de l'estat en text secundari.

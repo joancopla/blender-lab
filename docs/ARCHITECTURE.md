@@ -4,12 +4,14 @@ See `CLAUDE.md` for the rules. This file describes how the code is laid out toda
 
 ## Layers
 
-`labs → apps → core`, never the other way. `src/core/layers.test.ts` parses every import and
-fails if `core` imports `apps`, `labs` or three.js, or if `apps` imports `labs`.
+`labs → apps → core` and `pills → apps → core`, never the other way. `src/core/layers.test.ts`
+parses every import and fails if `core` imports `apps`, `labs`, `pills` or three.js, if `apps`
+imports `labs` or `pills`, or if labs and pills import each other.
 
 - `src/core/`: anything a replica of any program would use (a 2D timeline tool included).
 - `src/apps/blender/`: everything specific to Blender (three.js lives only here).
 - `src/labs/blender/NN-name/`: stage data and Catalan texts of one lab.
+- `src/pills/blender/<name>/`: step data, images and Catalan texts of one pill.
 - `src/site/`: index page and HTML entry points' scripts.
 
 ## The contract (`core/app-contract.ts`)
@@ -188,6 +190,23 @@ A lab is a `LabDefinition` in `src/labs/blender/<id>/index.ts`: stages (`stages.
 (`ca.json` + `texts.ts`) and `createApp: () => new BlenderApp(options)`. Adding a lab does not
 touch the core. HTML entry points live under `labs/<id>/index.html` at the project root and call
 `mountLabPage(lab)` from `src/site/`.
+
+## Pills
+
+A pill (DESIGN.md, «Píndoles») is a step-by-step tutorial with no checks and no progress.
+
+- `core/pills/pill.ts`: `PillInfo` (what the index card needs), `PillDefinition<View>` (the
+  steps) and the pure helpers (key tokens, keyboard navigation, step from the address), tested.
+- `core/pills/pill-viewer.ts` and `pill-page.ts`: the 1920 × 1080 scaled stage, the step
+  panel and the page. The program image is drawn by a `PillArtRenderer<View>` the program
+  provides, so the core never knows what is in it.
+- `apps/blender/ui/pill-viewport.ts`: the Blender renderer (viewport background, grid, header,
+  view text) around a transparent Workbench image; a beauty render is shown alone.
+- `pills/blender/minijack/`: `info.ts` (index card, light), `index.ts` (steps), `ca.json`,
+  `frames.json` and `img/`. The images and `frames.json` are generated in Blender by
+  `tools/pills/minijack/render_all.py` (Workbench steps, Cycles final shot, WebP).
+- Page entry: `pills/<name>/index.html` → `src/site/pill-<name>-page.ts`; the program's
+  `ProgramGroup.pills` in `site/catalog.ts` lists it on the index.
 
 ## Deployment
 
