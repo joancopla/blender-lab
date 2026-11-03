@@ -1026,3 +1026,34 @@ els mateixos valors que diuen els textos. Comença del jack de la píndola del m
 - Les llums s'orienten amb Track To cap al jack, i les posicions s'escriuen al panell N amb valors rodons
 - El terra no té material fins al pas 9 (blanc per defecte als passos de les llums)
 - Les imatges de càmera es renderitzen al 60 % de 1920 × 1080 per pes; el render final, igual
+
+# Píndola: Modela un cable amb una corba
+
+Pàgina `pills/cable/`. Segueix Blender 5.1, la versió dels alumnes. Imatges de
+`tools/pills/cable/render_all.py`, que fa la corba amb els operadors de Blender 5.1.2 (Add
+Bézier, Extrude, Set Handle Type, Resize, Move): la forma de cada pas és la que obté l'alumne.
+No depèn de cap altra píndola.
+
+## Viewport al voltant de la imatge
+
+- [ ] Overlay d'Edit Mode dibuixat per la pàgina amb els colors del tema de fàbrica de la 5.1.2: corba negra, punts negres (taronja #FF7A00 si estan seleccionats), nanses Aligned verdes (#72FF57) i Automatic vermelles (#FF1900), puntes de les nanses taronja (#FF8500)
+- [ ] Només es veuen les nanses dels punts seleccionats (Overlays ▸ Handles: Selected, el valor per defecte)
+- [ ] Pas 1: la corba sense gruix en Object Mode, dibuixada com una línia taronja (objecte actiu)
+- [ ] Pas 11: render amb EEVEE, la càmera i el llum de l'escena per defecte i Focal Length 100 mm
+
+## Preguntes obertes
+
+- [ ] ❓ Pas 1: X en Object Mode obre el menú de confirmació Delete (Supr esborra directament); al menú Add, Curve ▸ Bézier; el nom de l'objecte és «BézierCurve»
+- [ ] ❓ Grossor de les línies i dels punts de l'overlay (aquí: línies de 2 px, punts de radi 5 i puntes de nansa de radi 4)
+- [ ] ❓ Pas 4: E en un extrem i escriure Y 1.2 mou el punt nou 1.2 en Y (Extrude Curve and Move)
+- [ ] ❓ Pas 5: V obre el menú Set Handle Type amb l'opció Automatic
+- [ ] ❓ Pas 11: per seleccionar la càmera en vista de càmera, clic a la vora del marc
+
+## Decisions de la píndola (revisa-les)
+
+- Comprovat a la 5.1.2: la Bézier nova té dos punts amb nanses Aligned, tots seleccionats en entrar a Edit Mode
+- Comprovat a la 5.1.2: cada punt extrudit copia les nanses de l'anterior, per això el pas 4 queda torçat abans del pas 5
+- Comprovat a la 5.1.2: en escalar les nanses d'un punt Automatic, passen a Aligned (pas 6)
+- Pas 10: en Solid el cable continua gris, perquè el color de Solid és el de Viewport Display, no el Base Color del material
+- Els passos d'Edit Mode no tenen geometria a la imatge (la corba encara no té gruix): només la graella i l'overlay
+- El render final es fa al 60 % de 1920 × 1080 per pes
