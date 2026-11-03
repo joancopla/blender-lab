@@ -1,0 +1,141 @@
+{
+  "pillTurntable": {
+    "name": "Modela un plat de vinil",
+    "desc": "El plat de DJ del visual: una base amb Inset, un disc amb solcs fets d'insets, un braç amb Extrude i Scale, i Ctrl+L per copiar materials i modificadors. Continua la píndola de l'altaveu.",
+    "steps": {
+      "prepare": {
+        "title": "Fes lloc",
+        "titleAccent": "al centre",
+        "lead": "Continua amb el fitxer dels altaveus. Passa a Solid i esborra el cub de neó del mig: hi posaràs el plat.",
+        "hintStrong": "«Neó cian» no es perd:",
+        "hint": "el fan servir la graella i les caixes dels altaveus.",
+        "short": "el centre",
+        "notes": { "solid": "Solid", "cube": "al cub del mig", "delete": "Delete" }
+      },
+      "base": {
+        "title": "La base",
+        "titleAccent": "del plat",
+        "lead": "Afegeix un cub i, dins d'Edit Mode, aplana'l i allarga'l. Després, en Object Mode, puja'l perquè quedi sobre el terra.",
+        "hintStrong": "0.15 és la meitat del gruix:",
+        "hint": "la base fa 0.3 d'alt, i el centre ha de quedar a 0.15 del terra.",
+        "short": "la base",
+        "notes": { "cube": "Mesh ▸ Cube" }
+      },
+      "top": {
+        "title": "Enfonsa",
+        "titleAccent": "la tapa",
+        "lead": "Torna a Edit Mode, selecciona la cara de dalt, fes-hi un inset i enfonsa-la una mica.",
+        "hintStrong": "És el mateix que la façana de l'altaveu:",
+        "hint": "un Inset per al marc i un Extrude negatiu per enfonsar-la.",
+        "short": "la tapa",
+        "notes": { "top": "a la cara de dalt" }
+      },
+      "platter": {
+        "title": "Afegeix",
+        "titleAccent": "el disc",
+        "lead": "Torna a Object Mode i afegeix un cilindre de 32 cares, ample i prim, a l'esquerra de la base.",
+        "hintStrong": "A 0.3, el disc queda sobre la tapa enfonsada:",
+        "hint": "la tapa és a 0.27 i el disc fa 0.06 de gruix.",
+        "short": "el disc",
+        "notes": {
+          "cylinder": "Mesh ▸ Cylinder",
+          "fields": "Vertices 32 · Radius 0.95 · Depth 0.06",
+          "place": "Location -0.4 · 0 · 0.3"
+        }
+      },
+      "grooves": {
+        "title": "Els solcs",
+        "titleAccent": "i l'etiqueta",
+        "lead": "Selecciona la tapa de dalt del disc i fes-hi insets seguits: la vora, tres solcs i l'etiqueta del centre.",
+        "hintStrong": "Amb el Wireframe, cada inset serà un anell de llum.",
+        "hint": "No cal res més per fer els solcs.",
+        "short": "els solcs",
+        "notes": { "top": "a la tapa de dalt", "rim": "vora", "times": "× 3, un per solc", "label": "etiqueta" }
+      },
+      "platterNeon": {
+        "title": "Encén",
+        "titleAccent": "la base i el disc",
+        "lead": "Torna a Object Mode. Posa «Neó cian» i un Wireframe a la base, i copia-ho tot al disc amb Ctrl+L.",
+        "hintStrong": "Ctrl+L copia de l'actiu als altres seleccionats:",
+        "hint": "per això la base, que ja té el material, va al final.",
+        "short": "el neó cian",
+        "notes": {
+          "base": "a la base",
+          "material": "Browse Material ▸ Neó cian",
+          "wire": "Add Modifier ▸ Generate ▸ Wireframe",
+          "platter": "al disc",
+          "links": "Link Materials",
+          "mods": "Copy Modifiers"
+        }
+      },
+      "pivot": {
+        "title": "El pivot",
+        "titleAccent": "del braç",
+        "lead": "Afegeix un cilindre petit a la cantonada del darrere, a la dreta: és on gira el braç.",
+        "hintStrong": "Amb 16 cares n'hi ha prou:",
+        "hint": "és una peça petita, i amb menys cares el Wireframe es veu més net.",
+        "short": "el pivot",
+        "notes": {
+          "cylinder": "Mesh ▸ Cylinder",
+          "fields": "Vertices 16 · Radius 0.1 · Depth 0.2",
+          "place": "Location 0.95 · 0.7 · 0.37"
+        }
+      },
+      "arm": {
+        "title": "El braç",
+        "titleAccent": "i el capçal",
+        "lead": "Afegeix un cilindre molt prim i llarg, ajagut i girat cap al disc. A la punta, fes el capçal amb Extrude i Scale.",
+        "hintStrong": "Rotation X 90° l'ajeu i Z -35° el gira,",
+        "hint": "perquè la punta quedi sobre els solcs.",
+        "short": "el braç",
+        "notes": {
+          "cylinder": "Mesh ▸ Cylinder",
+          "fields": "Vertices 12 · Radius 0.025 · Depth 1.3",
+          "place": "Location 0.58 · 0.17 · 0.42 · Rotation 90° · 0° · -35°",
+          "tip": "a la tapa de la punta, sobre el disc"
+        }
+      },
+      "armNeon": {
+        "title": "Encén",
+        "titleAccent": "el braç",
+        "lead": "Torna a Object Mode. Posa «Neó taronja» i un Wireframe al braç, i copia-ho al pivot amb Ctrl+L.",
+        "hintStrong": "Taronja per als detalls i cian per a les formes:",
+        "hint": "la mateixa paleta de dos colors que els altaveus.",
+        "short": "el braç de neó",
+        "notes": {
+          "material": "Browse Material ▸ Neó taronja",
+          "wire": "Add Modifier ▸ Generate ▸ Wireframe",
+          "pivot": "al pivot",
+          "arm": "al braç",
+          "links": "Link Materials",
+          "mods": "Copy Modifiers"
+        }
+      },
+      "parent": {
+        "title": "Uneix-ho",
+        "titleAccent": "i gira'l",
+        "lead": "Fes que el disc, el pivot i el braç siguin fills de la base, i gira-la 45° perquè miri cap a la càmera, com els altaveus.",
+        "hintStrong": "La base va l'última:",
+        "hint": "és l'objecte actiu, i serà el pare.",
+        "short": "el plat",
+        "notes": {
+          "platter": "al disc",
+          "pivot": "al pivot",
+          "arm": "al braç",
+          "base": "a la base",
+          "object": "Object",
+          "rotation": "Rotation 0° · 0° · 45°"
+        }
+      },
+      "look": {
+        "title": "Mira-ho",
+        "titleAccent": "en neó",
+        "lead": "Torna a Rendered i mira per la càmera. El plat brilla al centre, entre els dos altaveus.",
+        "hintStrong": "A la píndola de l'animació,",
+        "hint": "el disc girarà al ritme de la música.",
+        "short": "el neó",
+        "notes": { "rendered": "Rendered", "view": "mira per la càmera" }
+      }
+    }
+  }
+}
