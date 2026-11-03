@@ -35,6 +35,15 @@ class Scene:
         self.sc = bpy.data.scenes.get("PillNeon") or bpy.data.scenes.new("PillNeon")
         for o in list(self.sc.objects):
             bpy.data.objects.remove(o)
+        # Materials of earlier runs ("Neó cian", "Neó taronja.001"...) would take the names and
+        # be picked by Browse Material in the later pills.
+        ours = lambda m: m is not None and m.name.startswith("Neó ")
+        for me in list(bpy.data.meshes):
+            if me.users == 0 and any(ours(m) for m in me.materials):
+                bpy.data.meshes.remove(me)
+        for m in list(bpy.data.materials):
+            if m.users == 0 and ours(m):
+                bpy.data.materials.remove(m)
         self.sc.compositing_node_group = None
         self.win.scene = self.sc
         self.area = next(a for a in self.win.screen.areas if a.type == "VIEW_3D")

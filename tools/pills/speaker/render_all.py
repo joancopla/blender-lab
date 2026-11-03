@@ -61,6 +61,8 @@ class Shots:
 
     def solid(self, view, edit=None):
         """A Solid viewport image; `edit` is the object in Edit Mode, if any."""
+        if self.out is None:  # rebuilding the scene for a later pill
+            return
         sc = self.sc
         self.n += 1
         saved = (sc.render.engine, sc.render.resolution_x, sc.render.resolution_y,
@@ -88,6 +90,8 @@ class Shots:
 
     def rendered(self):
         """Rendered through the scene camera (EEVEE, compositor with the bloom)."""
+        if self.out is None:
+            return
         sc = self.sc
         self.n += 1
         sc.camera = self.scene_cam
@@ -254,9 +258,11 @@ def build(out):
     # 11. Rendered through the camera.
     sh.rendered()
 
-    with open(os.path.join(out, "frames.json"), "w", encoding="utf-8") as fh:
-        json.dump(sh.frames, fh, separators=(",", ":"))
-    return {"scene": s, "speakers": (box, woofer, tweeter)}
+    if out is not None:
+        with open(os.path.join(out, "frames.json"), "w", encoding="utf-8") as fh:
+            json.dump(sh.frames, fh, separators=(",", ":"))
+    return {"scene": s, "cube": made["cube"], "grid": made["grid"], "glare": made["glare"],
+            "speakers": (box, woofer, tweeter, box2)}
 
 
 def main(here=HERE, out=None):
