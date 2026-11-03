@@ -17,6 +17,7 @@ import { ma3Lab02 } from '../labs/grandma3/02-addresses';
 import { ma3Lab03 } from '../labs/grandma3/03-command-line';
 import type { PillInfo } from '../core/pills/pill';
 import { minijackInfo } from '../pills/blender/minijack/info';
+import { lightingInfo } from '../pills/blender/lighting/info';
 
 export interface CatalogEntry {
   readonly lab: LabDefinition;
@@ -75,7 +76,10 @@ export const PROGRAMS: readonly ProgramGroup[] = [
       { lab: lab04, path: 'labs/04-lights/' },
       { lab: lab05, path: 'labs/05-materials/' },
     ],
-    pills: [{ pill: minijackInfo, path: 'pills/minijack/' }],
+    pills: [
+      { pill: minijackInfo, path: 'pills/minijack/' },
+      { pill: lightingInfo, path: 'pills/lighting/' },
+    ],
     shortcuts: [
       { labelKey: 'shortcuts.grab', keys: ['g'] },
       { labelKey: 'shortcuts.rotate', keys: ['r'] },

@@ -19,6 +19,7 @@ export default defineConfig({
         lab05: 'labs/05-materials/index.html',
         ma3lab01: 'labs/ma3-01-dmx/index.html',
         pillMinijack: 'pills/minijack/index.html',
+        pillLighting: 'pills/lighting/index.html',
         ma3lab02: 'labs/ma3-02-addresses/index.html',
         ma3lab03: 'labs/ma3-03-command-line/index.html',
       },
