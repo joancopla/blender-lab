@@ -211,6 +211,8 @@ A pill (DESIGN.md, «Píndoles») is a step-by-step tutorial with no checks and 
   minijack scene, adds one thing per step and renders it (Workbench, EEVEE, Cycles).
 - `pills/blender/cable/`: same layout; `tools/pills/cable/render_all.py` builds the curve with
   Blender's own operators and writes the Edit Mode overlay of each step to `frames.json`.
+- `pills/blender/neon/`: Lab 11's neon recipe as a pill; `tools/pills/neon/render_all.py` renders
+  each step with EEVEE through the factory camera and the scene's compositor (no `frames.json`).
 - Page entry: `pills/<name>/index.html` → `src/site/pill-<name>-page.ts`; the program's
   `ProgramGroup.pills` in `site/catalog.ts` lists it on the index.
 

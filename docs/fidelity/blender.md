@@ -1057,3 +1057,36 @@ No depèn de cap altra píndola.
 - Pas 10: en Solid el cable continua gris, perquè el color de Solid és el de Viewport Display, no el Base Color del material
 - Els passos d'Edit Mode no tenen geometria a la imatge (la corba encara no té gruix): només la graella i l'overlay
 - El render final es fa al 60 % de 1920 × 1080 per pes
+
+# Píndola: Look neó
+
+Pàgina `pills/neon/`. És la recepta del Lab 11 pas a pas, per a Blender 5.1 (la versió dels
+alumnes), mentre el lab interactiu no existeixi. Imatges de `tools/pills/neon/render_all.py`:
+EEVEE a través de la càmera per defecte i el compositor de l'escena (Glare Bloom des del pas
+5), al Blender 5.1.2 de Joan. Comença amb l'escena per defecte i no depèn de cap altra píndola.
+
+## Viewport al voltant de la imatge
+
+- [ ] Passos 1–8 en vista de càmera, amb el passepartout; el pas 1 encara en Solid (Workbench) i els altres en Rendered
+- [ ] Pas 2: sense objecte actiu (s'acaba d'esborrar el llum), la línia de dalt diu només «(1) Collection»
+- [ ] Pas 9: la finestra del render (F12)
+
+## Preguntes obertes
+
+- [ ] ❓ Pas 1: per seleccionar la càmera en vista de càmera, clic a la vora del marc; Camera Properties ▸ Focal Length
+- [ ] ❓ Pas 3: canviar el nom del material amb doble clic al camp del nom, a Material Properties
+- [ ] ❓ Pas 4: Adjust Last Operation de Grid amb X Subdivisions, Y Subdivisions i Size (verificat a la 5.1.2 a l'especificació del Lab 11)
+- [ ] ❓ Pas 4: Material Properties ▸ Browse Material per triar «Neó cian» en un objecte sense material
+- [ ] ❓ Pas 5: el workspace Layout té la Timeline a baix; Editor Type ▸ Compositor i el botó New a la capçalera
+- [ ] ❓ Pas 5: deixar anar el Glare sobre l'enllaç l'insereix entre Render Layers i el Reroute
+- [ ] ❓ Pas 7: el tor amb Location -2.5 · 2 · 1.25 i Rotation 90° · 0° · 45° al panell N
+
+## Decisions de la píndola (revisa-les)
+
+- Comprovat a la 5.1.2: al menú Shift+A del compositor, Filter té el Glare amb una entrada per a cada tipus (Glare ▸ Bloom)
+- Comprovat a la 5.1.2: Viewport Shading ▸ Compositor té Disabled, Camera i Always
+- El New del compositor de les imatges fa el mateix arbre que l'especificació del Lab 11: Render Layers → Reroute → Group Output, i el Reroute també cap al Viewer
+- Pas 1: Focal Length 35 mm, perquè amb els 50 mm per defecte el cub a Z = 1 queda tallat
+- Pas 3: el cub també porta Wireframe; amb el cub ple, el cian el converteix en una taca blanca
+- Strength: cian 5 i taronja 9, perquè la luminància dels dos colors × Strength quedi igual (0,56 × 5 ≈ 0,32 × 9)
+- A EEVEE, l'Emission també il·lumina una mica el que té a prop (es veu a les imatges, que són del Blender real)
