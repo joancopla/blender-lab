@@ -1036,18 +1036,18 @@ No depèn de cap altra píndola.
 
 ## Viewport al voltant de la imatge
 
-- [ ] Overlay d'Edit Mode dibuixat per la pàgina amb els colors del tema de fàbrica de la 5.1.2: corba negra, punts negres (taronja #FF7A00 si estan seleccionats), nanses Aligned verdes (#72FF57) i Automatic vermelles (#FF1900), puntes de les nanses taronja (#FF8500)
-- [ ] Només es veuen les nanses dels punts seleccionats (Overlays ▸ Handles: Selected, el valor per defecte)
-- [ ] Pas 1: la corba sense gruix en Object Mode, dibuixada com una línia taronja (objecte actiu)
-- [ ] Pas 11: render amb EEVEE, la càmera i el llum de l'escena per defecte i Focal Length 100 mm
+- [x] Overlay d'Edit Mode dibuixat per la pàgina amb els colors del tema de fàbrica de la 5.1.2: corba negra, punts negres (taronja #FF7A00 si estan seleccionats), nanses Aligned verdes (#72FF57) i Automatic vermelles (#FF1900), puntes de les nanses taronja (#FF8500)
+- [x] Només es veuen les nanses dels punts seleccionats (Overlays ▸ Handles: Selected, el valor per defecte)
+- [x] Pas 1: la corba sense gruix en Object Mode, dibuixada com una línia taronja (objecte actiu)
+- [x] Pas 11: render amb EEVEE, la càmera i el llum de l'escena per defecte i Focal Length 100 mm
 
-## Preguntes obertes
+## Preguntes (validades per Joan el 03/11/2026)
 
-- [ ] ❓ Pas 1: X en Object Mode obre el menú de confirmació Delete (Supr esborra directament); al menú Add, Curve ▸ Bézier; el nom de l'objecte és «BézierCurve»
-- [ ] ❓ Grossor de les línies i dels punts de l'overlay (aquí: línies de 2 px, punts de radi 5 i puntes de nansa de radi 4)
-- [ ] ❓ Pas 4: E en un extrem i escriure Y 1.2 mou el punt nou 1.2 en Y (Extrude Curve and Move)
-- [ ] ❓ Pas 5: V obre el menú Set Handle Type amb l'opció Automatic
-- [ ] ❓ Pas 11: per seleccionar la càmera en vista de càmera, clic a la vora del marc
+- [x] Pas 1: X en Object Mode obre el menú de confirmació Delete (Supr esborra directament); al menú Add, Curve ▸ Bézier; el nom de l'objecte és «BézierCurve»
+- [x] Grossor de les línies i dels punts de l'overlay (aquí: línies de 2 px, punts de radi 5 i puntes de nansa de radi 4)
+- [x] Pas 4: E en un extrem i escriure Y 1.2 mou el punt nou 1.2 en Y (Extrude Curve and Move)
+- [x] Pas 5: V obre el menú Set Handle Type amb l'opció Automatic
+- [x] Pas 11: per seleccionar la càmera en vista de càmera, clic a la vora del marc
 
 ## Decisions de la píndola (revisa-les)
 
