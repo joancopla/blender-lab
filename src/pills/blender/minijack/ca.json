@@ -1,7 +1,7 @@
 {
   "pillMinijack": {
     "name": "Modela un minijack",
-    "desc": "Un jack de 3,5 mm amb mànec de goma a partir d'un cilindre de 8 cares: Inset, Extrude, Scale, loop cuts, Subdivision Surface i materials.",
+    "desc": "Un jack de 3,5 mm amb mànec de goma a partir d'un cilindre de 8 cares: Inset, Extrude, Scale, loop cuts, Bevel, Subdivision Surface i materials.",
     "steps": {
       "cylinder": {
         "title": "Afegeix",
@@ -127,10 +127,19 @@
         "title": "Afegeix",
         "titleAccent": "loops de suport",
         "lead": "Torna a Edit Mode. Posa un loop cut molt a prop de cada vora que vulguis marcada: com més a prop, més viva queda la vora.",
-        "hintStrong": "Fes-ho a les vores que han de quedar marcades:",
-        "hint": "l'anella, els trams del connector i la punta. Deixa rodó el mànec.",
+        "hintStrong": "Fes-ho al cos del connector, a l'anella (ring) i al cable.",
+        "hint": "Deixa rodó el mànec. L'anella metàl·lica i la punta les marcaràs d'una altra manera al pas següent.",
         "short": "els loops de suport",
         "notes": { "slide": "arrossega fins a la vora" }
+      },
+      "bevel": {
+        "title": "Bisella",
+        "titleAccent": "l'anella i la punta",
+        "lead": "El Bevel és l'altra manera de marcar una vora: parteix l'aresta en dues i hi deixa una cara estreta al mig. Selecciona les dues vores de l'anella metàl·lica i les dues del cos de la punta, i fes-hi un bevel petit.",
+        "hintStrong": "Compara-ho amb el pas anterior:",
+        "hint": "el loop de suport marca la vora per un costat; el Bevel la marca pels dos i hi deixa un reflex fi.",
+        "short": "el bevel",
+        "notes": { "first": "a la vora de baix de l'anella", "more": "a les altres tres vores" }
       },
       "materials": {
         "title": "Posa",
@@ -144,7 +153,7 @@
       "final": {
         "title": "Minijack",
         "titleAccent": "acabat",
-        "lead": "Torna a Object Mode i mira'l per tots costats. Has fet tot el jack amb un sol cilindre i quatre operacions: Inset, Extrude, Scale i Loop Cut.",
+        "lead": "Torna a Object Mode i mira'l per tots costats. Has fet tot el jack amb un sol cilindre i cinc operacions: Inset, Extrude, Scale, Loop Cut i Bevel.",
         "hintStrong": "Repte: ara fes el jack gran de 6,35 mm, el de les guitarres.",
         "hint": "Té els mateixos trams, però més llargs i gruixuts.",
         "short": "el jack acabat",

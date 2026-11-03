@@ -9,5 +9,5 @@ export const minijackInfo: PillInfo = {
   descKey: 'pillMinijack.desc',
   texts: 'pillMinijack',
   cover,
-  stepCount: 17,
+  stepCount: 18,
 };

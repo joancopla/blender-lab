@@ -20,7 +20,7 @@ VIEWS = [
     ("persp", None), ("persp_top", None), ("persp", None), ("persp", (0.6, 2.5)),
     ("persp", (1.7, 2.95)), ("persp_below", None), ("persp_below", None), ("persp", None),
     ("persp", (-1.95, 1.5)), ("persp", (-1.95, 2.95)), ("persp", (0.7, 2.95)),
-    ("persp", (-1.95, 2.95)), ("persp", (-1.95, 2.95)),
+    ("persp", (0.7, 2.95)), ("persp", (-1.95, 2.95)), ("persp", (-1.95, 2.95)),
 ]
 
 

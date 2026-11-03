@@ -107,10 +107,17 @@ def groove_handle(p, t=1):
             r.r *= 1 + (0.9 - 1) * t
 
 
-def support_loops(p, t=1, off=0.03):
+# Bands that get a bevel instead of support loops (lower z of the band): the metal collar
+# and the tip body.
+BEVEL_BANDS = (1.0, 2.52)
+BEVEL_WIDTH = 0.02
+
+
+def support_loops(p, t=1, off=0.03, skip=BEVEL_BANDS):
     out = []
     rs = p.rings
-    vert = lambda i: abs(rs[i].r - rs[i + 1].r) < 1e-6 and rs[i + 1].z - rs[i].z >= 0.15
+    vert = lambda i: (abs(rs[i].r - rs[i + 1].r) < 1e-6 and rs[i + 1].z - rs[i].z >= 0.15
+                      and not any(abs(rs[i].z - z) < 1e-6 for z in skip))
     for i in range(len(rs)):
         out.append(rs[i])
         if i < len(rs) - 1 and vert(i):
@@ -125,6 +132,55 @@ def support_loops(p, t=1, off=0.03):
             for m in mids:
                 m.sel = True
             out.extend(mids)
+    p.rings = out
+
+
+def bevel_corners(p, t=1, width=BEVEL_WIDTH, bands=BEVEL_BANDS):
+    """Ctrl+B on the bottom and top loops of each band in `bands`, with the defaults of
+    Blender's Bevel operator (Offset, 1 segment, loop slide). Runs bmesh's bevel on the real
+    mesh and reads the new profile back from the column of vertices at +Y."""
+    rs = p.rings
+    targets = set()
+    for i in range(len(rs) - 1):
+        if any(abs(rs[i].z - z) < 1e-6 for z in bands) and abs(rs[i].r - rs[i + 1].r) < 1e-6:
+            targets.update((i, i + 1))
+    old = {(round(r.z, 5), round(r.r, 5)): r.mat for r in rs}
+    bm = bmesh.new()
+    rv = [[bm.verts.new(v) for v in ring_verts(r)] for r in rs]
+    for i in range(len(rv) - 1):
+        for k in range(N):
+            k2 = (k + 1) % N
+            bm.faces.new((rv[i][k], rv[i][k2], rv[i + 1][k2], rv[i + 1][k]))
+    bm.faces.new(rv[-1])
+    bm.faces.new(list(reversed(rv[0])))
+    edges = [bm.edges.get((rv[i][k], rv[i][(k + 1) % N])) for i in targets for k in range(N)]
+    bmesh.ops.bevel(bm, geom=edges, offset=width * t, offset_type="OFFSET",
+                    profile_type="SUPERELLIPSE", segments=1, profile=0.5, affect="EDGES",
+                    clamp_overlap=False, loop_slide=True, miter_outer="SHARP")
+    col = [v for v in bm.verts if abs(v.co.x) < 1e-6 and v.co.y > 0]
+    ids = {id(v) for v in col}
+    start = min(col, key=lambda v: v.co.z)
+    chain, prev, cur = [start], None, start
+    while True:
+        nb = [e.other_vert(cur) for e in cur.link_edges
+              if id(e.other_vert(cur)) in ids and e.other_vert(cur) is not prev]
+        if not nb:
+            break
+        prev, cur = cur, nb[0]
+        chain.append(cur)
+    out = []
+    for v in chain:
+        key = (round(v.co.z, 5), round(v.co.y, 5))
+        ring = Ring(v.co.z, v.co.y, old.get(key))
+        ring.sel = key not in old
+        out.append(ring)
+    bm.free()
+    # Each beveled loop becomes two new loops, in order; both keep the material of the band
+    # above the loop they replace (the bevel face belongs to the metal part).
+    replaced = [rs[i] for i in sorted(targets)]
+    new = [r for r in out if r.sel]
+    for k, ring in enumerate(new):
+        ring.mat = replaced[min(k // 2, len(replaced) - 1)].mat
     p.rings = out
 
 
@@ -160,6 +216,7 @@ STEPS = [
     ("grip", [loop_cuts_handle, groove_handle]),
     ("subsurf", []),
     ("support", [support_loops]),
+    ("bevel", [bevel_corners]),
     ("materials", []),
     ("final", []),
 ]
@@ -180,6 +237,8 @@ def profile_at(step, t=1.0):
             groove_handle(p, lt)
         elif name == "support":
             support_loops(p)
+        elif name == "bevel":
+            bevel_corners(p, lt)
         else:
             seq(p, ops, lt)
     name = STEPS[step][0]

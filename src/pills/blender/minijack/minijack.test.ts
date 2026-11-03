@@ -5,10 +5,10 @@ import frames from './frames.json';
 import { minijack } from '.';
 
 describe('minijack pill', () => {
-  it('has 17 steps, one frame each, with unique ids', () => {
-    expect(minijack.steps).toHaveLength(17);
-    expect(frames).toHaveLength(17);
-    expect(new Set(minijack.steps.map((s) => s.id)).size).toBe(17);
+  it('has 18 steps, one frame each, with unique ids', () => {
+    expect(minijack.steps).toHaveLength(18);
+    expect(frames).toHaveLength(18);
+    expect(new Set(minijack.steps.map((s) => s.id)).size).toBe(18);
   });
 
   it('has its name, description and every step text', () => {

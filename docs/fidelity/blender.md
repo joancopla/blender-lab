@@ -971,7 +971,7 @@ Especificació a `specs/blender/11-neon-look.md`. Les dades marcades «codi 5.2.
 
 # Píndola: Modela un minijack
 
-Pàgina `pills/minijack/`. Les imatges surten del Blender real (5.1.2) amb
+La píndola segueix Blender 5.1, la versió que fan servir els alumnes. Pàgina `pills/minijack/`. Les imatges surten del Blender real (5.1.2) amb
 `tools/pills/minijack/render_all.py`; el que replica la píndola és el que hi ha al voltant
 de la imatge i el que diuen els textos.
 
@@ -980,16 +980,18 @@ de la imatge i el que diuen els textos.
 - [ ] Fons, graella i eixos amb els colors de `viewport/theme.ts` (els mateixos ❓ que al Lab 01)
 - [ ] Capçalera simplificada: només el menú del mode i els tres botons de selecció (vèrtexs, arestes, cares)
 - [ ] Textos de dalt a l'esquerra: «User Perspective» i «(1) Collection | Cylinder»
-- [ ] Pas 17: render amb Cycles i AgX, mostrat sol, com la finestra de render (F12)
+- [ ] Pas 18: render amb Cycles i AgX, mostrat sol, com la finestra de render (F12)
 
 ## Preguntes obertes
 
-- [ ] ❓ Noms d'operador a la 5.2: Add Cylinder, Inset Faces, Extrude Region and Move, Resize, Loop Cut and Slide, Subdivision Set, Shade Smooth, Assign
+- [ ] ❓ Noms d'operador a la 5.1: Add Cylinder, Inset Faces, Extrude Region and Move, Resize, Loop Cut and Slide, Bevel, Subdivision Set, Shade Smooth, Assign
 - [ ] ❓ En entrar a Edit Mode amb un cilindre acabat d'afegir, està tot seleccionat (per això el pas 2 fa Alt+A)
-- [ ] ❓ Pas 16: Alt+clic en mode cares selecciona l'anella de cares d'un tram? Depèn de quina aresta es clica
+- [ ] ❓ Pas 17: Alt+clic en mode cares selecciona l'anella de cares d'un tram? Depèn de quina aresta es clica
 - [ ] ❓ Pas 13: Ctrl+R amb la roda fins a 7 talls i clic dret per deixar-los centrats
 - [ ] ❓ Pas 14: Ctrl+2 en Object Mode afegeix Subdivision Surface amb 2 nivells; Shade Smooth és al menú del botó dret
 - [ ] ❓ Mentre s'escriu el valor d'un Extrude, Blender el mostra a la capçalera del viewport
+- [ ] ❓ Pas 16: Ctrl+B amb quatre loops seleccionats en mode arestes; escriure 0.02 fixa l'amplada (Width Type Offset, 1 segment, els valors per defecte)
+- [ ] ❓ Pas 16: després del Bevel, les cares noves queden seleccionades (la imatge marca els loops nous)
 
 ## Decisions de la píndola (revisa-les)
 
@@ -997,6 +999,8 @@ de la imatge i el que diuen els textos.
 - El radi del cilindre es posa al panell Adjust Last Operation (Radius 0.38), no amb S, perquè l'escala quedi a 1
 - Els números escrits durant un operador es mostren en una sola tecla («0.2»), no xifra per xifra
 - Noms del ratolí: els de l'overlay de tecles dels labs («Clic esquerre», «Botó del mig», «Clic dret»)
+- Pas 16: el Bevel substitueix els loops de suport a l'anella metàl·lica i al cos de la punta; el cos del connector, l'anella (ring) i el cable mantenen els loops de suport. Amplada 0.02 amb 1 segment. Les imatges fan servir el mateix bevel de Blender (bmesh) amb els valors per defecte de l'operador a la 5.1.2
+- Comprovat a la 5.1.2: Select ▸ Checker Deselect amb els 7 loops del mànec seleccionats deselecciona arestes dins de cada loop, no loops sencers. Per això el pas 13 continua amb Alt+clic i Shift+Alt+clic
 
 # Píndola: Il·lumina i renderitza el minijack
 

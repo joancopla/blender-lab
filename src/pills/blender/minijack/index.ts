@@ -79,6 +79,17 @@ const DATA: readonly StepData[] = [
   },
   { id: 'subsurf', mode: 'Object Mode', rows: [['Tab', 'Ctrl+2'], ['@right', '~smooth']], op: 'Subdivision Set · Shade Smooth' },
   { id: 'support', mode: 'Edit Mode', select: 2, rows: [['Tab'], ['Ctrl+R', '@left', '~slide', '@left']], op: 'Loop Cut and Slide' },
+  {
+    id: 'bevel',
+    mode: 'Edit Mode',
+    select: 2,
+    rows: [
+      ['Alt+@left', '~first'],
+      ['Shift+Alt+@left', '~more'],
+      ['Ctrl+B', '0.02', 'Enter'],
+    ],
+    op: 'Bevel',
+  },
   { id: 'materials', mode: 'Object Mode', rows: [['~tab', '+', '~new'], ['Alt+@left', '~assign']], op: 'Assign' },
   { id: 'final', mode: 'Object Mode', rows: [['Tab', 'Numpad .', '~frame'], ['@middle', '~orbit']], render: true },
 ];
