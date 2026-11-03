@@ -27,7 +27,7 @@ export interface BlenderPillView {
   readonly mode: 'Object Mode' | 'Edit Mode';
   /** Edit Mode select mode: 1 vertex, 2 edge, 3 face. */
   readonly selectMode?: 1 | 2 | 3;
-  /** Active object name for the "(1) Collection | <name>" line. */
+  /** Active object name for the "(1) Collection | <name>" line; empty when there is none. */
   readonly active: string;
   /** Grid polylines in image pixels ("x,y x,y ..."). */
   readonly grid: readonly (readonly [GridKind, string])[];
@@ -112,7 +112,8 @@ export function renderBlenderPillArt(host: HTMLElement, step: PillStep<BlenderPi
   }
 
   const text = div('bl-pill-text');
-  text.append(div('', v.header), div('', `(1) Collection | ${v.active}`));
+  // FIDELITY? With no active object (e.g. right after deleting it) the line shows only the collection.
+  text.append(div('', v.header), div('', v.active ? `(1) Collection | ${v.active}` : '(1) Collection'));
   text.style.color = THEME.viewportText;
 
   const overlay = v.overlay?.length ? overlaySvg(v.overlay) : null;
