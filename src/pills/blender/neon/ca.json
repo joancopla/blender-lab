@@ -1,0 +1,129 @@
+{
+  "pillNeon": {
+    "name": "Look neó",
+    "desc": "Visuals per a la paret: un cub i una graella que brillen sobre negre, Emission, Wireframe, un Glare Bloom al compositor, Standard i dos colors equilibrats.",
+    "steps": {
+      "camera": {
+        "title": "Mira per",
+        "titleAccent": "la càmera",
+        "lead": "Comença amb l'escena per defecte. Mira per la càmera i posa-li un objectiu més curt: amb 35 mm hi cabrà tot el que afegiràs.",
+        "hintStrong": "Treballaràs sempre en vista de càmera:",
+        "hint": "és el que es projectarà a la paret.",
+        "short": "la càmera",
+        "notes": {
+          "view": "mira per la càmera",
+          "frame": "a la vora de la càmera",
+          "lens": "Camera Properties ▸ Focal Length 35 mm"
+        }
+      },
+      "off": {
+        "title": "Apaga-ho",
+        "titleAccent": "tot",
+        "lead": "Passa el viewport a Rendered, esborra el llum i posa el World negre. La pantalla queda negra: en un look neó, la llum la fan els objectes.",
+        "hintStrong": "En Material Preview, el World no es veu:",
+        "hint": "fa servir una imatge d'entorn pròpia. Per això treballes en Rendered.",
+        "short": "el negre",
+        "notes": {
+          "rendered": "Rendered",
+          "light": "al llum",
+          "delete": "Delete",
+          "world": "World Properties ▸ Surface ▸ Color #000000"
+        }
+      },
+      "cube": {
+        "title": "El primer",
+        "titleAccent": "neó",
+        "lead": "Selecciona el cub i puja'l perquè quedi sobre el terra. Canvia el nom del seu material i encén-ne l'Emission. Amb un Wireframe, del cub només en queden les arestes.",
+        "hintStrong": "El cian surt gairebé blanc.",
+        "hint": "És cosa de la transformació de color AgX: ho arreglaràs al pas 6.",
+        "short": "el primer neó",
+        "notes": {
+          "cube": "al cub",
+          "name": "Material Properties ▸ doble clic al nom ▸ Neó cian",
+          "emission": "Surface ▸ Emission ▸ Color #00D8FF · Strength 5",
+          "wire": "Modifier Properties ▸ Add Modifier ▸ Generate ▸ Wireframe"
+        }
+      },
+      "grid": {
+        "title": "La graella",
+        "titleAccent": "del terra",
+        "lead": "Afegeix una Grid i fes-la gran al panell Adjust Last Operation. Posa-li un Wireframe i el mateix material que el cub.",
+        "hintStrong": "Comparteixen material:",
+        "hint": "si canvies el color de Neó cian, canvien el cub i la graella alhora.",
+        "short": "la graella",
+        "notes": {
+          "grid": "Mesh ▸ Grid",
+          "adjust": "X Subdivisions 20 · Y Subdivisions 20 · Size 20 m",
+          "wire": "Add Modifier ▸ Generate ▸ Wireframe",
+          "material": "Material Properties ▸ Browse Material ▸ Neó cian"
+        }
+      },
+      "bloom": {
+        "title": "Encén",
+        "titleAccent": "el bloom",
+        "lead": "Canvia la Timeline de baix a Compositor i fes New. Afegeix un Glare de tipus Bloom entre Render Layers i el Reroute, i activa el compositor al viewport. Apareix l'halo.",
+        "hintStrong": "Sense Always, el viewport no mostra el bloom.",
+        "hint": "En canvi, la imatge del F12 sempre passa pel compositor.",
+        "short": "el bloom",
+        "notes": {
+          "editor": "Timeline ▸ Editor Type ▸ Compositor",
+          "new": "New",
+          "glare": "Filter ▸ Glare ▸ Bloom",
+          "drop": "deixa'l sobre l'enllaç de Render Layers al Reroute",
+          "always": "Viewport Shading ▸ Compositor ▸ Always"
+        }
+      },
+      "standard": {
+        "title": "AgX",
+        "titleAccent": "o Standard",
+        "lead": "A Color Management, canvia View Transform a Standard. Amb AgX, els colors molt intensos es tornen blancs; amb Standard, el cian es manté.",
+        "hintStrong": "AgX va millor per a escenes realistes.",
+        "hint": "Per a un neó de colors saturats, fes servir Standard.",
+        "short": "Standard",
+        "notes": {
+          "where": "Render Properties ▸ Color Management",
+          "standard": "View Transform ▸ Standard"
+        }
+      },
+      "second": {
+        "title": "Un segon",
+        "titleAccent": "color",
+        "lead": "Afegeix un tor, col·loca'l al panell N i dona-li un material nou taronja amb el seu Wireframe. Equilibra les intensitats perquè cap dels dos colors no mani.",
+        "hintStrong": "El taronja necessita més Strength que el cian:",
+        "hint": "és un color més fosc. Amb 9 contra 5, tots dos brillen igual.",
+        "short": "el segon color",
+        "notes": {
+          "torus": "Mesh ▸ Torus",
+          "fields": "Location -2.5 · 2 · 1.25 · Rotation 90° · 0° · 45°",
+          "material": "New ▸ Neó taronja · Emission #FF6A00 · Strength 9",
+          "wire": "Add Modifier ▸ Generate ▸ Wireframe"
+        }
+      },
+      "wall": {
+        "title": "Prepara'l",
+        "titleAccent": "per a la paret",
+        "lead": "A la paret, amb el projector, les línies fines es perden. Engruixeix la graella i fes el bloom una mica més ample.",
+        "hintStrong": "No et passis amb el bloom:",
+        "hint": "si l'apuges massa, tota la imatge es converteix en una taca.",
+        "short": "la paret",
+        "notes": {
+          "grid": "a la graella",
+          "thickness": "Wireframe ▸ Thickness 0.05",
+          "size": "Compositor ▸ Glare ▸ Size 0.7"
+        }
+      },
+      "render": {
+        "title": "Fes",
+        "titleAccent": "el render",
+        "lead": "Prem F12. El render passa pel compositor i porta el bloom inclòs. Desa'l des de la finestra del render.",
+        "hintStrong": "Per a la paret, 1920 × 1080.",
+        "hint": "Ho tens a Output Properties ▸ Resolution, i ja és el valor per defecte.",
+        "short": "el render",
+        "notes": {
+          "render": "fes el render",
+          "save": "Image ▸ Save As ▸ PNG"
+        }
+      }
+    }
+  }
+}
