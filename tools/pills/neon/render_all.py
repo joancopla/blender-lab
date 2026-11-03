@@ -107,6 +107,8 @@ class Scene:
         return ng, rl, rr
 
     def render(self, out, n):
+        if out is None:  # building the scene for a later pill, no images
+            return
         self.sc.render.filepath = os.path.join(out, "img", f"s{n:02d}.webp")
         bpy.ops.render.render(write_still=True, scene=self.sc.name)
 
@@ -186,6 +188,7 @@ def build(out):
     sc.render.resolution_percentage = 100
     sc.render.image_settings.quality = 85
     s.render(out, 9)
+    return {"scene": s, "cube": s.cube, "grid": grid, "torus": torus, "glare": glare}
 
 
 def main(here=HERE, out=None):
