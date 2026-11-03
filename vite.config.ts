@@ -21,6 +21,7 @@ export default defineConfig({
         pillMinijack: 'pills/minijack/index.html',
         pillLighting: 'pills/lighting/index.html',
         pillCable: 'pills/cable/index.html',
+        pillNeon: 'pills/neon/index.html',
         ma3lab02: 'labs/ma3-02-addresses/index.html',
         ma3lab03: 'labs/ma3-03-command-line/index.html',
       },

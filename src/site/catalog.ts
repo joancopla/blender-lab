@@ -19,6 +19,7 @@ import type { PillInfo } from '../core/pills/pill';
 import { minijackInfo } from '../pills/blender/minijack/info';
 import { lightingInfo } from '../pills/blender/lighting/info';
 import { cableInfo } from '../pills/blender/cable/info';
+import { neonInfo } from '../pills/blender/neon/info';
 
 export interface CatalogEntry {
   readonly lab: LabDefinition;
@@ -81,6 +82,7 @@ export const PROGRAMS: readonly ProgramGroup[] = [
       { pill: minijackInfo, path: 'pills/minijack/' },
       { pill: lightingInfo, path: 'pills/lighting/' },
       { pill: cableInfo, path: 'pills/cable/' },
+      { pill: neonInfo, path: 'pills/neon/' },
     ],
     shortcuts: [
       { labelKey: 'shortcuts.grab', keys: ['g'] },
