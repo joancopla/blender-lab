@@ -1,0 +1,110 @@
+{
+  "pillCable": {
+    "name": "Modela un cable amb una corba",
+    "desc": "Un cable d'auriculars que cau sobre la taula, fet amb una corba Bézier: punts i nanses, Extrude, tipus de nansa, Bevel i un render ràpid.",
+    "steps": {
+      "curve": {
+        "title": "Afegeix",
+        "titleAccent": "una corba Bézier",
+        "lead": "Comença amb l'escena per defecte. Esborra el cub i afegeix una corba Bézier. De moment és una línia sense gruix, però és el camí que seguirà el cable.",
+        "hintStrong": "Una corba no és una malla:",
+        "hint": "no té vèrtexs ni cares, sinó punts de control que el Blender uneix amb una línia suau.",
+        "short": "la corba",
+        "notes": { "delete": "Delete", "menu": "Curve ▸ Bézier" }
+      },
+      "edit": {
+        "title": "Entra al",
+        "titleAccent": "Mode Edició",
+        "lead": "Prem Tab. La corba té dos punts de control, i cada punt té dues nanses: les línies que en surten. La direcció i la llargada de les nanses decideixen com es corba la línia.",
+        "hintStrong": "Les nanses són verdes perquè són de tipus Aligned:",
+        "hint": "les dues nanses d'un punt sempre queden en línia recta.",
+        "short": "el Mode Edició"
+      },
+      "select": {
+        "title": "Selecciona",
+        "titleAccent": "l'extrem de la dreta",
+        "lead": "Fes clic al punt de la dreta. Només es veuen les nanses dels punts seleccionats: el de l'esquerra queda negre i sense nanses.",
+        "hintStrong": "Clica el punt del mig, no la punta de la nansa.",
+        "hint": "Si cliques la punta, només mouràs aquella nansa.",
+        "short": "l'extrem",
+        "notes": { "where": "al punt de la dreta" }
+      },
+      "extrude": {
+        "title": "Allarga",
+        "titleAccent": "el cable",
+        "lead": "Amb E afegeixes un punt nou a l'extrem i el mous. Fes cinc extrusions seguides: el cable fa la volta i torna a passar pel mig.",
+        "hintStrong": "La corba queda estranya:",
+        "hint": "cada punt nou copia les nanses de l'anterior, que miren cap als costats. Ho arreglaràs al pas següent.",
+        "short": "l'extrusió"
+      },
+      "auto": {
+        "title": "Nanses",
+        "titleAccent": "automàtiques",
+        "lead": "Selecciona tots els punts i canvia el tipus de nansa a Automatic. El Blender orienta cada nansa perquè la corba passi suau per tots els punts.",
+        "hintStrong": "El color de la nansa et diu de quin tipus és:",
+        "hint": "vermell vol dir Automatic, i verd, Aligned.",
+        "short": "les nanses automàtiques",
+        "notes": { "auto": "Automatic" }
+      },
+      "open": {
+        "title": "Obre",
+        "titleAccent": "una corba",
+        "lead": "Selecciona el punt de dalt a la dreta i allarga'n les nanses amb S. La corba d'aquesta cantonada s'obre i es fa més rodona.",
+        "hintStrong": "Les nanses d'aquest punt tornen a ser verdes:",
+        "hint": "quan en toques una, el Blender la passa d'Automatic a Aligned perquè no desfaci el que has fet.",
+        "short": "la cantonada",
+        "notes": { "where": "al punt de dalt a la dreta" }
+      },
+      "cross": {
+        "title": "Fes que passi",
+        "titleAccent": "per sobre",
+        "lead": "Al mig, el cable es creua amb ell mateix. Selecciona el punt del creuament i puja'l perquè el cable passi per sobre del tram de sota.",
+        "hintStrong": "0.06 és el gruix que tindrà el cable.",
+        "hint": "Així, al pas següent, els dos trams es toquen sense travessar-se.",
+        "short": "el creuament",
+        "notes": { "where": "al punt del creuament" }
+      },
+      "bevel": {
+        "title": "Dona gruix",
+        "titleAccent": "al cable",
+        "lead": "Torna a Object Mode. A les propietats de la corba, el Bevel fa passar un cercle per tota la línia: el cable deixa de ser una línia i es fa rodó.",
+        "hintStrong": "Depth és el radi, no el gruix:",
+        "hint": "amb 0.03 el cable fa 0.06 de gruix. Fill Caps tapa els dos extrems.",
+        "short": "el gruix",
+        "notes": { "depth": "Object Data Properties ▸ Geometry ▸ Bevel ▸ Depth 0.03", "caps": "Fill Caps" }
+      },
+      "floor": {
+        "title": "Posa'l",
+        "titleAccent": "sobre la taula",
+        "lead": "Puja el cable tant com el radi perquè quedi recolzat a terra. Després afegeix un pla i fes-lo gran: serà la taula.",
+        "hintStrong": "Si no el puges, el cable queda mig enterrat:",
+        "hint": "la corba passa pel centre del cable i el terra és a Z = 0.",
+        "short": "la taula",
+        "notes": { "plane": "Mesh ▸ Plane" }
+      },
+      "material": {
+        "title": "Posa-li",
+        "titleAccent": "un material",
+        "lead": "Selecciona el cable i crea-li un material. Un gris gairebé negre i una mica brillant és el color d'un cable d'auriculars.",
+        "hintStrong": "En Solid, el cable continua gris.",
+        "hint": "El color del material només es veu en Material Preview i en el render.",
+        "short": "el material",
+        "notes": { "cable": "al cable", "new": "Material Properties ▸ New", "values": "Base Color #1B1B1D · Roughness 0.4" }
+      },
+      "render": {
+        "title": "Fes",
+        "titleAccent": "el render",
+        "lead": "Mira per la càmera de l'escena per defecte, apropa-la amb un objectiu més llarg i prem F12. Amb el llum per defecte n'hi ha prou per veure el cable.",
+        "hintStrong": "Vols un render d'estudi?",
+        "hint": "A la píndola «Il·lumina i renderitza el minijack» hi ha les llums, els materials i Cycles.",
+        "short": "el render",
+        "notes": {
+          "view": "mira per la càmera",
+          "camera": "a la vora de la càmera",
+          "lens": "Camera Properties ▸ Focal Length 100 mm",
+          "render": "fes el render"
+        }
+      }
+    }
+  }
+}
