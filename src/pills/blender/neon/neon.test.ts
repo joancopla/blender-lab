@@ -4,9 +4,9 @@ import { STEP_TEXT_FIELDS, parseToken } from '../../../core/pills/pill';
 import { neon } from '.';
 
 describe('neon look pill', () => {
-  it('has 9 steps with unique ids and an image each', () => {
-    expect(neon.steps).toHaveLength(9);
-    expect(new Set(neon.steps.map((s) => s.id)).size).toBe(9);
+  it('has 23 steps with unique ids and an image each', () => {
+    expect(neon.steps).toHaveLength(23);
+    expect(new Set(neon.steps.map((s) => s.id)).size).toBe(23);
     expect(neon.stepCount).toBe(neon.steps.length);
     expect(neon.steps.every((s) => typeof s.image === 'string' && s.image.length > 0)).toBe(true);
   });
@@ -33,8 +33,9 @@ describe('neon look pill', () => {
     expect(missing).toEqual([]);
   });
 
-  it('looks through the camera until the F12 render of the last step', () => {
-    expect(neon.steps.slice(0, -1).every((s) => s.view.camera && !s.view.render)).toBe(true);
+  it('maps the window first, then looks through the camera until the F12 render', () => {
+    expect(neon.steps[0]!.view.screen).toBe(true);
+    expect(neon.steps.slice(1, -1).every((s) => s.view.camera && !s.view.render && !s.view.screen)).toBe(true);
     expect(neon.steps.at(-1)!.view.render).toBe(true);
   });
 });

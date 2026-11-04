@@ -3,7 +3,8 @@
 # Run from a live Blender 5.1 session: exec this file, then call main(). It builds its own
 # scene "PillNeon" (the factory cube, camera and light) and leaves the user's scene alone.
 # Every step is rendered with EEVEE through the factory camera, with the scene's compositor
-# (Glare Bloom from step 4), so each image is what the student sees in Rendered.
+# (Glare Bloom from step 16), so each image is what the student sees in Rendered; steps 1-5
+# are still in Solid (Workbench, transparent background).
 # Output: img/sNN.webp.
 import math, os
 import bpy
@@ -122,81 +123,112 @@ class Scene:
         bpy.ops.render.render(write_still=True, scene=self.sc.name)
 
 
+def solid(sc, on):
+    """Solid view (Workbench, transparent: the page draws the viewport) or back to EEVEE."""
+    if on:
+        sc.render.engine = "BLENDER_WORKBENCH"
+        sc.display.shading.light = "STUDIO"
+        sc.display.shading.color_type = "MATERIAL"
+        sc.render.film_transparent = True
+        sc.view_settings.view_transform = "Standard"
+        sc.render.image_settings.color_mode = "RGBA"
+    else:
+        sc.render.engine = "BLENDER_EEVEE"
+        sc.render.film_transparent = False
+        sc.view_settings.view_transform = "AgX"
+        sc.render.image_settings.color_mode = "RGB"
+
+
 def build(out):
+    """One image per step (sNN.webp is step NN), each one what the student sees after it."""
     s = Scene()
     s.factory()
     sc = s.sc
     cam = sc.camera
+    shot = lambda n: s.render(out, n)
 
-    # 1. Numpad 0, select the camera, Focal Length 35 mm (the 50 mm one cuts the cube).
+    # 1. Map of the screen (the factory scene, as on opening Blender) and
+    # 2. Numpad 0 and 3. the camera selected in the Outliner: still the 50 mm lens, in Solid.
+    solid(sc, True)
+    shot(1)
+    shot(2)
+    shot(3)
+    # 4. Focal Length 35 mm (the 50 mm one cuts the cube once it is lifted).
     cam.data.lens = LENS
-    # Still in Solid: Workbench with a transparent background (the page draws the viewport's).
-    sc.render.engine = "BLENDER_WORKBENCH"
-    sc.display.shading.light = "STUDIO"
-    sc.display.shading.color_type = "MATERIAL"
-    sc.render.film_transparent = True
-    sc.view_settings.view_transform = "Standard"
-    sc.render.image_settings.color_mode = "RGBA"
-    s.render(out, 1)
-    sc.render.engine = "BLENDER_EEVEE"
-    sc.render.film_transparent = False
-    sc.view_settings.view_transform = "AgX"
-    sc.render.image_settings.color_mode = "RGB"
-
-    # 2. Rendered, delete the light, black World.
-    bpy.data.objects.remove(s.light)
-    s.bg.inputs["Color"].default_value = (0, 0, 0, 1)
-    s.render(out, 2)
-
-    # 3. Cube up 1 m, its material renamed "Neó cian" with a cyan Emission, and a Wireframe.
+    shot(4)
+    # 5. The cube up 1 m (G Z 1), still in Solid so the student sees it move.
     s.cube.location.z = 1
+    shot(5)
+
+    # 6. Rendered: EEVEE with the factory light and grey World.
+    solid(sc, False)
+    shot(6)
+    # 7. Delete the light: only the grey World lights the cube.
+    bpy.data.objects.remove(s.light)
+    shot(7)
+    # 8. Black World: the screen goes black.
+    s.bg.inputs["Color"].default_value = (0, 0, 0, 1)
+    shot(8)
+    # 9. The material renamed "Neó cian": nothing changes on screen.
     cyan = s.cube.data.materials[0]
     cyan.name = "Neó cian"
+    shot(9)
+    # 10. Emission: the whole cube glows (almost white with AgX).
     s.neon(cyan, CYAN, CYAN_STRENGTH)
+    shot(10)
+    # 11. Wireframe: only the edges are left.
     s.cube.modifiers.new("Wireframe", "WIREFRAME")
-    s.render(out, 3)
+    shot(11)
 
-    # 4. Grid 20 × 20, Size 20, Wireframe, the same material.
+    # 12. Grid 20 × 20, Size 20: without material or light it is black on black.
     with s.ctx():
         bpy.ops.mesh.primitive_grid_add(x_subdivisions=20, y_subdivisions=20, size=20, location=(0, 0, 0))
     grid = bpy.context.active_object
+    shot(12)
+    # 13. Wireframe and the same material: the grid glows too.
     wf = grid.modifiers.new("Wireframe", "WIREFRAME")
     grid.data.materials.append(cyan)
-    s.render(out, 4)
-
-    # 5. Compositor: New, Glare Bloom between Render Layers and the Reroute.
+    shot(13)
+    # 14. Compositor ▸ New and 15. the Glare: the viewport does not show it yet.
+    shot(14)
+    shot(15)
+    # 16. Compositor Always in the viewport: the bloom appears.
     ng, rl, rr = s.compositor_new()
     glare = ng.nodes.new("CompositorNodeGlare")
     glare.inputs["Type"].default_value = "Bloom"
     ng.links.new(rl.outputs["Image"], glare.inputs["Image"])
     ng.links.new(glare.outputs["Image"], rr.inputs[0])
-    s.render(out, 5)
-
-    # 6. View Transform Standard.
+    shot(16)
+    # 17. View Transform Standard: the cyan stops turning white.
     sc.view_settings.view_transform = "Standard"
-    s.render(out, 6)
+    shot(17)
 
-    # 7. Torus with an orange neon and its own Wireframe, placed in the N panel.
+    # 18. Torus placed in the N panel: without material it is black, nothing new on screen.
     with s.ctx():
         bpy.ops.mesh.primitive_torus_add(location=(0, 0, 0))
     torus = bpy.context.active_object
     torus.location = TORUS_LOC
     torus.rotation_euler = tuple(math.radians(a) for a in TORUS_ROT)
+    shot(18)
+    # 19. New material "Neó taronja" with its Emission: a solid orange ring.
     orange = bpy.data.materials.new("Neó taronja")
     torus.data.materials.append(orange)
     s.neon(orange, ORANGE, ORANGE_STRENGTH)
+    shot(19)
+    # 20. Its Wireframe.
     torus.modifiers.new("Wireframe", "WIREFRAME")
-    s.render(out, 7)
+    shot(20)
 
-    # 8. Ready for the wall: thicker grid lines and a wider bloom.
+    # 21. Thicker grid lines and 22. a wider bloom, for the wall.
     wf.thickness = THICK
+    shot(21)
     glare.inputs["Size"].default_value = GLARE_SIZE
-    s.render(out, 8)
+    shot(22)
 
-    # 9. F12: the same image at full size.
+    # 23. F12: the same image at full size.
     sc.render.resolution_percentage = 100
     sc.render.image_settings.quality = 85
-    s.render(out, 9)
+    shot(23)
     return {"scene": s, "cube": s.cube, "grid": grid, "torus": torus, "glare": glare}
 
 

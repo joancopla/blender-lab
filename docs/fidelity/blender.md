@@ -1063,31 +1063,49 @@ No depèn de cap altra píndola.
 Pàgina `pills/neon/`. És la recepta del Lab 11 pas a pas, per a Blender 5.1 (la versió dels
 alumnes), mentre el lab interactiu no existeixi. Imatges de `tools/pills/neon/render_all.py`:
 EEVEE a través de la càmera per defecte i el compositor de l'escena (Glare Bloom des del pas
-5), al Blender 5.1.2 de Joan. Comença amb l'escena per defecte i no depèn de cap altra píndola.
+16), al Blender 5.1.2 de Joan. Comença amb l'escena per defecte i no depèn de cap altra píndola.
+
+El 04/11/2026 es va refer amb 23 passos, una acció per pas, per a alumnes que no han fet cap
+lab: cada pas diu a quina zona i a quina pestanya s'ha d'anar, i com s'escriu un valor.
 
 ## Viewport al voltant de la imatge
 
-- [ ] Passos 1–8 en vista de càmera, amb el passepartout; el pas 1 encara en Solid (Workbench) i els altres en Rendered
-- [ ] Pas 2: sense objecte actiu (s'acaba d'esborrar el llum), la línia de dalt diu només «(1) Collection»
-- [ ] Pas 9: la finestra del render (F12)
+- [ ] Pas 1: esquema de la finestra (Layout) amb el 3D Viewport, l'Outliner, Properties i la Timeline; les pestanyes de Properties són quadrats genèrics, sense les icones de Blender
+- [ ] Passos 2–22 en vista de càmera, amb el passepartout; els passos 2–5 encara en Solid (Workbench) i els altres en Rendered
+- [ ] Passos 7–8: sense objecte actiu (s'acaba d'esborrar el llum), la línia de dalt diu només «(1) Collection»
+- [ ] Pas 23: la finestra del render (F12)
 
 ## Preguntes obertes
 
-- [ ] ❓ Pas 1: per seleccionar la càmera en vista de càmera, clic a la vora del marc; Camera Properties ▸ Focal Length
-- [ ] ❓ Pas 3: canviar el nom del material amb doble clic al camp del nom, a Material Properties
-- [ ] ❓ Pas 4: Adjust Last Operation de Grid amb X Subdivisions, Y Subdivisions i Size (verificat a la 5.1.2 a l'especificació del Lab 11)
-- [ ] ❓ Pas 4: Material Properties ▸ Browse Material per triar «Neó cian» en un objecte sense material
-- [ ] ❓ Pas 5: el workspace Layout té la Timeline a baix; Editor Type ▸ Compositor i el botó New a la capçalera
-- [ ] ❓ Pas 5: deixar anar el Glare sobre l'enllaç l'insereix entre Render Layers i el Reroute
-- [ ] ❓ Pas 7: el tor amb Location -2.5 · 2 · 1.25 i Rotation 90° · 0° · 45° al panell N
+- [ ] ❓ Pas 1: ordre de les pestanyes de Properties amb una malla seleccionada a la 5.1 (Tool, Render, Output, View Layer, Scene, World, Collection, Object, Modifiers, Particles, Physics, Object Constraints, Object Data, Material, Texture), recordat de la 4.x
+- [ ] ❓ Pas 1: a la finestra de benvinguda, New File ▸ General
+- [ ] ❓ Pas 2: sense teclat numèric, View ▸ Cameras ▸ Active Camera
+- [ ] ❓ Pas 3: amb la càmera seleccionada a l'Outliner, la vora del marc de la càmera es torna taronja en vista de càmera
+- [ ] ❓ Pas 4: la pestanya de la càmera es descriu com «la càmera verda (Object Data)»; Lens ▸ Focal Length
+- [ ] ❓ Pas 6: Rendered és l'esfera de la dreta del tot de les quatre de la capçalera del viewport
+- [ ] ❓ Pas 8: World es descriu com «el globus vermell»; Surface ▸ Color obre el selector amb un camp Hex
+- [ ] ❓ Pas 9: Material es descriu com «l'esfera, la penúltima» pestanya; doble clic al nom per canviar-lo
+- [ ] ❓ Pas 10: Emission és un subpanell plegat dins de Surface (Principled BSDF)
+- [ ] ❓ Pas 11: Modifiers es descriu com «la clau anglesa blava»; la X de la capçalera del modificador l'esborra
+- [ ] ❓ Pas 12: el panell Add Grid surt plegat a baix a l'esquerra; F9 el torna a obrir just després d'afegir
+- [ ] ❓ Pas 13: Material ▸ desplegable de l'esquerra de New per triar «Neó cian» en un objecte sense material
+- [ ] ❓ Pas 14: el workspace Layout té la Timeline a baix; el primer botó de la capçalera és Editor Type ▸ Compositor; New; Home encaixa els nodes
+- [ ] ❓ Pas 15: el node nou segueix el ratolí i, deixat sobre l'enllaç (que s'il·lumina), s'insereix entre Render Layers i el Reroute
+- [ ] ❓ Pas 16: la fletxa de la dreta de les esferes obre Viewport Shading, amb Compositor ▸ Always
+- [ ] ❓ Pas 17: Render és la segona pestanya; Color Management surt plegat
+- [ ] ❓ Pas 18: panell N ▸ Item, amb Location -2.5 · 2 · 1.25 i Rotation 90° · 0° · 45°; Tab passa al camp següent mentre s'escriu
+- [ ] ❓ Pas 23: a la finestra del render, Image ▸ Save As i el botó Save As Image
 
 ## Decisions de la píndola (revisa-les)
 
-- Comprovat a la 5.1.2: al menú Shift+A del compositor, Filter té el Glare amb una entrada per a cada tipus (Glare ▸ Bloom)
+- Comprovat a la 5.1.2: al menú Shift+A del compositor, Filter té el Glare amb una entrada per a cada tipus (Glare ▸ Bloom); un Glare sense tipus surt amb Streaks
 - Comprovat a la 5.1.2: Viewport Shading ▸ Compositor té Disabled, Camera i Always
 - El New del compositor de les imatges fa el mateix arbre que l'especificació del Lab 11: Render Layers → Reroute → Group Output, i el Reroute també cap al Viewer
-- Pas 1: Focal Length 35 mm, perquè amb els 50 mm per defecte el cub a Z = 1 queda tallat
-- Pas 3: el cub també porta Wireframe; amb el cub ple, el cian el converteix en una taca blanca
+- Pas 4: Focal Length 35 mm, perquè amb els 50 mm per defecte el cub a Z = 1 queda tallat
+- Pas 5: el cub es puja encara en Solid, perquè l'alumne vegi com es mou; en Rendered i sense llum quedaria negre
+- Passos 9, 12 i 18: la imatge no canvia (el material encara no brilla, la graella i el tor no tenen material); la pista ho diu perquè l'alumne no pensi que s'ha equivocat
+- Passos 14 i 15: el viewport encara no mostra el bloom; apareix al pas 16, amb Always
+- Pas 11: el cub també porta Wireframe; amb el cub ple, el cian el converteix en una taca blanca
 - Strength: cian 5 i taronja 9, perquè la luminància dels dos colors × Strength quedi igual (0,56 × 5 ≈ 0,32 × 9)
 - A EEVEE, l'Emission també il·lumina una mica el que té a prop (es veu a les imatges, que són del Blender real)
 
