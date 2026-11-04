@@ -3,7 +3,7 @@
 # Run from a live Blender 5.1 session: exec this file, then call main(). It builds its own
 # scene "PillNeon" (the factory cube, camera and light) and leaves the user's scene alone.
 # Every step is rendered with EEVEE through the factory camera, with the scene's compositor
-# (Glare Bloom from step 16), so each image is what the student sees in Rendered; steps 1-5
+# (Glare Bloom from step 17), so each image is what the student sees in Rendered; steps 1-5
 # are still in Solid (Workbench, transparent background).
 # Output: img/sNN.webp.
 import math, os
@@ -189,46 +189,47 @@ def build(out):
     wf = grid.modifiers.new("Wireframe", "WIREFRAME")
     grid.data.materials.append(cyan)
     shot(13)
-    # 14. Compositor ▸ New and 15. the Glare: the viewport does not show it yet.
+    # 14. Empty compositor, 15. New and 16. the Glare: the viewport does not show it yet.
     shot(14)
     shot(15)
-    # 16. Compositor Always in the viewport: the bloom appears.
+    shot(16)
+    # 17. Compositor Always in the viewport: the bloom appears.
     ng, rl, rr = s.compositor_new()
     glare = ng.nodes.new("CompositorNodeGlare")
     glare.inputs["Type"].default_value = "Bloom"
     ng.links.new(rl.outputs["Image"], glare.inputs["Image"])
     ng.links.new(glare.outputs["Image"], rr.inputs[0])
-    shot(16)
-    # 17. View Transform Standard: the cyan stops turning white.
-    sc.view_settings.view_transform = "Standard"
     shot(17)
+    # 18. View Transform Standard: the cyan stops turning white.
+    sc.view_settings.view_transform = "Standard"
+    shot(18)
 
-    # 18. Torus placed in the N panel: without material it is black, nothing new on screen.
+    # 19. Torus placed in the N panel: without material it is black, nothing new on screen.
     with s.ctx():
         bpy.ops.mesh.primitive_torus_add(location=(0, 0, 0))
     torus = bpy.context.active_object
     torus.location = TORUS_LOC
     torus.rotation_euler = tuple(math.radians(a) for a in TORUS_ROT)
-    shot(18)
-    # 19. New material "Neó taronja" with its Emission: a solid orange ring.
+    shot(19)
+    # 20. New material "Neó taronja" with its Emission: a solid orange ring.
     orange = bpy.data.materials.new("Neó taronja")
     torus.data.materials.append(orange)
     s.neon(orange, ORANGE, ORANGE_STRENGTH)
-    shot(19)
-    # 20. Its Wireframe.
-    torus.modifiers.new("Wireframe", "WIREFRAME")
     shot(20)
-
-    # 21. Thicker grid lines and 22. a wider bloom, for the wall.
-    wf.thickness = THICK
+    # 21. Its Wireframe.
+    torus.modifiers.new("Wireframe", "WIREFRAME")
     shot(21)
-    glare.inputs["Size"].default_value = GLARE_SIZE
-    shot(22)
 
-    # 23. F12: the same image at full size.
+    # 22. Thicker grid lines and 23. a wider bloom, for the wall.
+    wf.thickness = THICK
+    shot(22)
+    glare.inputs["Size"].default_value = GLARE_SIZE
+    shot(23)
+
+    # 24. F12: the same image at full size.
     sc.render.resolution_percentage = 100
     sc.render.image_settings.quality = 85
-    shot(23)
+    shot(24)
     return {"scene": s, "cube": s.cube, "grid": grid, "torus": torus, "glare": glare}
 
 

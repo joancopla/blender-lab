@@ -1,6 +1,6 @@
 /** Index card data of the neon look pill (no step data, so the index stays light). */
 import type { PillInfo } from '../../../core/pills/pill';
-import cover from './img/s23.webp?url';
+import cover from './img/s24.webp?url';
 import './texts';
 
 export const neonInfo: PillInfo = {
@@ -9,5 +9,5 @@ export const neonInfo: PillInfo = {
   descKey: 'pillNeon.desc',
   texts: 'pillNeon',
   cover,
-  stepCount: 23,
+  stepCount: 24,
 };

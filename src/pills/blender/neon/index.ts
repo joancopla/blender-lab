@@ -7,8 +7,9 @@
  * camera, with the scene's compositor).
  */
 import type { PillDefinition, PillStep } from '../../../core/pills/pill';
-import type { BlenderPillView } from '../../../apps/blender/ui/pill-viewport';
+import type { BlenderPillView, PillNodeEditor } from '../../../apps/blender/ui/pill-viewport';
 import { neonInfo } from './info';
+import { EMPTY, GLARE, GLARE_DONE, GLARE_SIZE, NEW_TREE } from './compositor';
 
 const images = import.meta.glob('./img/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 
@@ -21,6 +22,8 @@ interface StepData {
   readonly render?: boolean;
   /** Map of the whole window instead of the viewport (first step). */
   readonly screen?: boolean;
+  /** Compositor steps: viewport above, node editor below. */
+  readonly nodes?: PillNodeEditor;
 }
 
 const DATA: readonly StepData[] = [
@@ -37,15 +40,16 @@ const DATA: readonly StepData[] = [
   { id: 'wire', active: 'Cube', rows: [['@left', '~tab'], ['~add']], op: 'Add Modifier' },
   { id: 'grid', active: 'Grid', rows: [['Shift+A', '~add'], ['@left', '~panel'], ['~values'], ['F9', '~redo']], op: 'Add Grid' },
   { id: 'gridWire', active: 'Grid', rows: [['~wire'], ['~browse'], ['@left', '~pick']], op: 'Add Modifier' },
-  { id: 'compositor', active: 'Grid', rows: [['~border'], ['~editor'], ['@left', '~new'], ['Home', '~home']] },
-  { id: 'glare', active: 'Grid', rows: [['Shift+A', '~add'], ['~drop', '@left']] },
-  { id: 'always', active: 'Grid', rows: [['@left', '~menu'], ['~always']] },
+  { id: 'compositor', active: 'Grid', rows: [['~border'], ['@left', '~editor']], nodes: EMPTY },
+  { id: 'new', active: 'Grid', rows: [['@left', '~new'], ['Home', '~home']], nodes: NEW_TREE },
+  { id: 'glare', active: 'Grid', rows: [['~over', 'Shift+A', '~add'], ['~move'], ['~drop', '@left']], nodes: GLARE },
+  { id: 'always', active: 'Grid', rows: [['@left', '~menu'], ['~always']], nodes: GLARE_DONE },
   { id: 'standard', active: 'Grid', rows: [['@left', '~tab'], ['~where'], ['~standard']] },
   { id: 'torus', active: 'Torus', rows: [['Shift+A', '~add'], ['N', '~panel'], ['~location', 'Tab'], ['~rotation', 'Enter']], op: 'Add Torus' },
   { id: 'orange', active: 'Torus', rows: [['~new'], ['~rename', 'Enter'], ['~emission']] },
   { id: 'torusWire', active: 'Torus', rows: [['~wire']], op: 'Add Modifier' },
   { id: 'thickness', active: 'Grid', rows: [['@left', '~grid'], ['~thickness', 'Enter']] },
-  { id: 'size', active: 'Grid', rows: [['@left', '~glare'], ['~size', 'Enter']] },
+  { id: 'size', active: 'Grid', rows: [['@left', '~glare'], ['~panel'], ['~size', 'Enter']], nodes: GLARE_SIZE },
   { id: 'render', active: 'Grid', rows: [['F12', '~render'], ['~save']], op: 'Render Image · Save As', render: true },
 ];
 
@@ -62,9 +66,10 @@ export const neon: PillDefinition<BlenderPillView> = {
       mode: 'Object Mode',
       active: d.active,
       grid: [],
-      camera: !d.render && !d.screen,
+      camera: !d.render && !d.screen && !d.nodes,
       render: d.render,
       screen: d.screen,
+      nodes: d.nodes,
     },
   })),
 };

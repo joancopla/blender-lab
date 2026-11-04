@@ -45,6 +45,35 @@ export interface BlenderPillView {
    * the 3D Viewport and each area carries its name, for students who have never opened it.
    */
   readonly screen?: boolean;
+  /**
+   * Compositor steps: the viewport above (the step image) and the compositor node editor
+   * below, as in the Layout workspace once the Timeline has become a Compositor.
+   */
+  readonly nodes?: PillNodeEditor;
+}
+
+/** One node, in node editor pixels (x, y: top left corner, as Blender's node location). */
+export interface PillNode {
+  readonly id: string;
+  readonly title: string;
+  readonly kind: 'input' | 'output' | 'filter' | 'reroute';
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly outputs?: readonly string[];
+  /** Menus and fields shown between the outputs and the inputs (e.g. "Bloom ▾"). */
+  readonly fields?: readonly string[];
+  readonly inputs?: readonly string[];
+}
+
+export interface PillNodeEditor {
+  /** No node tree yet: the header shows the New button, highlighted. */
+  readonly empty?: boolean;
+  readonly nodes?: readonly PillNode[];
+  /** Links from the first output of one node to the first input of another (node ids). */
+  readonly links?: readonly (readonly [from: string, to: string])[];
+  /** Node to look at in this step, outlined in the pill accent. */
+  readonly highlight?: string;
 }
 
 /** Camera frame inside the 1200 × 1080 viewport image. FIDELITY? Blender fits the frame with a small margin. */
@@ -86,6 +115,12 @@ export function renderBlenderPillArt(host: HTMLElement, step: PillStep<BlenderPi
 
   if (v.screen) {
     host.replaceChildren(...screenMap(img));
+    return;
+  }
+
+  if (v.nodes) {
+    host.style.background = SCREEN_GAP;
+    host.replaceChildren(...compositorSplit(img, v));
     return;
   }
 
@@ -240,4 +275,107 @@ function screenMap(img: HTMLImageElement): HTMLElement[] {
   );
 
   return [top, view, outliner, props, timeline];
+}
+
+/** Height of the viewport above the node editor in the compositor steps. */
+const SPLIT_Y = 520;
+const NODE_HEAD = 26;
+const NODE_ROW = 24;
+
+/**
+ * Node header colours of the default theme. FIDELITY? Remembered from 4.x
+ * (Preferences ▸ Themes ▸ Node Editor ▸ Theme Space List); check in 5.1.
+ */
+const NODE_HEADER: Record<Exclude<PillNode['kind'], 'reroute'>, string> = {
+  input: '#83314a',
+  output: '#4d0017',
+  filter: '#551a80',
+};
+/** Colour socket (yellow) and link colour. FIDELITY? */
+const SOCKET = '#c7c729';
+const LINK = '#a0a0a0';
+
+function nodeHeight(n: PillNode): number {
+  const rows = (n.outputs?.length ?? 0) + (n.fields?.length ?? 0) + (n.inputs?.length ?? 0);
+  return NODE_HEAD + rows * NODE_ROW + 8;
+}
+
+/** Centre of a node's first output (side 'out') or first input (side 'in'). */
+function socketAt(n: PillNode, side: 'out' | 'in'): readonly [number, number] {
+  if (n.kind === 'reroute') return [n.x, n.y];
+  const before = side === 'out' ? 0 : (n.outputs?.length ?? 0) + (n.fields?.length ?? 0);
+  return [side === 'out' ? n.x + n.w : n.x, n.y + NODE_HEAD + before * NODE_ROW + NODE_ROW / 2];
+}
+
+function nodeBox(n: PillNode, highlight: boolean): HTMLDivElement {
+  if (n.kind === 'reroute') {
+    const dot = div(`bl-pill-reroute${highlight ? ' is-look' : ''}`);
+    Object.assign(dot.style, { left: `${n.x - 7}px`, top: `${n.y - 7}px` });
+    return dot;
+  }
+  const box = div(`bl-pill-node${highlight ? ' is-look' : ''}`);
+  Object.assign(box.style, { left: `${n.x}px`, top: `${n.y}px`, width: `${n.w}px`, height: `${nodeHeight(n)}px` });
+  const head = div('bl-pill-node-head', n.title);
+  head.style.background = NODE_HEADER[n.kind];
+  box.append(head);
+  for (const o of n.outputs ?? []) box.append(div('bl-pill-node-row is-out', o));
+  for (const f of n.fields ?? []) box.append(div('bl-pill-node-row is-field', f));
+  for (const i of n.inputs ?? []) box.append(div('bl-pill-node-row is-in', i));
+  return box;
+}
+
+/** Viewport (the step image, through the camera) above and the Compositor below. */
+function compositorSplit(img: HTMLImageElement, v: BlenderPillView): HTMLElement[] {
+  const ed = v.nodes!;
+  const view = area('bl-pill-zone', 0, 0, 1200, SPLIT_Y);
+  img.classList.add('is-split');
+  const text = div('bl-pill-text');
+  text.append(div('', v.header), div('', v.active ? `(1) Collection | ${v.active}` : '(1) Collection'));
+  view.append(img, text);
+
+  const editor = area('bl-pill-zone bl-pill-nodes', 0, SPLIT_Y + 4, 1200, 1080 - SPLIT_Y - 4);
+  const head = div('bl-pill-zone-head');
+  head.append(div('bl-pill-editor-type', 'Compositor ▾'), div('', '   View   Select   Add   Node   '));
+  head.append(ed.empty ? div('bl-pill-new', 'New') : div('bl-pill-tree-name', 'Compositor Nodes'));
+  editor.append(head);
+
+  const nodes = ed.nodes ?? [];
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  const svg = document.createElementNS(SVG, 'svg');
+  svg.setAttribute('class', 'bl-pill-links');
+  svg.setAttribute('viewBox', `0 0 1200 ${1080 - SPLIT_Y - 4}`);
+  for (const [from, to] of ed.links ?? []) {
+    const a = byId.get(from);
+    const b = byId.get(to);
+    if (!a || !b) continue;
+    const [x1, y1] = socketAt(a, 'out');
+    const [x2, y2] = socketAt(b, 'in');
+    const dx = Math.max(30, (x2 - x1) / 2);
+    const path = document.createElementNS(SVG, 'path');
+    path.setAttribute('d', `M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}`);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', LINK);
+    path.setAttribute('stroke-width', '2.5');
+    svg.append(path);
+  }
+  for (const n of nodes) {
+    if (n.kind === 'reroute') continue;
+    const sockets: [number, number][] = [];
+    (n.outputs ?? []).forEach((_, i) => sockets.push([n.x + n.w, n.y + NODE_HEAD + i * NODE_ROW + NODE_ROW / 2]));
+    const before = (n.outputs?.length ?? 0) + (n.fields?.length ?? 0);
+    (n.inputs ?? []).forEach((_, i) => sockets.push([n.x, n.y + NODE_HEAD + (before + i) * NODE_ROW + NODE_ROW / 2]));
+    for (const [cx, cy] of sockets) {
+      const c = document.createElementNS(SVG, 'circle');
+      c.setAttribute('cx', String(cx));
+      c.setAttribute('cy', String(cy));
+      c.setAttribute('r', '6');
+      c.setAttribute('fill', SOCKET);
+      c.setAttribute('stroke', '#000');
+      svg.append(c);
+    }
+  }
+  const layer = div('bl-pill-node-layer');
+  layer.append(...nodes.map((n) => nodeBox(n, n.id === ed.highlight)), svg);
+  editor.append(layer);
+  return [view, editor];
 }

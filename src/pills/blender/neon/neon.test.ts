@@ -4,9 +4,9 @@ import { STEP_TEXT_FIELDS, parseToken } from '../../../core/pills/pill';
 import { neon } from '.';
 
 describe('neon look pill', () => {
-  it('has 23 steps with unique ids and an image each', () => {
-    expect(neon.steps).toHaveLength(23);
-    expect(new Set(neon.steps.map((s) => s.id)).size).toBe(23);
+  it('has 24 steps with unique ids and an image each', () => {
+    expect(neon.steps).toHaveLength(24);
+    expect(new Set(neon.steps.map((s) => s.id)).size).toBe(24);
     expect(neon.stepCount).toBe(neon.steps.length);
     expect(neon.steps.every((s) => typeof s.image === 'string' && s.image.length > 0)).toBe(true);
   });
@@ -35,7 +35,8 @@ describe('neon look pill', () => {
 
   it('maps the window first, then looks through the camera until the F12 render', () => {
     expect(neon.steps[0]!.view.screen).toBe(true);
-    expect(neon.steps.slice(1, -1).every((s) => s.view.camera && !s.view.render && !s.view.screen)).toBe(true);
+    expect(neon.steps.slice(1, -1).every((s) => (s.view.camera || s.view.nodes) && !s.view.render && !s.view.screen)).toBe(true);
+    expect(neon.steps.filter((s) => s.view.nodes).map((s) => s.id)).toEqual(['compositor', 'new', 'glare', 'always', 'size']);
     expect(neon.steps.at(-1)!.view.render).toBe(true);
   });
 });

@@ -121,7 +121,7 @@
         "titleAccent": "l'Emission",
         "lead": "Baixa amb la rodeta per la pestanya Material fins al subpanell Emission i fes-hi clic per obrir-lo. Posa el Color a 00D8FF (camp Hex) i Strength a 5. El cub s'encén.",
         "hintStrong": "El cian surt gairebé blanc.",
-        "hint": "És normal: ho arreglaràs al pas 17, amb Standard.",
+        "hint": "És normal: ho arreglaràs al pas 18, amb Standard.",
         "short": "l'Emission",
         "notes": {
           "scroll": "rodeta sobre Properties",
@@ -172,33 +172,45 @@
       "compositor": {
         "title": "Obre",
         "titleAccent": "el compositor",
-        "lead": "Arrossega cap amunt la vora entre el viewport i la Timeline perquè la Timeline sigui més alta. Al primer botó de la seva capçalera (Editor Type), tria Compositor. Després prem New.",
-        "hintStrong": "Surten quatre nodes:",
-        "hint": "Render Layers, un punt petit (Reroute), Group Output i Viewer. Amb el ratolí a sobre, Home els encaixa tots a la vista.",
+        "lead": "Arrossega cap amunt la vora entre el viewport i la Timeline, perquè la Timeline sigui més alta. Fes clic al primer botó de la seva capçalera (Editor Type) i tria Compositor.",
+        "hintStrong": "El compositor surt buit.",
+        "hint": "És normal: a Blender 5 no hi ha cap node fins que en crees. Només hi ha el botó New, a la capçalera.",
         "short": "el compositor",
         "notes": {
-          "border": "arrossega la vora cap amunt",
-          "editor": "Editor Type ▸ Compositor",
-          "new": "New",
+          "border": "arrossega cap amunt la vora de la Timeline",
+          "editor": "Editor Type ▸ Compositor"
+        }
+      },
+      "new": {
+        "title": "Prem",
+        "titleAccent": "New",
+        "lead": "Prem New. Surten els nodes que porten la imatge del render a la pantalla: Render Layers (la imatge de la càmera), un punt petit que reparteix la línia (Reroute), Group Output (el render F12) i Viewer (el viewport).",
+        "hintStrong": "No canvia res a la imatge:",
+        "hint": "de moment la línia passa directa. Al pas següent hi posaràs el Glare enmig. Si no veus tots els nodes, posa-hi el ratolí a sobre i prem Home.",
+        "short": "els nodes",
+        "notes": {
+          "new": "New, a la capçalera del compositor",
           "home": "tots els nodes a la vista"
         }
       },
       "glare": {
-        "title": "Afegeix",
-        "titleAccent": "el Glare",
-        "lead": "Amb el ratolí sobre el compositor, prem Shift+A i tria Filter ▸ Glare ▸ Bloom. El node segueix el ratolí: porta'l sobre la línia entre Render Layers i el Reroute i, quan la línia s'il·lumini, fes clic.",
-        "hintStrong": "Al viewport encara no canvia res.",
-        "hint": "Si el node no ha quedat connectat, arrossega des de la sortida Image de Render Layers a l'entrada Image del Glare, i de la sortida Image del Glare al Reroute.",
+        "title": "Posa el Glare",
+        "titleAccent": "enmig",
+        "lead": "Amb el ratolí sobre el compositor, prem Shift+A i tria Filter ▸ Glare ▸ Bloom. El node nou s'enganxa al ratolí: porta'l sobre la línia entre Render Layers i el punt petit. Quan la línia s'il·lumini, fes clic.",
+        "hintStrong": "Si no s'ha connectat:",
+        "hint": "arrossega des del punt groc Image de Render Layers fins a l'entrada Image del Glare, i des de la sortida Image del Glare fins al punt petit. Al viewport encara no veuràs l'halo.",
         "short": "el Glare",
         "notes": {
+          "over": "ratolí sobre el compositor",
           "add": "Filter ▸ Glare ▸ Bloom",
-          "drop": "sobre la línia de Render Layers al Reroute"
+          "move": "mou el ratolí, sense fer clic",
+          "drop": "sobre la línia, quan s'il·lumini"
         }
       },
       "always": {
         "title": "Mira",
         "titleAccent": "el bloom",
-        "lead": "A la capçalera del viewport, fes clic a la fletxa petita de la dreta de les quatre esferes (Viewport Shading). A Compositor, tria Always. Apareix l'halo al voltant de les línies.",
+        "lead": "A la capçalera del viewport, fes clic a la fletxa petita de la dreta de les quatre esferes (Viewport Shading). A Compositor, tria Always. Ara el viewport passa pels nodes i apareix l'halo.",
         "hintStrong": "Sense Always, el viewport no mostra el bloom.",
         "hint": "En canvi, el render del F12 sempre passa pel compositor.",
         "short": "el bloom",
@@ -273,12 +285,13 @@
       "size": {
         "title": "Un bloom",
         "titleAccent": "més ample",
-        "lead": "Al compositor, fes clic al node Glare per seleccionar-lo i posa Size a 0.7. L'halo s'escampa una mica més.",
+        "lead": "Al compositor, fes clic al node Glare per seleccionar-lo. Si el panell Glare del node està plegat, obre'l, i posa Size a 0.7. L'halo s'escampa una mica més.",
         "hintStrong": "No et passis amb el bloom:",
         "hint": "si l'apuges massa, tota la imatge es converteix en una taca.",
         "short": "el bloom ample",
         "notes": {
           "glare": "al node Glare",
+          "panel": "panell Glare del node",
           "size": "Size ▸ 0.7"
         }
       },
