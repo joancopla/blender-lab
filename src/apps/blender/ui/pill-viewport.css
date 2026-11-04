@@ -72,3 +72,108 @@
   height: 100%;
   display: block;
 }
+/* Map of the whole window (first step of a pill): areas with their names. */
+.bl-pill-area {
+  position: absolute;
+  overflow: hidden;
+  color: #e6e6e6;
+  font-size: 14px;
+}
+.bl-pill-topbar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 12px;
+  background: #232323;
+  white-space: pre;
+}
+.bl-pill-ws {
+  padding: 3px 10px;
+  background: #3d3d3d;
+  border-radius: 4px;
+}
+.bl-pill-ws-off {
+  color: #9a9a9a;
+}
+.bl-pill-zone {
+  background: #303030;
+  border-radius: 6px;
+}
+.bl-pill-zone-head {
+  height: 28px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  background: #2b2b2b;
+  white-space: pre;
+  font-size: 13px;
+}
+.bl-pill-image.is-screen {
+  top: 28px;
+  width: 100%;
+  height: calc(100% - 28px);
+  object-fit: contain;
+  background: #3d3d3d;
+}
+.bl-pill-tree {
+  padding-top: 6px;
+}
+.bl-pill-tree-row {
+  height: 26px;
+  line-height: 26px;
+  font-size: 14px;
+}
+.bl-pill-tree-row:nth-child(odd) {
+  background: #2b2b2b;
+}
+.bl-pill-tabs {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 38px;
+  padding-top: 8px;
+  background: #232323;
+}
+.bl-pill-tab {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  margin: 0 7px 6px;
+  border-radius: 4px;
+  background: #3d3d3d;
+}
+.bl-pill-tab.is-gap {
+  margin-top: 14px;
+}
+.bl-pill-tab.is-named {
+  outline: 2px solid #57f1db;
+}
+.bl-pill-tab-name {
+  position: absolute;
+  left: 40px;
+  top: 0;
+  line-height: 24px;
+  white-space: nowrap;
+  color: #57f1db;
+  font-size: 15px;
+}
+.bl-pill-ruler {
+  margin-top: 10px;
+  padding: 0 12px;
+  white-space: pre;
+  color: #9a9a9a;
+  font-size: 13px;
+}
+/* Area name, in the site accent: it is a label of the pill, not part of Blender. */
+.bl-pill-callout {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  padding: 6px 16px;
+  border: 2px solid #57f1db;
+  border-radius: 999px;
+  background: rgba(23, 25, 28, 0.9);
+  color: #57f1db;
+  font: 600 24px/1.2 'Segoe UI', Arial, sans-serif;
+}

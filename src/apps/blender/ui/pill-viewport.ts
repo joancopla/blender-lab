@@ -40,6 +40,11 @@ export interface BlenderPillView {
   readonly camera?: boolean;
   /** Overlay drawn over the image (Edit Mode curve, points and handles; a curve wire). */
   readonly overlay?: readonly OverlayItem[];
+  /**
+   * True for a map of the whole Blender window (Layout workspace): the step image goes in
+   * the 3D Viewport and each area carries its name, for students who have never opened it.
+   */
+  readonly screen?: boolean;
 }
 
 /** Camera frame inside the 1200 × 1080 viewport image. FIDELITY? Blender fits the frame with a small margin. */
@@ -72,12 +77,17 @@ function div(cls: string, text?: string): HTMLDivElement {
 export function renderBlenderPillArt(host: HTMLElement, step: PillStep<BlenderPillView>): void {
   const v = step.view;
   host.classList.add('bl-pill-art');
-  host.style.background = v.render ? '#000' : THEME.viewportBackground;
+  host.style.background = v.render ? '#000' : v.screen ? SCREEN_GAP : THEME.viewportBackground;
 
   const img = document.createElement('img');
   img.className = 'bl-pill-image';
   img.src = step.image;
   img.alt = '';
+
+  if (v.screen) {
+    host.replaceChildren(...screenMap(img));
+    return;
+  }
 
   if (v.render) {
     img.classList.add('is-render');
@@ -155,4 +165,79 @@ function overlaySvg(items: readonly OverlayItem[]): SVGSVGElement {
     }
   }
   return svg;
+}
+
+/** Colour of the gaps between areas. FIDELITY? Remembered from the default theme. */
+const SCREEN_GAP = '#161616';
+
+/**
+ * Properties tabs of a selected mesh in the Layout workspace, top to bottom, with the names
+ * the pills use. Drawn as plain squares: the lab does not use Blender's icons.
+ * FIDELITY? Tab order and the gap after Tool, as remembered from 4.x; check in 5.1.
+ */
+const PROPERTIES_TABS: readonly (string | null)[] = [
+  null, // Tool
+  'Render',
+  'Output',
+  null, // View Layer
+  null, // Scene
+  'World',
+  null, // Collection
+  null, // Object
+  'Modifiers',
+  null, // Particles
+  null, // Physics
+  null, // Object Constraints
+  'Object Data',
+  'Material',
+  null, // Texture
+];
+
+function area(cls: string, x: number, y: number, w: number, h: number): HTMLDivElement {
+  const d = div(`bl-pill-area ${cls}`);
+  Object.assign(d.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
+  return d;
+}
+
+/** Simplified Layout workspace: top bar, 3D Viewport, Outliner, Properties and Timeline. */
+function screenMap(img: HTMLImageElement): HTMLElement[] {
+  const top = area('bl-pill-topbar', 0, 0, 1200, 34);
+  top.append(
+    div('', 'File   Edit   Render   Window   Help'),
+    div('bl-pill-ws', 'Layout'),
+    div('bl-pill-ws-off', 'Modeling   Sculpting   UV Editing   Shading   …'),
+  );
+
+  const view = area('bl-pill-zone', 0, 38, 812, 790);
+  img.classList.add('is-screen');
+  view.append(img, div('bl-pill-zone-head', 'Object Mode ▾   View   Select   Add   Object'), div('bl-pill-callout', '3D Viewport'));
+
+  const outliner = area('bl-pill-zone', 816, 38, 384, 250);
+  const tree = div('bl-pill-tree');
+  const rows = [['Scene Collection', 0], ['Collection', 1], ['Camera', 2], ['Cube', 2], ['Light', 2]] as const;
+  for (const [name, depth] of rows) {
+    const r = div('bl-pill-tree-row', name);
+    r.style.paddingLeft = `${12 + depth * 22}px`;
+    tree.append(r);
+  }
+  outliner.append(div('bl-pill-zone-head', ''), tree, div('bl-pill-callout', 'Outliner'));
+
+  const props = area('bl-pill-zone', 816, 292, 384, 536);
+  const tabs = div('bl-pill-tabs');
+  PROPERTIES_TABS.forEach((name, i) => {
+    const tab = div(`bl-pill-tab${name ? ' is-named' : ''}${i === 1 ? ' is-gap' : ''}`);
+    if (name) tab.append(div('bl-pill-tab-name', name));
+    tabs.append(tab);
+  });
+  props.append(tabs, div('bl-pill-callout', 'Properties'));
+
+  const timeline = area('bl-pill-zone', 0, 832, 1200, 248);
+  const ruler = Array.from({ length: 13 }, (_, i) => String(i * 20).padEnd(10)).join('');
+  timeline.append(
+    div('bl-pill-zone-head', 'Playback ▾   Keying ▾   View   Marker'),
+    div('bl-pill-ruler', ruler),
+    div('bl-pill-callout', 'Timeline'),
+  );
+
+  return [top, view, outliner, props, timeline];
 }
