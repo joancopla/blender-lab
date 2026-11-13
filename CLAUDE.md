@@ -9,8 +9,12 @@ retroalimentació.
 
 - **Programari actual: Blender i grandMA3 onPC.** grandMA3 (control de llums per DMX) és el
   segon programa des de l'01/10/2026: especificació a `specs/grandma3/README.md`, fidelitat a
-  `docs/fidelity/grandma3.md`. Se'n podrien afegir d'altres (per exemple, After Effects) sense
-  tocar el nucli (vegeu "Arquitectura").
+  `docs/fidelity/grandma3.md`.
+- **En construcció: Adobe Photoshop**, tercer programa des del 13/11/2026: especificació a
+  `specs/photoshop/README.md`, fidelitat a `docs/fidelity/photoshop.md`. Joan en fa la mostra
+  (programa mínim i Lab 01); un company professor de Photoshop duplicarà el repositori i la
+  continuarà pel seu compte (`docs/photoshop-handover.md`). Se'n podrien afegir d'altres (per
+  exemple, After Effects) sense tocar el nucli (vegeu "Arquitectura").
 - **Autor:** Joan, professor de Blender (el domina a fons). És l'expert de domini i el
   validador final de tot el que fa referència al comportament del programari.
 - **Públic:** alumnes d'un cicle formatiu d'Imatge i So, sense experiència prèvia.
@@ -36,6 +40,20 @@ Per a Blender:
 - Blender és **Z-up**; three.js és Y-up. Tota la lògica, els valors que veu l'alumne i les
   comprovacions treballen en coordenades de Blender (Z amunt, metres, graus). La conversió
   a three.js es fa en un sol lloc (`src/apps/blender/coords.ts`) i enlloc més.
+
+Per a Photoshop:
+
+- Versió, idioma de la interfície i sistema de referència: els de la taula de
+  `specs/photoshop/README.md`. Mentre hi hagi files amb ❓, no donis res per confirmat.
+- Joan no és expert en Photoshop. El validador és qui tingui el programa obert al costat
+  (Joan durant la mostra; després, el seu company). No donis per bo el que recordis: tot
+  comportament replicat va a `docs/fidelity/photoshop.md` amb la seva casella, i els dubtes
+  porten ❓ i `// FIDELITY?`.
+- **Cap icona, logotip ni imatge d'Adobe.** Les icones es dibuixen de nou i les imatges de
+  pràctica es generen amb codi o són CC0.
+- El navegador es reserva dreceres que Photoshop fa servir (`Ctrl+T`, `Ctrl+N`,
+  `Ctrl+Shift+N`...): vegeu "Limitacions del navegador" a `specs/photoshop/README.md`.
+- `src/apps/photoshop/` no importa res d'`apps/blender` ni d'`apps/grandma3`, ni three.js.
 
 Qualsevol programa que s'afegeixi en el futur tindrà la seva pròpia secció de fidelitat i
 el seu propi fitxer a `docs/fidelity/`.
