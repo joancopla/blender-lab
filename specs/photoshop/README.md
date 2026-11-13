@@ -78,14 +78,15 @@ l'anterior.
 
 | Lab | Títol | Introdueix | Estat |
 |---|---|---|---|
-| 01 | Capes | Document, panell Layers, eina Move | Especificat (`01-layers.md`) |
-| 02 | Seleccions | Marquee, Lasso, sumar i restar, Select > Inverse, Deselect | Proposta |
-| 03 | Màscares de capa | Màscara, pinzell blanc i negre, X i D | Proposta |
-| 04 | Capes d'ajust | Levels, Hue/Saturation, edició no destructiva | Proposta |
-| 05 | Transformació i objectes intel·ligents | Free Transform, Smart Object | Proposta |
-| 06 | Modes de fusió | Normal, Multiply, Screen, Overlay | Proposta |
-| 07 | Text | Type Tool, panell Character | Proposta |
-| 08 | Mida, resolució i exportació | Image Size, Canvas Size, Crop, Export As | Proposta |
+| 01 | Transformar | Document, panell Layers reduït, Free Transform, Scale, Rotate, Skew, Distort, Perspective | **La mostra.** Especificat (`01-transform.md`) |
+| 02 | Capes | Panell Layers complet, eina Move | Proposta especificada (`02-layers.md`) |
+| 03 | Seleccions | Marquee, Lasso, sumar i restar, Select > Inverse, Deselect | Proposta |
+| 04 | Màscares de capa | Màscara, pinzell blanc i negre, X i D | Proposta |
+| 05 | Capes d'ajust | Levels, Hue/Saturation, edició no destructiva | Proposta |
+| 06 | Objectes intel·ligents i Warp | Smart Object, Warp | Proposta |
+| 07 | Modes de fusió | Normal, Multiply, Screen, Overlay | Proposta |
+| 08 | Text | Type Tool, panell Character | Proposta |
+| 09 | Mida, resolució i exportació | Image Size, Canvas Size, Crop, Export As | Proposta |
 
 ## El repte final (proposta, per validar)
 
@@ -104,16 +105,17 @@ ajustos). El dibuix és de línia i propi del lab, a `src/labs/photoshop/bluepri
   | Document i capes (model de dades) | `document/` | Tots | 01 |
   | Composició de capes al llenç | `render/` | Tots | 01 |
   | Operadors sobre `core/history` | `operators/` | Tots | 01 |
-  | Panell Layers | `ui/layers-panel/` | Tots | 01 |
+  | Panell Layers | `ui/layers-panel/` | Tots | 01 (reduït), 02 (complet) |
+  | Transformació (quadrilàter, nanses, homografia) | `transform/` | 01, 06 | 01 |
   | Finestra: barra de menús, Options bar, Tools, pestanya del document | `ui/` | Tots | 01 (mínim) |
   | Keymap | `keymap.ts` | Tots | 01 |
-  | Seleccions (màscara de selecció, formigues) | `selection/` | 02, 03 | 02 |
-  | Màscares | `document/`, `render/` | 03 | 03 |
-  | Capes d'ajust | `adjustments/` | 04 | 04 |
+  | Seleccions (màscara de selecció, formigues) | `selection/` | 03, 04 | 03 |
+  | Màscares | `document/`, `render/` | 04 | 04 |
+  | Capes d'ajust | `adjustments/` | 05 | 05 |
 
 - **L'estat és l'única font de veritat.** L'estat que llegeixen les comprovacions és tipat i de
   només lectura: mida del document, llista de capes (nom, visibilitat, opacitat, mode de fusió,
-  bloquejos, desplaçament, identificador del contingut), capes seleccionades i eina activa. Els
+  bloquejos, les quatre cantonades, identificador del contingut), capes seleccionades i eina activa. Els
   píxels de cada capa es desen a part, referenciats per identificador; les comprovacions no
   llegeixen el llenç ni el DOM.
 - Unitats: píxels del document, amb l'origen a dalt a l'esquerra, com a Photoshop. Opacitat en
@@ -121,8 +123,8 @@ ajustos). El dibuix és de línia i propi del lab, a `src/labs/photoshop/bluepri
 - Tot canvi passa per un operador registrat a `core/history`. `Ctrl+Z` desfà i `Shift+Ctrl+Z`
   refà (❓ validar amb la versió de l'aula).
 - `src/labs/photoshop/NN-nom/`: etapes, textos (`ca.json`) i escena inicial de cada lab. Els ids
-  de lab porten el prefix `ps-` (són la clau del progrés): `ps-01-layers`. Pàgines a
-  `labs/ps-01-layers/`.
+  de lab porten el prefix `ps-` (són la clau del progrés): `ps-01-transform`. Pàgines a
+  `labs/ps-01-transform/`.
 - La UI replicada va en l'idioma de referència (vegeu la taula de dalt); les consignes, en català.
 - Les ajudes pròpies del lab (zones de destí, fantasmes) es dibuixen amb l'estil de l'embolcall,
   mai amb el de Photoshop, perquè l'alumne no les busqui després al programa.
@@ -132,7 +134,7 @@ ajustos). El dibuix és de línia i propi del lab, a `src/labs/photoshop/bluepri
 - **Lògica:** tests de Vitest per al model de capes, els operadors, el keymap i les
   comprovacions de cada etapa.
 - **Composició:** les funcions de fusió (opacitat, modes) es proven amb valors de píxel
-  calculats a mà. Quan arribin els modes de fusió (Lab 06), el validador exporta de Photoshop
+  calculats a mà. Quan arribin els modes de fusió (Lab 07), el validador exporta de Photoshop
   imatges de referència petites a `tests/fixtures/photoshop/`.
 - **Aspecte i comportament:** el validador repassa `docs/fidelity/photoshop.md` amb Photoshop
   obert al costat.

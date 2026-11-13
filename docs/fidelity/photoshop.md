@@ -16,7 +16,84 @@ validar, també el que no porta ❓.
 - [ ] ❓ Espai de treball per defecte: Essentials (Default)
 - [ ] ❓ Tema de color de la interfície per defecte i els seus grisos
 
-## Lab 01 — Capes
+## Lab 01 — Transformar
+
+### Entrar i sortir
+
+- [ ] Edit > Free Transform, `Ctrl+T`
+- [ ] Edit > Transform > Again (`Shift+Ctrl+T`), Scale, Rotate, Skew, Distort, Perspective, Warp, Rotate 180°, Rotate 90° Clockwise, Rotate 90° Counter Clockwise, Flip Horizontal, Flip Vertical
+- [ ] ❓ Ordre exacte i separadors del submenú Transform en aquesta versió (hi pot haver ordres de Split Warp)
+- [ ] Retorn aplica la transformació; Esc la cancel·la
+- [ ] Botons Cancel i Commit a la dreta de l'Options bar
+- [ ] ❓ Textos dels tooltips: "Cancel transform (Esc)" i "Commit transform (Enter)"
+- [ ] ❓ Doble clic dins la caixa també aplica la transformació
+- [ ] ❓ Triar una altra eina amb una transformació en curs: Photoshop demana si es vol aplicar (text del diàleg i botons Apply / Cancel / Don't Apply)
+- [ ] ❓ Clic fora de la caixa (lluny) amb una transformació en curs: l'aplica, o comença a rotar
+- [ ] Amb la capa `Background` seleccionada, Free Transform i Transform surten desactivats
+- [ ] ❓ Amb una capa amagada o buida seleccionada: què fa `Ctrl+T`
+- [ ] Rotate 180°, Rotate 90° i Flip s'apliquen directament, sense caixa ni confirmació, quan no hi ha cap transformació en curs
+- [ ] ❓ Dins d'una transformació en curs, Rotate 90° i Flip modifiquen la caixa i cal confirmar igualment
+- [ ] La barra de tasques contextual mostra Cancel i Done durant la transformació (❓ el lab no la replica)
+
+### La caixa
+
+- [ ] Vuit nanses quadrades: quatre cantonades i quatre costats
+- [ ] ❓ Aspecte de la caixa i de les nanses (color de la línia, mida, farciment)
+- [ ] El punt de referència està amagat per defecte; es mostra amb la casella de l'esquerra de l'Options bar
+- [ ] ❓ Amb el punt de referència amagat, la rotació és al voltant del centre de la caixa
+- [ ] ❓ Mentre s'arrossega, un rètol al costat del cursor mostra els valors (W, H o l'angle)
+
+### Escalar
+
+- [ ] Arrossegar una cantonada escala mantenint la proporció (comportament per defecte des de la versió 2019)
+- [ ] Amb Shift, l'escala és lliure
+- [ ] ❓ Arrossegar una nansa de costat també manté la proporció per defecte
+- [ ] Amb Alt, l'escala és des del centre (❓ o des del punt de referència, si és visible)
+- [ ] ❓ Preferences > General > Use Legacy Free Transform inverteix el paper de Shift; el lab segueix el valor per defecte (desactivat)
+- [ ] ❓ L'enllaç Maintain aspect ratio de l'Options bar ve activat per defecte i recorda l'últim estat
+- [ ] Arrossegar una nansa més enllà del costat oposat volteja la capa (W o H negatiu)
+
+### Moure i rotar
+
+- [ ] Arrossegar dins la caixa mou la capa
+- [ ] Fora de la caixa, el cursor és una fletxa corba de dues puntes i arrossegar rota
+- [ ] Amb Shift, la rotació va de 15° en 15°
+- [ ] L'angle de l'Options bar és positiu en sentit horari
+- [ ] ❓ Rang de l'angle mostrat (de −180° a 180°)
+- [ ] ❓ Amb Shift, moure dins la caixa queda limitat a horitzontal, vertical o 45°
+
+### Inclinar, distorsionar i perspectiva
+
+- [ ] Dins de Free Transform, Ctrl + arrossegar una cantonada la mou sola (Distort)
+- [ ] Dins de Free Transform, Ctrl + arrossegar un costat l'inclina (Skew)
+- [ ] ❓ Ctrl + Shift + arrossegar un costat limita la inclinació a la direcció del costat
+- [ ] Dins de Free Transform, Ctrl + Alt + Shift + arrossegar una cantonada fa perspectiva
+- [ ] Edit > Transform > Skew: les nanses de costat llisquen al llarg del seu costat; ❓ què fan les de cantonada
+- [ ] Edit > Transform > Distort: cada cantonada es mou lliure; ❓ què fan les de costat
+- [ ] Edit > Transform > Perspective: moure una cantonada mou l'oposada del mateix costat en sentit contrari
+- [ ] ❓ En mode Scale, Rotate, Skew, Distort o Perspective, què passa en arrossegar fora de la caixa (a Rotate, rota; a la resta?)
+- [ ] ❓ Amb Alt en mode Skew o Distort, la transformació és simètrica respecte del centre
+- [ ] Clic dret dins la caixa: menú amb Free Transform, Scale, Rotate, Skew, Distort, Perspective, Warp i les rotacions i volteigs
+- [ ] ❓ Contingut i ordre exactes d'aquest menú contextual (Content-Aware Scale, Puppet Warp, Split Warp...)
+
+### Options bar
+
+- [ ] D'esquerra a dreta: casella i graella del punt de referència, X, triangle de posició relativa, Y, W, enllaç, H, angle, H (inclinació), V (inclinació), Interpolation, botó de Warp, Cancel, Commit
+- [ ] ❓ Etiquetes i unitats exactes de cada camp (px, %, °) i nombre de decimals
+- [ ] ❓ X i Y indiquen la posició del punt de referència (el centre de la caixa, per defecte)
+- [ ] W i H en percentatge respecte de la mida en entrar a la transformació
+- [ ] ❓ Després de confirmar i tornar a entrar, W i H tornen a 100 % i l'angle a 0° en una capa de píxels
+- [ ] ❓ Després d'una distorsió o perspectiva, què mostren W, H, l'angle i la inclinació
+- [ ] ❓ Valor per defecte d'Interpolation (Bicubic Automatic)
+
+### Desfer
+
+- [ ] Durant la transformació, `Ctrl+Z` desfà l'últim ajust
+- [ ] ❓ Durant la transformació es poden desfer diversos ajustos seguits, o només l'últim
+- [ ] Una transformació confirmada és un sol pas de desfer, anomenat Free Transform a Edit > Undo
+- [ ] ❓ Nom del pas de desfer de cada ordre (Undo Free Transform, Undo Flip Horizontal...)
+
+## Lab 02 — Capes (proposta, no construït)
 
 ### Finestra
 
@@ -106,5 +183,10 @@ validar, també el que no porta ❓.
 - El navegador es reserva `Ctrl+N`, `Ctrl+T`, `Ctrl+W`, `Ctrl+Shift+N`, `Ctrl+Shift+T` i
   `Ctrl+Shift+W`: al lab aquestes ordres es fan pel menú o pel botó.
 - Les icones són dibuixos propis, no les d'Adobe.
-- El llenç no té zoom ni desplaçament al Lab 01: el document es veu sencer.
-- El rètol de `Títol` és una capa de píxels, no una capa de text.
+- El llenç no té zoom ni desplaçament: el document es veu sencer.
+- **El lab no remostreja els píxels en confirmar una transformació:** desa les quatre
+  cantonades i dibuixa sempre el contingut original. Photoshop sí que remostreja, i per això
+  transformar moltes vegades una capa de píxels en degrada la qualitat. El lab ho explica però
+  no ho mostra.
+- La interpolació del lab és bilineal; la de Photoshop, la que indiqui Interpolation.
+- Warp, el punt de referència mòbil, Content-Aware Scale i transformar una selecció no hi són.
