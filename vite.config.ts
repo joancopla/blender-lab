@@ -26,6 +26,7 @@ export default defineConfig({
         pillTurntable: 'pills/turntable/index.html',
         ma3lab02: 'labs/ma3-02-addresses/index.html',
         ma3lab03: 'labs/ma3-03-command-line/index.html',
+        pslab01: 'labs/ps-01-transform/index.html',
       },
     },
   },

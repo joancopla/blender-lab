@@ -1,0 +1,11 @@
+{
+  "ps": {
+    "name": "Photoshop",
+    "realTitle": "Al Photoshop real",
+    "tools": {
+      "fullscreenHelp": "El navegador es queda Ctrl + T per obrir una pestanya. En pantalla completa, el lab el pot rebre i funciona com a Photoshop.",
+      "fullscreen": "Pantalla completa",
+      "fullscreenExit": "Surt de la pantalla completa"
+    }
+  }
+}

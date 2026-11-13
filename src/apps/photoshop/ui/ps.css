@@ -1,0 +1,443 @@
+/*
+ * Photoshop replica. Its own look (the program's dark grey interface), not the
+ * lab shell's. The lab's turquoise only appears in lab elements (targets).
+ * FIDELITY? Greys of the default colour theme, to validate.
+ */
+.ps {
+  --ps-bg: #535353;
+  --ps-bar: #454545;
+  --ps-deep: #282828;
+  --ps-field: #3a3a3a;
+  --ps-line: #383838;
+  --ps-line-light: #6a6a6a;
+  --ps-text: #dddddd;
+  --ps-muted: #a8a8a8;
+  --ps-sel: #6b6b6b;
+  --ps-hover: #606060;
+  --ps-blue: #1473e6;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ps-bg);
+  color: var(--ps-text);
+  font: 400 12px/1.3 'Segoe UI', 'Inter', Arial, sans-serif;
+  user-select: none;
+  overflow: hidden;
+}
+.ps:focus {
+  outline: none;
+}
+.ps button,
+.ps input {
+  font: inherit;
+  color: inherit;
+}
+.ps button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: default;
+}
+.ps :focus-visible {
+  outline: 1px solid var(--ps-blue);
+  outline-offset: 0;
+}
+.ps .is-inert {
+  opacity: 0.55;
+}
+.ps .is-inert .is-inert {
+  opacity: 1;
+}
+
+/* Menu bar */
+.ps-menubar {
+  display: flex;
+  align-items: stretch;
+  height: 26px;
+  padding: 0 4px;
+  background: var(--ps-bar);
+  border-bottom: 1px solid var(--ps-line);
+  flex: none;
+}
+.ps .ps-menubar-item {
+  padding: 0 8px;
+  font-size: 12.5px;
+}
+.ps-menubar-item:hover,
+.ps-menubar-item.is-open {
+  background: var(--ps-hover);
+}
+
+/* Menus */
+.ps-menu {
+  position: absolute;
+  z-index: 20;
+  min-width: 230px;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #f0f0f0;
+  color: #1a1a1a;
+  border: 1px solid #9a9a9a;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  font-size: 12.5px;
+}
+.ps-menu-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 12px 3px 6px;
+  white-space: nowrap;
+}
+.ps-menu-item[aria-disabled='true'] {
+  color: #9b9b9b;
+}
+.ps-menu-item[aria-disabled='false']:hover {
+  background: var(--ps-blue);
+  color: #fff;
+}
+.ps-menu-check {
+  text-align: center;
+  font-size: 11px;
+}
+.ps-menu-shortcut {
+  margin-left: 28px;
+  display: flex;
+  align-items: center;
+}
+.ps-menu-separator {
+  height: 1px;
+  margin: 4px 0;
+  background: #c8c8c8;
+}
+.ps-menu .ps-menu {
+  display: none;
+  left: 100%;
+  top: -5px;
+  color: #1a1a1a;
+}
+.ps-menu-item.has-submenu:hover > .ps-menu {
+  display: block;
+}
+
+/* Options bar */
+.ps-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 8px;
+  background: var(--ps-bg);
+  border-bottom: 1px solid var(--ps-line);
+  flex: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.ps-opt-tool {
+  display: flex;
+  align-items: center;
+  padding-right: 8px;
+  border-right: 1px solid var(--ps-line);
+}
+.ps-opt-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 22px;
+}
+.ps-opt-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.ps-opt-check input {
+  margin: 0;
+}
+.ps-opt-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 21px;
+  padding: 0 22px 0 7px;
+  background: var(--ps-field) linear-gradient(45deg, transparent 50%, var(--ps-muted) 50%) no-repeat right 8px center / 6px 6px;
+  border: 1px solid var(--ps-line);
+  border-radius: 2px;
+}
+.ps-opt-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--ps-line);
+}
+.ps-opt-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ps-opt-label {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ps-text);
+}
+.ps-opt-field input {
+  width: 70px;
+  height: 21px;
+  padding: 0 5px;
+  background: var(--ps-field);
+  border: 1px solid var(--ps-line);
+  border-radius: 2px;
+  user-select: text;
+}
+.ps-opt-field input:focus {
+  outline: 1px solid var(--ps-blue);
+  background: #2f2f2f;
+}
+.ps-opt-interp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.ps .ps-opt-link[aria-pressed='true'] {
+  background: var(--ps-deep);
+  border-radius: 2px;
+}
+.ps .ps-opt-action {
+  width: 26px;
+  height: 26px;
+  border-radius: 3px;
+}
+.ps .ps-opt-action:hover,
+.ps .ps-opt-link:hover {
+  background: var(--ps-hover);
+}
+
+/* Main area */
+.ps-main {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+}
+.ps-tools {
+  flex: none;
+  width: 38px;
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--ps-bg);
+  border-right: 1px solid var(--ps-line);
+}
+.ps .ps-tool {
+  width: 30px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+.ps-tool.is-active {
+  background: var(--ps-deep);
+}
+.ps-tool[aria-disabled='true'] {
+  opacity: 0.5;
+}
+.ps-work {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ps-deep);
+}
+.ps-tabs {
+  flex: none;
+  display: flex;
+  height: 26px;
+  background: #3c3c3c;
+  border-bottom: 1px solid var(--ps-line);
+}
+.ps-tab {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: var(--ps-bg);
+  border-right: 1px solid var(--ps-line);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ps-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+}
+.ps-canvas {
+  position: absolute;
+  /* Transparency grid, seen where no layer covers the document. */
+  background: repeating-conic-gradient(#cccccc 0% 25%, #ffffff 0% 50%) 0 0 / 16px 16px;
+  box-shadow: 0 0 0 1px #1c1c1c;
+}
+.ps-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.ps-box-under {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1;
+  opacity: 0.85;
+}
+.ps-box {
+  fill: none;
+  stroke: #3d3d3d;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+.ps-handle {
+  fill: #ffffff;
+  stroke: #3d3d3d;
+  stroke-width: 1;
+}
+/* Lab element (not Photoshop): where to take the layer. */
+.ps-target {
+  fill: rgba(87, 241, 219, 0.1);
+  stroke: #57f1db;
+  stroke-width: 1.5;
+  stroke-dasharray: 7 5;
+}
+
+/* Panels */
+.ps-panels {
+  flex: none;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--ps-bg);
+  border-left: 1px solid var(--ps-line);
+}
+.ps-layers {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: min(100%, 360px);
+  border-top: 1px solid var(--ps-line);
+}
+.ps-panel-tabs {
+  display: flex;
+  height: 26px;
+  background: #3c3c3c;
+  flex: none;
+}
+.ps-panel-tab {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  color: var(--ps-muted);
+}
+.ps-panel-tab.is-active {
+  background: var(--ps-bg);
+  color: var(--ps-text);
+}
+.ps-layers-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  flex: none;
+}
+.ps-layers-pair {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.ps-layers-value {
+  min-width: 40px;
+  padding: 1px 5px;
+  background: var(--ps-field);
+  border: 1px solid var(--ps-line);
+  border-radius: 2px;
+  text-align: right;
+}
+.ps-layers-lock,
+.ps-layer-lock {
+  display: inline-flex;
+  align-items: center;
+}
+.ps-layer-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  background: #4a4a4a;
+  border-top: 1px solid var(--ps-line);
+  border-bottom: 1px solid var(--ps-line);
+}
+.ps-layer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding-right: 8px;
+  border-bottom: 1px solid var(--ps-line);
+}
+.ps-layer.is-active {
+  background: var(--ps-sel);
+}
+.ps .ps-layer-eye {
+  flex: none;
+  width: 30px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--ps-line);
+}
+.ps-layer-thumb {
+  flex: none;
+  display: flex;
+  background: repeating-conic-gradient(#cccccc 0% 25%, #ffffff 0% 50%) 0 0 / 8px 8px;
+  outline: 1px solid #2a2a2a;
+}
+.ps-layer-thumb canvas {
+  width: 36px;
+  height: 28px;
+}
+.ps-layer-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ps-layer-name.is-background {
+  font-style: italic;
+}
+.ps-layers-footer {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 6px 10px;
+}
+.ps-layers-button {
+  display: inline-flex;
+}
+
+/* Lab tool in the lab panel (shell style comes from the page). */
+.lab-tool-help {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+}

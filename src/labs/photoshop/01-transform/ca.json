@@ -1,0 +1,29 @@
+{
+  "pslab01": {
+    "name": "Transformar",
+    "desc": "Escalar, rotar, inclinar, distorsionar i posar en perspectiva una capa amb Transformación libre i les ordres d'Edición > Transformar.",
+    "intro": {
+      "lead": "Transformar una capa vol dir canviar-ne la mida, girar-la o deformar-la. A Photoshop tot es fa des d'una mateixa caixa amb vuit nanses: el que canvia és quina nansa arrossegues i quina tecla mantens premuda.",
+      "controls": {
+        "enter": "Entra a transformar: Edición > Transformación libre",
+        "scale": "Escala mantenint la proporció: arrossega una nansa",
+        "free": "Escala sense mantenir la proporció: Mayús + arrossega",
+        "centre": "Escala des del centre: Alt + arrossega",
+        "rotate": "Rota: arrossega fora de la caixa (amb Mayús, de 15° en 15°)",
+        "distort": "Distorsiona: Ctrl + arrossega una cantonada",
+        "skew": "Inclina: Ctrl + Mayús + arrossega un costat",
+        "perspective": "Perspectiva: Ctrl + Alt + Mayús + arrossega una cantonada",
+        "apply": "Aplica la transformació: Intro",
+        "cancel": "Descarta-la: Esc",
+        "undo": "Desfés: Ctrl + Z"
+      }
+    },
+    "real": {
+      "lead": "El lab reprodueix la caixa de transformació i les ordres del menú Edición. A Photoshop trobaràs algunes coses més.",
+      "shortcut": "Ctrl + T: és la manera habitual d'entrar a Transformación libre. Al navegador aquesta drecera obre una pestanya nova, i per això al lab s'hi entra pel menú Edición.",
+      "pixels": "Píxels: cada vegada que apliques una transformació, Photoshop torna a calcular els píxels de la capa i se'n perd qualitat. Per transformar moltes vegades sense perdre'n, la capa es converteix en un objecte intel·ligent.",
+      "warp": "Deformar: l'ordre Edición > Transformar > Deformar doblega la capa amb una malla. No forma part d'aquest lab.",
+      "reference": "Punt de referència: una casella de la barra d'opcions mostra el punt al voltant del qual es rota i s'escala, i es pot moure."
+    }
+  }
+}

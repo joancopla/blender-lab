@@ -65,6 +65,17 @@ describe('layers', () => {
     expect(violations('apps', ['labs', 'pills'])).toEqual([]);
   });
 
+  it('the Photoshop replica does not import other programs or three.js', () => {
+    const own = Object.entries(sources).filter(([file]) => file.startsWith('apps/photoshop/'));
+    expect(own.length).toBeGreaterThan(0);
+    const bad = own.flatMap(([file, text]) =>
+      importsOf(text)
+        .filter((spec) => spec === 'three' || spec.startsWith('three/') || /apps/(blender|grandma3)|../(blender|grandma3)//.test(spec))
+        .map((spec) => `${file} -> ${spec}`),
+    );
+    expect(bad).toEqual([]);
+  });
+
   it('labs and pills do not import each other', () => {
     expect(violations('labs', ['pills'])).toEqual([]);
     expect(violations('pills', ['labs'])).toEqual([]);
