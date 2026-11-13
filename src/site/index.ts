@@ -151,9 +151,10 @@ function mainAction(group: ProgramGroup): HTMLAnchorElement {
     const p = progressOf(e.lab);
     return p.done < p.total;
   });
-  const entry = next ?? all[0]!;
+  // A program whose labs are all still being built: its first lab, in free mode.
+  const entry = next ?? all[0] ?? group.labs[0]!;
   const p = progressOf(entry.lab);
-  const key = !next ? 'site.review' : p.started ? 'site.continue' : 'site.start';
+  const key = all.length === 0 ? 'site.start' : !next ? 'site.review' : p.started ? 'site.continue' : 'site.start';
   const a = el('a', 'shell-button shell-button-primary', t(key, { n: entry.lab.number }));
   a.href = entry.path;
   return a;

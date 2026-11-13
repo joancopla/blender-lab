@@ -1,6 +1,8 @@
 {
   "ps": {
     "name": "Photoshop",
+    "eyebrow": "Retoc d'imatge · {n} lab",
+    "lead": "Comença per transformar una capa: escalar-la, rotar-la, inclinar-la i posar-la en perspectiva. La interfície és en castellà, com a l'aula.",
     "realTitle": "Al Photoshop real",
     "tools": {
       "fullscreenHelp": "El navegador es queda Ctrl + T per obrir una pestanya. En pantalla completa, el lab el pot rebre i funciona com a Photoshop.",

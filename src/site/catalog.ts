@@ -15,6 +15,8 @@ import { lab05 } from '../labs/blender/05-materials';
 import { ma3Lab01 } from '../labs/grandma3/01-dmx';
 import { ma3Lab02 } from '../labs/grandma3/02-addresses';
 import { ma3Lab03 } from '../labs/grandma3/03-command-line';
+import { POSTER_BLUEPRINT } from '../labs/photoshop/blueprint';
+import { psLab01 } from '../labs/photoshop/01-transform';
 import type { PillInfo } from '../core/pills/pill';
 import { minijackInfo } from '../pills/blender/minijack/info';
 import { lightingInfo } from '../pills/blender/lighting/info';
@@ -122,6 +124,16 @@ export const PROGRAMS: readonly ProgramGroup[] = [
       { labelKey: 'ma3.shortcuts.normal', keys: ['ma3At', 'ma3At'] },
       { labelKey: 'ma3.shortcuts.clear', keys: ['ma3Clear'] },
     ],
+  },
+  {
+    id: 'photoshop',
+    nameKey: 'ps.name',
+    blueprint: POSTER_BLUEPRINT,
+    eyebrowKey: 'ps.eyebrow',
+    leadKey: 'ps.lead',
+    realTitleKey: 'ps.realTitle',
+    labs: [{ lab: psLab01, path: 'labs/ps-01-transform/' }],
+    shortcuts: [],
   },
 ];
 

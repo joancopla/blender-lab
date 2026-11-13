@@ -1,6 +1,7 @@
 import type { LabDefinition } from '../../../core/lab';
 import { PhotoshopApp } from '../../../apps/photoshop/photoshop-app';
 import type { PsDecorations, PsSetup, PsState } from '../../../apps/photoshop/document/state';
+import { POSTER_BLUEPRINT } from '../blueprint';
 import { PS_LAB01_STAGES } from './stages';
 import './texts';
 
@@ -12,6 +13,7 @@ export const psLab01: LabDefinition<PsState, PsSetup, PsDecorations> = {
   stages: PS_LAB01_STAGES,
   // Phase 1: the replica in free mode. The stages come in phase 2.
   preview: true,
+  blueprint: POSTER_BLUEPRINT,
   createApp: () => new PhotoshopApp(),
   page: {
     prefix: 'pslab01',
