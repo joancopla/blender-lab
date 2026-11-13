@@ -70,7 +70,7 @@ describe('layers', () => {
     expect(own.length).toBeGreaterThan(0);
     const bad = own.flatMap(([file, text]) =>
       importsOf(text)
-        .filter((spec) => spec === 'three' || spec.startsWith('three/') || /apps/(blender|grandma3)|../(blender|grandma3)//.test(spec))
+        .filter((spec) => spec === 'three' || spec.startsWith('three/') || ['blender', 'grandma3'].some((app) => spec.includes(`apps/${app}`) || spec.includes(`../${app}/`)))
         .map((spec) => `${file} -> ${spec}`),
     );
     expect(bad).toEqual([]);
