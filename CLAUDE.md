@@ -43,8 +43,9 @@ Per a Blender:
 
 Per a Photoshop:
 
-- Versió, idioma de la interfície i sistema de referència: els de la taula de
-  `specs/photoshop/README.md`. Mentre hi hagi files amb ❓, no donis res per confirmat.
+- **La interfície replicada de Photoshop és en castellà**, com la tenen a l'aula (excepció a
+  la regla general de l'anglès). Tots els seus textos són a `src/apps/photoshop/ui/labels.ts`.
+- Versió i sistema de referència: els de la taula de `specs/photoshop/README.md`. Mentre hi hagi files amb ❓, no donis res per confirmat.
 - Joan no és expert en Photoshop. El validador és qui tingui el programa obert al costat
   (Joan durant la mostra; després, el seu company). No donis per bo el que recordis: tot
   comportament replicat va a `docs/fidelity/photoshop.md` amb la seva casella, i els dubtes
@@ -61,7 +62,7 @@ el seu propi fitxer a `docs/fidelity/`.
 ## Idioma
 
 - **Interfície replicada del programa: en anglès**, exactament com al programa
-  (Object Mode, Location, User Perspective...).
+  (Object Mode, Location, User Perspective...). Excepció: Photoshop, en castellà.
 - **Tot el contingut didàctic en català:** consignes, pistes, missatges d'error,
   retroalimentació, pàgines del web. Aquests textos mai s'escriuen directament al codi:
   - textos del nucli i de l'embolcall a `src/core/i18n/ca.json`;

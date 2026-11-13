@@ -67,7 +67,8 @@ a Claude Code mateix):
 
 - **Autor i validador:** tu, com a professor de Photoshop i expert de domini.
 - **Versió, idioma i sistema de referència** de Photoshop a la teva aula (taula de
-  `specs/photoshop/README.md`).
+  `specs/photoshop/README.md`). La rèplica és en castellà; tots els textos són a
+  `src/apps/photoshop/ui/labels.ts` i els has de comparar amb el programa.
 - **Programari actual:** si només vols Photoshop, digues-ho (vegeu l'apartat següent).
 - **Nom del projecte** i frase del peu de pàgina: ha de dir que és un projecte educatiu
   independent, i no pot semblar un producte d'Adobe.

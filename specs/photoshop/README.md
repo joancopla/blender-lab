@@ -18,8 +18,8 @@ Tercer programa de la col·lecció (decisió de Joan, 13/11/2026). Mateix nucli,
 | Què | Valor | Estat |
 |---|---|---|
 | Versió | L'última instal·lada a l'aula | ❓ Per confirmar a Help > About Photoshop (Photoshop 2025 = 26.x; Photoshop 2026 = 27.x) |
-| Idioma de la interfície | Anglès (regla general del projecte) | ❓ Per confirmar: si a l'aula el tenen en castellà, cal decidir si la rèplica va en castellà |
-| Sistema | Windows (Ctrl, Alt) | ❓ Per confirmar: si l'aula és Mac, les dreceres es mostren amb Cmd i Option |
+| Idioma de la interfície | **Castellà** (decisió de Joan, 13/11/2026: és com el tenen a l'aula) | Tots els textos de la rèplica són a `src/apps/photoshop/ui/labels.ts`, per validar |
+| Sistema | Windows (Ctrl, Alt, Mayús, Intro) | ❓ Per confirmar: si l'aula és Mac, les dreceres es mostren amb Cmd i Opción |
 | Dreceres | Keyboard Shortcuts per defecte ("Photoshop Defaults") | |
 | Espai de treball | Essentials (Default) | ❓ |
 | Tema de color de la interfície | El gris fosc per defecte | ❓ |

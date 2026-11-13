@@ -11,7 +11,7 @@ validar, també el que no porta ❓.
 ## Referència
 
 - [ ] ❓ Versió de l'aula (Help > About Photoshop). Photoshop 2025 = 26.x; Photoshop 2026 = 27.x
-- [ ] ❓ Idioma de la interfície a l'aula (el lab la replica en anglès)
+- [ ] Idioma de la interfície: castellà. **Tots els textos de `src/apps/photoshop/ui/labels.ts`** (menús, barra d'opcions, panell Capas, eines, noms dels passos de desfer) s'han escrit de memòria i cal comparar-los un per un amb el programa. Aquesta llista fa servir els noms anglesos de les ordres
 - [ ] ❓ Sistema de l'aula: Windows (Ctrl, Alt) o Mac (Cmd, Option)
 - [ ] ❓ Espai de treball per defecte: Essentials (Default)
 - [ ] ❓ Tema de color de la interfície per defecte i els seus grisos
@@ -65,8 +65,9 @@ validar, també el que no porta ❓.
 ### Inclinar, distorsionar i perspectiva
 
 - [ ] Dins de Free Transform, Ctrl + arrossegar una cantonada la mou sola (Distort)
-- [ ] Dins de Free Transform, Ctrl + arrossegar un costat l'inclina (Skew)
-- [ ] ❓ Ctrl + Shift + arrossegar un costat limita la inclinació a la direcció del costat
+- [ ] Dins de Free Transform, Ctrl + arrossegar un costat el mou lliurement amb les seves dues cantonades (Distort)
+- [ ] Dins de Free Transform, Ctrl + Shift + arrossegar un costat l'inclina (Skew)
+- [ ] ❓ Dins de Free Transform, Ctrl + Shift + arrossegar una cantonada la fa lliscar per un dels seus costats
 - [ ] Dins de Free Transform, Ctrl + Alt + Shift + arrossegar una cantonada fa perspectiva
 - [ ] Edit > Transform > Skew: les nanses de costat llisquen al llarg del seu costat; ❓ què fan les de cantonada
 - [ ] Edit > Transform > Distort: cada cantonada es mou lliure; ❓ què fan les de costat

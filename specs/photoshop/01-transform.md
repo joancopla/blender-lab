@@ -5,6 +5,17 @@ Id `ps-01-transform` (no es pot canviar: és la clau del progrés). Pàgina `lab
 És la mostra que fa Joan (13/11/2026): el programa mínim de Photoshop i aquest lab. La resta de
 labs els farà el professor de Photoshop al seu repositori.
 
+La interfície de la rèplica és en **castellà**, com a l'aula (Edición > Transformación libre,
+Mayús, Intro). Aquesta especificació fa servir els noms anglesos de les ordres; l'equivalència
+és a `src/apps/photoshop/ui/labels.ts`.
+
+## Estat
+
+- **Fase 1 (feta, 13/11/2026):** el programa mínim i el mode lliure, a `labs/ps-01-transform/`.
+  Encara no surt a l'índex.
+- **Fase 2 (pendent):** les nou etapes amb comprovacions, les ajudes del lab, la targeta a
+  l'índex i el plànol del repte final.
+
 ## Objectiu
 
 Aprendre les transformacions d'una capa: escalar, rotar, inclinar, distorsionar i posar en
@@ -35,8 +46,8 @@ tanca publicitària vista de costat. Cap imatge externa.
   - arrossegar una nansa: escala. Proporcional per defecte; amb Shift, lliure; amb Alt, des del
     centre;
   - arrossegar fora de la caixa: rota (el cursor és una fletxa corba). Amb Shift, de 15° en 15°;
-  - Ctrl + arrossegar una cantonada: distorsiona (la cantonada es mou sola);
-  - Ctrl + arrossegar un costat: inclina;
+  - Ctrl + arrossegar una nansa: distorsiona (la cantonada es mou sola; un costat s'emporta les seves dues cantonades);
+  - Ctrl + Shift + arrossegar un costat: inclina;
   - Ctrl + Alt + Shift + arrossegar una cantonada: perspectiva;
   - les ordres Scale, Rotate, Skew, Distort i Perspective del menú limiten les nanses a aquella
     transformació sense haver de prémer cap tecla;
@@ -91,7 +102,7 @@ Notes de disseny de les etapes:
 - **5:** Shift durant la rotació, o Edit > Transform > Rotate 90° Clockwise: les dues valen.
 - **6:** una ordre de menú, sense caixa. També serveix per ensenyar que girar 180° no és el
   mateix que voltejar (la retroalimentació ho detecta).
-- **7:** Edit > Transform > Skew, o Ctrl + arrossegar el costat de dalt.
+- **7:** Edit > Transform > Skew, o Ctrl + Shift + arrossegar el costat de dalt.
 - **8:** l'exercici clàssic de posar un cartell sobre una superfície en perspectiva. Les
   marques de les cantonades de la tanca són part del motiu del fons, no una ajuda afegida.
 - **9:** Edit > Transform > Perspective: arrossegar una cantonada de dalt cap endins mou també
